@@ -1,0 +1,1721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Laura Girls Secondary School - DEBSite</title>
+    <meta name="description" content="Official school management system for Laura Girls Secondary School - Kasama District">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,450;9..144,560;9..144,650&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --paper: #F4F5F1;
+            --surface: #FFFFFF;
+            --surface-sunken: #EDF0EA;
+            --ink: #15201A;
+            --ink-soft: #4B5A50;
+            --ink-faint: #8A968C;
+            --border: #DCE3DB;
+            --border-strong: #C3CDC1;
+            --green: #0B3D2E;
+            --green-dark: #082A20;
+            --green-tint: #E5EEE8;
+            --brass: #B8862E;
+            --brass-dark: #8C6A22;
+            --brass-tint: #F6EDD9;
+            --plum: #4B2E62;
+            --plum-dark: #37224A;
+            --plum-tint: #EFE8F3;
+            --oxblood: #8C2F2F;
+            --oxblood-dark: #6E2222;
+            --oxblood-tint: #F5E6E6;
+            --font-display: 'Fraunces', serif;
+            --font-body: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'IBM Plex Mono', monospace;
+            --radius-sm: 10px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --shadow-sm: 0 1px 2px rgba(21, 32, 26, 0.06);
+            --shadow-md: 0 8px 24px rgba(21, 32, 26, 0.09);
+            --shadow-lg: 0 24px 60px rgba(21, 32, 26, 0.18);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--paper);
+            color: var(--ink);
+            min-height: 100vh;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ============================================================
+           TOP BAR
+           ============================================================ */
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            background: var(--green);
+            border-bottom: 1px solid var(--green-dark);
+            padding: 12px 18px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: var(--shadow-sm);
+        }
+        .topbar .seal {
+            width: 38px;
+            height: 38px;
+            flex-shrink: 0;
+        }
+        .topbar .brand {
+            flex: 1;
+            min-width: 0;
+        }
+        .topbar .brand .eyebrow {
+            font-size: 10px;
+            letter-spacing: 1.6px;
+            text-transform: uppercase;
+            color: var(--brass);
+            font-weight: 600;
+        }
+        .topbar .brand h1 {
+            font-family: var(--font-display);
+            font-weight: 560;
+            font-size: 17px;
+            color: #fff;
+            letter-spacing: 0.2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .topbar .brand h1 span {
+            color: var(--brass);
+        }
+        .topbar-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .topbar-actions .btn-sm {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            color: #EAF1EC;
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.15s ease;
+        }
+        .topbar-actions .btn-sm:hover {
+            background: rgba(255, 255, 255, 0.16);
+        }
+        .topbar-actions .btn-sm i {
+            font-size: 12px;
+        }
+        .topbar-actions .user-badge {
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            color: #EAF1EC;
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* ============================================================
+           SHELL & SECTIONS
+           ============================================================ */
+        .shell {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px 16px 60px;
+        }
+
+        .section {
+            display: none;
+        }
+        .section.active {
+            display: block;
+        }
+
+        /* ============================================================
+           CARDS & COMPONENTS
+           ============================================================ */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-bottom: 18px;
+            box-shadow: var(--shadow-sm);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--green-tint);
+        }
+        .card-header h2 {
+            font-family: var(--font-display);
+            font-weight: 560;
+            font-size: 18px;
+            color: var(--green-dark);
+        }
+        .card-header h2 i {
+            color: var(--brass-dark);
+            margin-right: 8px;
+        }
+        .card-header .subtitle {
+            font-size: 13px;
+            color: var(--ink-faint);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+        }
+        .grid-4 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2,
+            .grid-3,
+            .grid-4 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            width: 100%;
+        }
+        .field label {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--ink-soft);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .field label i {
+            color: var(--green);
+            width: 16px;
+            font-size: 13px;
+        }
+        .field input,
+        .field select,
+        .field textarea {
+            background: var(--paper);
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            padding: 10px 13px;
+            font-size: 14px;
+            outline: none;
+            width: 100%;
+            color: var(--ink);
+            font-family: var(--font-body);
+            transition: border-color 0.12s ease, background 0.12s ease;
+        }
+        .field input:focus,
+        .field select:focus,
+        .field textarea:focus {
+            border-color: var(--green);
+            background: var(--surface);
+            box-shadow: 0 0 0 3px var(--green-tint);
+        }
+        .field textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .btn {
+            background: var(--green);
+            border: 1px solid var(--green-dark);
+            padding: 12px 20px;
+            border-radius: 60px;
+            color: #fff;
+            font-weight: 700;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: transform 0.1s ease, background 0.15s ease;
+            border: none;
+            font-family: var(--font-body);
+        }
+        .btn:active {
+            transform: scale(0.97);
+            background: var(--green-dark);
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .btn-primary {
+            background: var(--green);
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background: var(--green-dark);
+        }
+        .btn-success {
+            background: #0f7b3a;
+            color: #fff;
+        }
+        .btn-success:hover {
+            background: #0a5e2b;
+        }
+        .btn-danger {
+            background: var(--oxblood);
+            color: #fff;
+        }
+        .btn-danger:hover {
+            background: var(--oxblood-dark);
+        }
+        .btn-warning {
+            background: #d4a017;
+            color: #fff;
+        }
+        .btn-warning:hover {
+            background: #b8860b;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid var(--green);
+            color: var(--green);
+        }
+        .btn-outline:hover {
+            background: var(--green-tint);
+        }
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 12.5px;
+        }
+        .btn-block {
+            width: 100%;
+        }
+
+        /* ============================================================
+           TAB NAVIGATION
+           ============================================================ */
+        .tab-nav {
+            display: flex;
+            background: var(--surface-sunken);
+            border-radius: 40px;
+            padding: 5px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        .tab-nav .tab-btn {
+            flex: 1;
+            text-align: center;
+            padding: 10px 14px;
+            border-radius: 36px;
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--ink-soft);
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            transition: 0.16s ease;
+            min-width: 80px;
+        }
+        .tab-nav .tab-btn.active {
+            background: var(--green);
+            color: #fff;
+            box-shadow: var(--shadow-sm);
+        }
+        .tab-nav .tab-btn i {
+            font-size: 14px;
+        }
+
+        /* ============================================================
+           RESULT TABLE
+           ============================================================ */
+        .table-wrapper {
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+        .table-wrapper table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            min-width: 600px;
+        }
+        .table-wrapper table thead {
+            background: var(--green);
+            color: #fff;
+        }
+        .table-wrapper table th {
+            padding: 10px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+        .table-wrapper table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+        .table-wrapper table tbody tr:nth-child(even) {
+            background: var(--paper);
+        }
+        .table-wrapper table tbody tr:hover {
+            background: var(--green-tint);
+        }
+        .table-wrapper table .totals-row {
+            background: var(--green-tint) !important;
+            font-weight: 700;
+        }
+        .table-wrapper table .totals-row td {
+            border-top: 2px solid var(--green);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 40px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .badge-success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        .badge-warning {
+            background: #fff3e0;
+            color: #e65100;
+        }
+        .badge-danger {
+            background: #ffebee;
+            color: #c62828;
+        }
+        .badge-info {
+            background: #e3f2fd;
+            color: #0d47a1;
+        }
+
+        /* ============================================================
+           STAT CARDS
+           ============================================================ */
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 16px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+        }
+        .stat-card .number {
+            font-family: var(--font-mono);
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--green-dark);
+        }
+        .stat-card .label {
+            font-size: 11px;
+            color: var(--ink-faint);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+        .stat-card .icon {
+            font-size: 24px;
+            color: var(--brass-dark);
+            margin-bottom: 6px;
+        }
+
+        /* ============================================================
+           TOAST
+           ============================================================ */
+        .toast {
+            position: fixed;
+            left: 50%;
+            bottom: 26px;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--ink);
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 60px;
+            font-size: 13.5px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            box-shadow: var(--shadow-lg);
+            z-index: 200;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            max-width: 88vw;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+            pointer-events: auto;
+        }
+        .toast i {
+            color: var(--brass);
+        }
+        .toast.error i {
+            color: #E8898F;
+        }
+
+        /* ============================================================
+           PRINT STYLES
+           ============================================================ */
+        @media print {
+            .topbar,
+            .tab-nav,
+            .no-print {
+                display: none !important;
+            }
+            .section {
+                display: block !important;
+            }
+            .card {
+                box-shadow: none !important;
+                border: 1px solid #ddd !important;
+                break-inside: avoid;
+            }
+            .table-wrapper {
+                border: 1px solid #ddd !important;
+            }
+            .table-wrapper table th {
+                background: #333 !important;
+                color: #fff !important;
+            }
+            body {
+                background: #fff !important;
+            }
+        }
+
+        /* ============================================================
+           RESULTS CARD (Student View)
+           ============================================================ */
+        .result-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow-sm);
+            border-left: 4px solid var(--brass);
+        }
+        .result-card .subject-result {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .result-card .subject-result:last-child {
+            border-bottom: none;
+        }
+        .result-card .subject-name {
+            font-weight: 600;
+        }
+        .result-card .subject-score {
+            font-family: var(--font-mono);
+            font-weight: 600;
+        }
+        .result-card .subject-grade {
+            font-weight: 600;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+        .result-card .total-score {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--green-dark);
+        }
+        .result-card .average-score {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--brass-dark);
+        }
+        .result-card .position {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--oxblood);
+        }
+        .result-card .comment {
+            font-style: italic;
+            color: var(--ink-soft);
+            padding: 8px 12px;
+            background: var(--paper);
+            border-radius: 10px;
+            margin-top: 8px;
+        }
+
+        /* ============================================================
+           FOOTER
+           ============================================================ */
+        .footer-note {
+            font-size: 11px;
+            color: var(--ink-faint);
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+            letter-spacing: 0.3px;
+        }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+        @media (max-width: 480px) {
+            .topbar .brand h1 {
+                font-size: 14px;
+            }
+            .topbar-actions .btn-sm {
+                font-size: 10px;
+                padding: 4px 10px;
+            }
+            .topbar-actions .user-badge {
+                font-size: 10px;
+                padding: 4px 10px;
+            }
+            .card {
+                padding: 14px;
+            }
+            .tab-nav .tab-btn {
+                font-size: 11px;
+                padding: 8px 10px;
+                min-width: 60px;
+            }
+            .table-wrapper table {
+                font-size: 11px;
+                min-width: 450px;
+            }
+            .table-wrapper table th,
+            .table-wrapper table td {
+                padding: 6px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================================
+         TOP BAR
+         ============================================================ -->
+    <div class="topbar">
+        <span class="seal" id="topbarSeal"></span>
+        <div class="brand">
+            <div class="eyebrow">Republic of Zambia · Ministry of Education</div>
+            <h1>Laura Girls Secondary School <span>· DEBSite</span></h1>
+        </div>
+        <div class="topbar-actions">
+            <span class="user-badge" id="userBadge"><i class="fas fa-user"></i> Guest</span>
+            <button class="btn-sm" id="loginBtn"><i class="fas fa-sign-in-alt"></i> Login</button>
+            <button class="btn-sm" id="logoutBtn" style="display:none;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+    </div>
+
+    <div class="shell" id="app">
+
+        <!-- ============================================================
+             TAB NAVIGATION
+             ============================================================ -->
+        <div class="tab-nav" id="tabNav">
+            <button class="tab-btn active" data-tab="student"><i class="fas fa-user-graduate"></i> Student</button>
+            <button class="tab-btn" data-tab="teacher"><i class="fas fa-chalkboard-teacher"></i> Teacher</button>
+            <button class="tab-btn" data-tab="admin"><i class="fas fa-user-shield"></i> Admin</button>
+        </div>
+
+        <!-- ============================================================
+             STUDENT SECTION
+             ============================================================ -->
+        <div class="section active" id="studentSection">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-search"></i> Check Your Results</h2>
+                    <span class="subtitle">Enter your details to view results</span>
+                </div>
+                <div class="grid-2">
+                    <div class="field">
+                        <label><i class="fas fa-id-card"></i> Student Number</label>
+                        <input type="text" id="studentNumber" placeholder="e.g. 2024-001">
+                    </div>
+                    <div class="field">
+                        <label><i class="fas fa-calendar-alt"></i> Term</label>
+                        <select id="studentTerm">
+                            <option value="">Select Term</option>
+                            <option value="1">Term 1</option>
+                            <option value="2">Term 2</option>
+                            <option value="3">Term 3</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid-2">
+                    <div class="field">
+                        <label><i class="fas fa-calendar-year"></i> Year</label>
+                        <select id="studentYear">
+                            <option value="">Select Year</option>
+                            <option value="2024">2024</option>
+                            <option value="2025">2025</option>
+                            <option value="2026">2026</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label><i class="fas fa-tag"></i> Test Type</label>
+                        <select id="studentTestType">
+                            <option value="">Select Test Type</option>
+                            <option value="mid_term">Mid Term</option>
+                            <option value="end_term">End of Term</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-block" id="viewResultsBtn"><i class="fas fa-eye"></i> View Results</button>
+            </div>
+
+            <!-- Results Display -->
+            <div id="studentResults" style="display:none;">
+                <div class="card" id="studentInfoCard">
+                    <div class="card-header">
+                        <h2><i class="fas fa-user-graduate"></i> Student Information</h2>
+                    </div>
+                    <div id="studentInfo"></div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-list"></i> Results</h2>
+                        <button class="btn btn-sm btn-success" id="downloadResultsBtn"><i class="fas fa-download"></i> Download PDF</button>
+                    </div>
+                    <div id="resultsContent"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+             TEACHER SECTION
+             ============================================================ -->
+        <div class="section" id="teacherSection">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-chalkboard-teacher"></i> Teacher Dashboard</h2>
+                    <span class="subtitle">Enter and manage student results</span>
+                </div>
+                <div class="grid-3">
+                    <div class="field">
+                        <label><i class="fas fa-users"></i> Class</label>
+                        <select id="teacherClass">
+                            <option value="">Select Class</option>
+                            <option value="10A">Grade 10A</option>
+                            <option value="10B">Grade 10B</option>
+                            <option value="11A">Grade 11A</option>
+                            <option value="11B">Grade 11B</option>
+                            <option value="12A">Grade 12A</option>
+                            <option value="12B">Grade 12B</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label><i class="fas fa-book"></i> Subject</label>
+                        <select id="teacherSubject">
+                            <option value="">Select Subject</option>
+                            <option value="English">English</option>
+                            <option value="Mathematics">Mathematics</option>
+                            <option value="Biology">Biology</option>
+                            <option value="Chemistry">Chemistry</option>
+                            <option value="Physics">Physics</option>
+                            <option value="History">History</option>
+                            <option value="Geography">Geography</option>
+                            <option value="Civic Education">Civic Education</option>
+                            <option value="Zambian Languages">Zambian Languages</option>
+                            <option value="Religious Education">Religious Education</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label><i class="fas fa-calendar-alt"></i> Term</label>
+                        <select id="teacherTerm">
+                            <option value="">Select Term</option>
+                            <option value="1">Term 1</option>
+                            <option value="2">Term 2</option>
+                            <option value="3">Term 3</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid-3">
+                    <div class="field">
+                        <label><i class="fas fa-calendar-year"></i> Year</label>
+                        <select id="teacherYear">
+                            <option value="">Select Year</option>
+                            <option value="2024">2024</option>
+                            <option value="2025">2025</option>
+                            <option value="2026">2026</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label><i class="fas fa-tag"></i> Test Type</label>
+                        <select id="teacherTestType">
+                            <option value="">Select Test Type</option>
+                            <option value="mid_term">Mid Term</option>
+                            <option value="end_term">End of Term</option>
+                        </select>
+                    </div>
+                    <div class="field" style="justify-content:flex-end;">
+                        <button class="btn btn-primary" id="loadStudentsBtn"><i class="fas fa-users"></i> Load Students</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Entry -->
+            <div id="resultsEntry" style="display:none;">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-edit"></i> Enter Results</h2>
+                        <button class="btn btn-sm btn-success" id="saveResultsBtn"><i class="fas fa-save"></i> Save All</button>
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Student Name</th>
+                                    <th>Student Number</th>
+                                    <th>Score (%)</th>
+                                    <th>Grade</th>
+                                    <th>Comment</th>
+                                </tr>
+                            </thead>
+                            <tbody id="resultsTableBody">
+                                <tr><td colspan="6" style="text-align:center;color:var(--ink-faint);">No students loaded. Please select class and subject.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+             ADMIN SECTION
+             ============================================================ -->
+        <div class="section" id="adminSection">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-user-shield"></i> Admin Dashboard</h2>
+                    <span class="subtitle">Manage users, classes, and terms</span>
+                </div>
+                <div class="grid-4">
+                    <div class="stat-card">
+                        <div class="icon"><i class="fas fa-users"></i></div>
+                        <div class="number" id="totalStudents">0</div>
+                        <div class="label">Total Students</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon"><i class="fas fa-user-tie"></i></div>
+                        <div class="number" id="totalTeachers">0</div>
+                        <div class="label">Total Teachers</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon"><i class="fas fa-book"></i></div>
+                        <div class="number" id="totalSubjects">0</div>
+                        <div class="label">Total Subjects</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="icon"><i class="fas fa-file-alt"></i></div>
+                        <div class="number" id="totalResults">0</div>
+                        <div class="label">Total Results</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-user-plus"></i> Add Student</h2>
+                    </div>
+                    <div class="field">
+                        <label>Student Number</label>
+                        <input type="text" id="adminStudentNumber" placeholder="e.g. 2024-001">
+                    </div>
+                    <div class="field">
+                        <label>Full Name</label>
+                        <input type="text" id="adminStudentName" placeholder="e.g. Mary Mwansa">
+                    </div>
+                    <div class="field">
+                        <label>Class</label>
+                        <select id="adminStudentClass">
+                            <option value="">Select Class</option>
+                            <option value="10A">Grade 10A</option>
+                            <option value="10B">Grade 10B</option>
+                            <option value="11A">Grade 11A</option>
+                            <option value="11B">Grade 11B</option>
+                            <option value="12A">Grade 12A</option>
+                            <option value="12B">Grade 12B</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-success btn-block" id="addStudentBtn"><i class="fas fa-plus"></i> Add Student</button>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-user-plus"></i> Add Teacher</h2>
+                    </div>
+                    <div class="field">
+                        <label>Teacher Name</label>
+                        <input type="text" id="adminTeacherName" placeholder="e.g. Mr. John Banda">
+                    </div>
+                    <div class="field">
+                        <label>Username</label>
+                        <input type="text" id="adminTeacherUsername" placeholder="e.g. jbanda">
+                    </div>
+                    <div class="field">
+                        <label>Password</label>
+                        <input type="password" id="adminTeacherPassword" placeholder="Enter password">
+                    </div>
+                    <button class="btn btn-success btn-block" id="addTeacherBtn"><i class="fas fa-plus"></i> Add Teacher</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-note">
+            Laura Girls Secondary School · Kasama District &copy; 2026 &nbsp;·&nbsp; Powered by DEBSite
+        </div>
+    </div>
+
+    <!-- ============================================================
+         TOAST
+         ============================================================ -->
+    <div class="toast" id="globalToast"><i class="fas fa-check-circle"></i> <span id="toastMsg">Saved</span></div>
+
+    <script>
+        (function() {
+            "use strict";
+
+            // ============================================================
+            // CONFIG
+            // ============================================================
+            const SUPABASE_URL = 'https://ruewsvksoizldmaegvpo.supabase.co';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ1ZXdzdmtzb2l6bGRtYWVndnBvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYxODgxODYsImV4cCI6MjEwMTc2NDE4Nn0.GVGUJb8NM7NFOMfRbgN4RbT59tIMInqRxAKep0QsS8k';
+
+            const SCHOOL_NAME = 'Laura Girls Secondary School';
+            const SCHOOL_DISTRICT = 'Kasama';
+
+            // ============================================================
+            // STATE
+            // ============================================================
+            let supabaseClient = null;
+            let currentUser = null;
+            let currentResults = [];
+            let currentStudents = [];
+
+            // ============================================================
+            // SEAL
+            // ============================================================
+            function sealMarkup(ringColor, inkColor) {
+                ringColor = ringColor || '#B8862E';
+                inkColor = inkColor || '#0B3D2E';
+                return '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">' +
+                    '<circle cx="50" cy="50" r="47" fill="none" stroke="' + ringColor + '" stroke-width="1.6"/>' +
+                    '<circle cx="50" cy="50" r="41" fill="none" stroke="' + ringColor + '" stroke-width="1"/>' +
+                    '<path d="M50 24 L54.8 34.4 66.2 36 57.6 43.9 59.7 55.2 50 49.4 40.3 55.2 42.4 43.9 33.8 36 45.2 34.4 Z" fill="' +
+                    ringColor + '"/>' +
+                    '<text x="50" y="66" text-anchor="middle" font-size="8.4" letter-spacing="1" fill="' + inkColor +
+                    '" font-family="IBM Plex Sans, sans-serif" font-weight="700">LAURA GIRLS</text>' +
+                    '<text x="50" y="76" text-anchor="middle" font-size="6.4" letter-spacing="0.6" fill="' + inkColor +
+                    '" font-family="IBM Plex Sans, sans-serif" font-weight="500">KASAMA DISTRICT</text>' +
+                    '</svg>';
+            }
+            document.getElementById('topbarSeal').innerHTML = sealMarkup('#E7C77A', '#ffffff');
+
+            // ============================================================
+            // DOM REFS
+            // ============================================================
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const sections = {
+                student: document.getElementById('studentSection'),
+                teacher: document.getElementById('teacherSection'),
+                admin: document.getElementById('adminSection')
+            };
+            const loginBtn = document.getElementById('loginBtn');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const userBadge = document.getElementById('userBadge');
+            const toastDiv = document.getElementById('globalToast');
+            const toastMsg = document.getElementById('toastMsg');
+
+            // Student
+            const studentNumber = document.getElementById('studentNumber');
+            const studentTerm = document.getElementById('studentTerm');
+            const studentYear = document.getElementById('studentYear');
+            const studentTestType = document.getElementById('studentTestType');
+            const viewResultsBtn = document.getElementById('viewResultsBtn');
+            const studentResults = document.getElementById('studentResults');
+            const studentInfo = document.getElementById('studentInfo');
+            const resultsContent = document.getElementById('resultsContent');
+            const downloadResultsBtn = document.getElementById('downloadResultsBtn');
+
+            // Teacher
+            const teacherClass = document.getElementById('teacherClass');
+            const teacherSubject = document.getElementById('teacherSubject');
+            const teacherTerm = document.getElementById('teacherTerm');
+            const teacherYear = document.getElementById('teacherYear');
+            const teacherTestType = document.getElementById('teacherTestType');
+            const loadStudentsBtn = document.getElementById('loadStudentsBtn');
+            const resultsEntry = document.getElementById('resultsEntry');
+            const resultsTableBody = document.getElementById('resultsTableBody');
+            const saveResultsBtn = document.getElementById('saveResultsBtn');
+
+            // Admin
+            const adminStudentNumber = document.getElementById('adminStudentNumber');
+            const adminStudentName = document.getElementById('adminStudentName');
+            const adminStudentClass = document.getElementById('adminStudentClass');
+            const addStudentBtn = document.getElementById('addStudentBtn');
+            const adminTeacherName = document.getElementById('adminTeacherName');
+            const adminTeacherUsername = document.getElementById('adminTeacherUsername');
+            const adminTeacherPassword = document.getElementById('adminTeacherPassword');
+            const addTeacherBtn = document.getElementById('addTeacherBtn');
+            const totalStudents = document.getElementById('totalStudents');
+            const totalTeachers = document.getElementById('totalTeachers');
+            const totalSubjects = document.getElementById('totalSubjects');
+            const totalResults = document.getElementById('totalResults');
+
+            // ============================================================
+            // INIT SUPABASE
+            // ============================================================
+            function initSupabase() {
+                try {
+                    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                    console.log('✅ Supabase connected');
+                    return true;
+                } catch (e) {
+                    console.error('❌ Supabase connection error:', e);
+                    showToast('❌ Connection error: ' + e.message);
+                    return false;
+                }
+            }
+
+            // ============================================================
+            // TAB SWITCHING
+            // ============================================================
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    const tab = this.dataset.tab;
+                    Object.keys(sections).forEach(key => {
+                        sections[key].classList.toggle('active', key === tab);
+                    });
+                    if (tab === 'admin') {
+                        loadAdminStats();
+                    }
+                });
+            });
+
+            // ============================================================
+            // TOAST
+            // ============================================================
+            let toastTimer = null;
+
+            function showToast(msg, isError = false) {
+                toastMsg.textContent = msg;
+                toastDiv.classList.toggle('error', isError);
+                toastDiv.classList.add('show');
+                clearTimeout(toastTimer);
+                toastTimer = setTimeout(() => toastDiv.classList.remove('show'), 4000);
+            }
+
+            // ============================================================
+            // LOGIN / LOGOUT
+            // ============================================================
+            loginBtn.addEventListener('click', function() {
+                const role = prompt('Enter role (student/teacher/admin):');
+                if (!role) return;
+                if (role === 'student') {
+                    const studentId = prompt('Enter your student number:');
+                    if (!studentId) return;
+                    currentUser = { role: 'student', id: studentId };
+                    userBadge.innerHTML = '<i class="fas fa-user-graduate"></i> ' + studentId;
+                    showToast('✅ Logged in as student: ' + studentId);
+                    loginBtn.style.display = 'none';
+                    logoutBtn.style.display = 'inline-flex';
+                    // Switch to student tab
+                    document.querySelector('.tab-btn[data-tab="student"]').click();
+                } else if (role === 'teacher') {
+                    const username = prompt('Enter your username:');
+                    if (!username) return;
+                    const password = prompt('Enter your password:');
+                    if (!password) return;
+                    // Simple auth - check if teacher exists
+                    authenticateTeacher(username, password);
+                } else if (role === 'admin') {
+                    const password = prompt('Enter admin password:');
+                    if (password === 'admin123') {
+                        currentUser = { role: 'admin' };
+                        userBadge.innerHTML = '<i class="fas fa-user-shield"></i> Admin';
+                        showToast('✅ Logged in as Admin');
+                        loginBtn.style.display = 'none';
+                        logoutBtn.style.display = 'inline-flex';
+                        document.querySelector('.tab-btn[data-tab="admin"]').click();
+                        loadAdminStats();
+                    } else {
+                        showToast('❌ Invalid admin password', true);
+                    }
+                }
+            });
+
+            async function authenticateTeacher(username, password) {
+                try {
+                    if (!supabaseClient && !initSupabase()) {
+                        showToast('❌ Database connection failed', true);
+                        return;
+                    }
+                    const { data, error } = await supabaseClient
+                        .from('teachers')
+                        .select('*')
+                        .eq('username', username)
+                        .maybeSingle();
+
+                    if (error) throw error;
+                    if (!data) {
+                        showToast('❌ Teacher not found', true);
+                        return;
+                    }
+                    if (data.password !== password) {
+                        showToast('❌ Invalid password', true);
+                        return;
+                    }
+                    currentUser = { role: 'teacher', id: data.id, name: data.name };
+                    userBadge.innerHTML = '<i class="fas fa-chalkboard-teacher"></i> ' + data.name;
+                    showToast('✅ Logged in as teacher: ' + data.name);
+                    loginBtn.style.display = 'none';
+                    logoutBtn.style.display = 'inline-flex';
+                    document.querySelector('.tab-btn[data-tab="teacher"]').click();
+                    // Load admin stats for teacher
+                    loadAdminStats();
+                } catch (err) {
+                    showToast('❌ Error: ' + err.message, true);
+                    console.error(err);
+                }
+            }
+
+            logoutBtn.addEventListener('click', function() {
+                currentUser = null;
+                userBadge.innerHTML = '<i class="fas fa-user"></i> Guest';
+                loginBtn.style.display = 'inline-flex';
+                logoutBtn.style.display = 'none';
+                showToast('🔒 Logged out');
+                // Clear results
+                studentResults.style.display = 'none';
+                resultsEntry.style.display = 'none';
+            });
+
+            // ============================================================
+            // STUDENT - VIEW RESULTS
+            // ============================================================
+            viewResultsBtn.addEventListener('click', async function() {
+                const number = studentNumber.value.trim();
+                const term = studentTerm.value;
+                const year = studentYear.value;
+                const testType = studentTestType.value;
+
+                if (!number) { showToast('⚠️ Please enter your student number', true); return; }
+                if (!term) { showToast('⚠️ Please select a term', true); return; }
+                if (!year) { showToast('⚠️ Please select a year', true); return; }
+                if (!testType) { showToast('⚠️ Please select a test type', true); return; }
+
+                if (!supabaseClient && !initSupabase()) {
+                    showToast('❌ Database connection failed', true);
+                    return;
+                }
+
+                try {
+                    showToast('🔄 Loading results...');
+                    // Get student info
+                    const { data: studentData, error: studentError } = await supabaseClient
+                        .from('students')
+                        .select('*')
+                        .eq('student_number', number)
+                        .maybeSingle();
+
+                    if (studentError) throw studentError;
+                    if (!studentData) {
+                        showToast('❌ Student not found', true);
+                        return;
+                    }
+
+                    // Get results
+                    const { data: resultsData, error: resultsError } = await supabaseClient
+                        .from('results')
+                        .select('*')
+                        .eq('student_id', studentData.id)
+                        .eq('term', term)
+                        .eq('year', year)
+                        .eq('test_type', testType);
+
+                    if (resultsError) throw resultsError;
+
+                    currentResults = resultsData || [];
+
+                    // Display results
+                    displayStudentResults(studentData, resultsData, term, year, testType);
+                    studentResults.style.display = 'block';
+
+                    if (resultsData.length === 0) {
+                        showToast('📭 No results found for this term');
+                    } else {
+                        showToast('✅ Results loaded successfully');
+                    }
+
+                } catch (err) {
+                    showToast('❌ Error: ' + err.message, true);
+                    console.error(err);
+                }
+            });
+
+            function displayStudentResults(student, results, term, year, testType) {
+                // Student info
+                studentInfo.innerHTML = `
+                    <div class="grid-3">
+                        <div><strong>Name:</strong> ${student.name}</div>
+                        <div><strong>Student Number:</strong> ${student.student_number}</div>
+                        <div><strong>Class:</strong> ${student.class}</div>
+                        <div><strong>Term:</strong> ${term}</div>
+                        <div><strong>Year:</strong> ${year}</div>
+                        <div><strong>Test Type:</strong> ${testType === 'mid_term' ? 'Mid Term' : 'End of Term'}</div>
+                    </div>
+                `;
+
+                if (!results || results.length === 0) {
+                    resultsContent.innerHTML = `
+                        <div style="text-align:center;padding:30px;color:var(--ink-faint);">
+                            <i class="fas fa-folder-open" style="font-size:30px;display:block;margin-bottom:12px;"></i>
+                            <p>No results available for this term.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Calculate totals
+                let totalScore = 0;
+                let subjectCount = 0;
+                let html = `
+                    <div class="result-card">
+                        <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
+                            <div class="total-score">Total: ${results.reduce((s,r) => s + (parseInt(r.score) || 0), 0)}%</div>
+                            <div class="average-score">Average: ${(results.reduce((s,r) => s + (parseInt(r.score) || 0), 0) / results.length).toFixed(1)}%</div>
+                            <div class="position">Position: ${student.position || 'N/A'}</div>
+                        </div>
+                `;
+
+                results.forEach(r => {
+                    const score = parseInt(r.score) || 0;
+                    const grade = getGrade(score);
+                    const gradeClass = getGradeClass(score);
+                    html += `
+                        <div class="subject-result">
+                            <span class="subject-name">${r.subject}</span>
+                            <span class="subject-score">${score}%</span>
+                            <span class="subject-grade ${gradeClass}">${grade}</span>
+                        </div>
+                    `;
+                });
+
+                if (student.comment) {
+                    html += `
+                        <div class="comment">
+                            <i class="fas fa-quote-left" style="color:var(--brass-dark);margin-right:6px;"></i>
+                            ${student.comment}
+                        </div>
+                    `;
+                }
+
+                html += `</div>`;
+                resultsContent.innerHTML = html;
+            }
+
+            function getGrade(score) {
+                if (score >= 80) return 'A';
+                if (score >= 70) return 'B';
+                if (score >= 60) return 'C';
+                if (score >= 50) return 'D';
+                return 'F';
+            }
+
+            function getGradeClass(score) {
+                if (score >= 80) return 'badge-success';
+                if (score >= 60) return 'badge-info';
+                if (score >= 50) return 'badge-warning';
+                return 'badge-danger';
+            }
+
+            // ============================================================
+            // TEACHER - LOAD STUDENTS
+            // ============================================================
+            loadStudentsBtn.addEventListener('click', async function() {
+                const className = teacherClass.value;
+                const subject = teacherSubject.value;
+                const term = teacherTerm.value;
+                const year = teacherYear.value;
+                const testType = teacherTestType.value;
+
+                if (!className) { showToast('⚠️ Please select a class', true); return; }
+                if (!subject) { showToast('⚠️ Please select a subject', true); return; }
+                if (!term) { showToast('⚠️ Please select a term', true); return; }
+                if (!year) { showToast('⚠️ Please select a year', true); return; }
+                if (!testType) { showToast('⚠️ Please select a test type', true); return; }
+
+                if (!supabaseClient && !initSupabase()) {
+                    showToast('❌ Database connection failed', true);
+                    return;
+                }
+
+                try {
+                    showToast('🔄 Loading students...');
+                    // Get students in the class
+                    const { data: studentsData, error: studentsError } = await supabaseClient
+                        .from('students')
+                        .select('*')
+                        .eq('class', className)
+                        .order('name');
+
+                    if (studentsError) throw studentsError;
+                    if (!studentsData || studentsData.length === 0) {
+                        showToast('⚠️ No students found in this class', true);
+                        return;
+                    }
+
+                    currentStudents = studentsData;
+                    displayResultsEntry(studentsData, subject, term, year, testType);
+                    resultsEntry.style.display = 'block';
+                    showToast('✅ ' + studentsData.length + ' students loaded');
+
+                } catch (err) {
+                    showToast('❌ Error: ' + err.message, true);
+                    console.error(err);
+                }
+            });
+
+            async function displayResultsEntry(students, subject, term, year, testType) {
+                // Check if results already exist for these students
+                let existingResults = {};
+                try {
+                    const studentIds = students.map(s => s.id);
+                    const { data, error } = await supabaseClient
+                        .from('results')
+                        .select('*')
+                        .in('student_id', studentIds)
+                        .eq('subject', subject)
+                        .eq('term', term)
+                        .eq('year', year)
+                        .eq('test_type', testType);
+
+                    if (!error && data) {
+                        data.forEach(r => {
+                            existingResults[r.student_id] = r;
+                        });
+                    }
+                } catch (e) {
+                    console.warn('Could not load existing results:', e);
+                }
+
+                let html = '';
+                students.forEach((student, index) => {
+                    const existing = existingResults[student.id];
+                    const score = existing ? existing.score : '';
+                    const comment = existing ? existing.comment || '' : '';
+                    html += `
+                        <tr data-student-id="${student.id}">
+                            <td>${index + 1}</td>
+                            <td><strong>${student.name}</strong></td>
+                            <td>${student.student_number}</td>
+                            <td>
+                                <input type="number" min="0" max="100" class="score-input" value="${score}" 
+                                    style="width:70px;padding:6px 8px;border-radius:8px;border:1.5px solid var(--border);text-align:center;">
+                            </td>
+                            <td class="grade-display">${score ? getGrade(parseInt(score)) : '-'}</td>
+                            <td>
+                                <input type="text" class="comment-input" value="${comment}" 
+                                    placeholder="Comment..." style="width:100%;padding:6px 8px;border-radius:8px;border:1.5px solid var(--border);font-size:12px;">
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                resultsTableBody.innerHTML = html;
+
+                // Auto-calculate grade on score change
+                document.querySelectorAll('.score-input').forEach(input => {
+                    input.addEventListener('input', function() {
+                        const row = this.closest('tr');
+                        const gradeDisplay = row.querySelector('.grade-display');
+                        const score = parseInt(this.value);
+                        if (!isNaN(score) && score >= 0 && score <= 100) {
+                            gradeDisplay.textContent = getGrade(score);
+                            gradeDisplay.className = 'grade-display ' + getGradeClass(score);
+                        } else {
+                            gradeDisplay.textContent = '-';
+                            gradeDisplay.className = 'grade-display';
+                        }
+                    });
+                });
+
+                // Apply initial grades
+                document.querySelectorAll('.score-input').forEach(input => {
+                    const score = parseInt(input.value);
+                    if (!isNaN(score) && score >= 0 && score <= 100) {
+                        const row = input.closest('tr');
+                        const gradeDisplay = row.querySelector('.grade-display');
+                        gradeDisplay.textContent = getGrade(score);
+                        gradeDisplay.className = 'grade-display ' + getGradeClass(score);
+                    }
+                });
+            }
+
+            // ============================================================
+            // TEACHER - SAVE RESULTS
+            // ============================================================
+            saveResultsBtn.addEventListener('click', async function() {
+                if (!currentUser || currentUser.role !== 'teacher') {
+                    showToast('🔒 Please login as a teacher first', true);
+                    return;
+                }
+
+                const className = teacherClass.value;
+                const subject = teacherSubject.value;
+                const term = teacherTerm.value;
+                const year = teacherYear.value;
+                const testType = teacherTestType.value;
+
+                if (!className || !subject || !term || !year || !testType) {
+                    showToast('⚠️ Please select all fields', true);
+                    return;
+                }
+
+                if (!supabaseClient && !initSupabase()) {
+                    showToast('❌ Database connection failed', true);
+                    return;
+                }
+
+                // Collect results
+                const rows = document.querySelectorAll('#resultsTableBody tr');
+                const resultsToSave = [];
+                let hasErrors = false;
+
+                rows.forEach(row => {
+                    const studentId = row.dataset.studentId;
+                    const scoreInput = row.querySelector('.score-input');
+                    const commentInput = row.querySelector('.comment-input');
+                    const score = parseInt(scoreInput.value);
+
+                    if (isNaN(score) || score < 0 || score > 100) {
+                        // Skip if no valid score
+                        return;
+                    }
+
+                    resultsToSave.push({
+                        student_id: studentId,
+                        subject: subject,
+                        term: term,
+                        year: year,
+                        test_type: testType,
+                        score: score,
+                        comment: commentInput.value || '',
+                        teacher_id: currentUser.id
+                    });
+                });
+
+                if (resultsToSave.length === 0) {
+                    showToast('⚠️ No valid scores to save', true);
+                    return;
+                }
+
+                try {
+                    showToast('🔄 Saving results...');
+                    saveResultsBtn.disabled = true;
+                    saveResultsBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+                    // Delete existing results for these students and subject/term
+                    const studentIds = [...new Set(resultsToSave.map(r => r.student_id))];
+                    await supabaseClient
+                        .from('results')
+                        .delete()
+                        .in('student_id', studentIds)
+                        .eq('subject', subject)
+                        .eq('term', term)
+                        .eq('year', year)
+                        .eq('test_type', testType);
+
+                    // Insert new results
+                    const { error } = await supabaseClient
+                        .from('results')
+                        .insert(resultsToSave);
+
+                    if (error) throw error;
+
+                    // Calculate and update positions
+                    await updateClassPositions(className, term, year, testType);
+
+                    showToast('✅ ' + resultsToSave.length + ' results saved successfully!');
+                    saveResultsBtn.innerHTML = '<i class="fas fa-save"></i> Save All';
+                    saveResultsBtn.disabled = false;
+
+                } catch (err) {
+                    showToast('❌ Error: ' + err.message, true);
+                    console.error(err);
+                    saveResultsBtn.innerHTML = '<i class="fas fa-save"></i> Save All';
+                    saveResultsBtn.disabled = false;
+                }
+            });
+
+            // ============================================================
+            // UPDATE CLASS POSITIONS
+            // ============================================================
+            async function updateClassPositions(className, term, year, testType) {
+                try {
+                    // Get all students in class
+                    const { data: students, error: studentError } = await supabaseClient
+                        .from('students')
+                        .select('id, name')
+                        .eq('class', className);
+
+                    if (studentError) throw studentError;
+                    if (!students || students.length === 0) return;
+
+                    // Get all results for these students for this term
+                    const studentIds = students.map(s => s.id);
+                    const { data: results, error: resultsError } = await supabaseClient
+                        .from('results')
+                        .select('student_id, score')
+                        .in('student_id', studentIds)
+                        .eq('term', term)
+                        .eq('year', year)
+                        .eq('test_type', testType);
+
+                    if (resultsError) throw resultsError;
+
+                    // Calculate average per student
+                    const studentScores = {};
+                    const studentComments = {};
+
+                    students.forEach(s => {
+                        const studentResults = results.filter(r => r.student_id === s.id);
+                        if (studentResults.length > 0) {
+                            const total = studentResults.reduce((sum, r) => sum + (parseInt(r.score) || 0), 0);
+                            const avg = total / studentResults.length;
+                            studentScores[s.id] = avg;
+                            // Generate comment based on average
+                            if (avg >= 80) studentComments[s.id] = 'Excellent performance! Keep up the great work.';
+                            else if (avg >= 70) studentComments[s.id] = 'Good performance. Continue working hard.';
+                            else if (avg >= 60) studentComments[s.id] = 'Satisfactory performance. Room for improvement.';
+                            else if (avg >= 50) studentComments[s.id] = 'Below average. Need to work harder.';
+                            else studentComments[s.id] = 'Unsatisfactory performance. Seek help from teachers.';
+                        } else {
+                            studentScores[s.id] = 0;
+                            studentComments[s.id] = 'No results recorded.';
+                        }
+                    });
+
+                    // Sort by average (descending)
+                    const sorted = Object.keys(studentScores).sort((a, b) => studentScores[b] - studentScores[a]);
+
+                    // Assign positions and update students
+                    const updates = sorted.map((id, index) => {
+                        return {
+                            id: id,
+                            position: index + 1,
+                            comment: studentComments[id] || ''
+                        };
+                    });
+
+                    // Update each student
+                    for (const update of updates) {
+                        await supabaseClient
+                            .from('students')
+                            .update({ position: update.position, comment: update.comment })
+                            .eq('id', update.id);
+                    }
+
+                    console.log('✅ Positions updated for class', className);
+
+                } catch (err) {
+                    console.error('Error updating positions:', err);
+                }
+            }
+
+            // ============================================================
+            // ADMIN - ADD STUDENT
+            // ============================================================
+            addStudentBtn.addEventListener('click', async function() {
+                const number = adminStudentNumber.value.trim();
+                const name = adminStudentName.value.trim();
+                const className = adminStudentClass.value;
+
+                if (!number) { showToast('⚠️ Please enter student number', true); return; }
+                if (!name) { showToast('⚠️ Please enter student name', true); return; }
+                if (!className) { showToast('⚠️ Please select class', true); return; }
+
+                if (!supabaseClient && !initSupabase()) {
+                    showToast('❌ Database connection failed', true);
+                    return;
+                }
+
+                try {
+                    const { error } = await supabaseClient
+                        .from('students')
+                        .insert({
+                            student_number: number,
+                            name: name,
+                            class: className
+                        });
+
+                    if (error) throw error;
+
+                    showToast('✅ Student added successfully!');
+                    adminStudentNumber.value = '';
+                    adminStudentName.value = '';
+                    adminStudentClass.value = '';
+                    loadAdminStats();
+
+                } catch (err) {
+                    if (err.message.includes('duplicate')) {
+                        showToast('❌ Student number already exists', true);
+                    } else {
+                        showToast('❌ Error: ' + err.message, true);
+                    }
+                    console.error(err);
+                }
+            });
+
+            // ============================================================
+            // ADMIN - ADD TEACHER
+            // ============================================================
+            addTeacherBtn.addEventListener('click', async function() {
+                const name = adminTeacherName.value.trim();
+                const username = adminTeacherUsername.value.trim();
+                const password = adminTeacherPassword.value.trim();
+
+                if (!name) { showToast('⚠️ Please enter teacher name', true); return; }
+                if (!username) { showToast('⚠️ Please enter username', true); return; }
+                if (!password) { showToast('⚠️ Please enter password', true); return; }
+
+                if (!supabaseClient && !initSupabase()) {
+                    showToast('❌ Database connection failed', true);
+                    return;
+                }
+
+                try {
+                    const { error } = await supabaseClient
+                        .from('teachers')
+                        .insert({
+                            name: name,
+                            username: username,
+                            password: password
+                        });
+
+                    if (error) throw error;
+
+                    showToast('✅ Teacher added successfully!');
+                    adminTeacherName.value = '';
+                    adminTeacherUsername.value = '';
+                    adminTeacherPassword.value = '';
+                    loadAdminStats();
+
+                } catch (err) {
+                    if (err.message.includes('duplicate')) {
+                        showToast('❌ Username already exists', true);
+                    } else {
+                        showToast('❌ Error: ' + err.message, true);
+                    }
+                    console.error(err);
+                }
+            });
+
+            // ============================================================
+            // ADMIN - LOAD STATS
+            // ============================================================
+            async function loadAdminStats() {
+                if (!supabaseClient && !initSupabase()) return;
+
+                try {
+                    // Count students
+                    const { count: studentCount } = await supabaseClient
+                        .from('students')
+                        .select('*', { count: 'exact', head: true });
+                    totalStudents.textContent = studentCount || 0;
+
+                    // Count teachers
+                    const { count: teacherCount } = await supabaseClient
+                        .from('teachers')
+                        .select('*', { count: 'exact', head: true });
+                    totalTeachers.textContent = teacherCount || 0;
+
+                    // Count subjects (hardcoded for now)
+                    const subjects = ['English', 'Mathematics', 'Biology', 'Chemistry', 'Physics', 'History', 'Geography', 'Civic Education', 'Zambian Languages', 'Religious Education'];
+                    totalSubjects.textContent = subjects.length;
+
+                    // Count results
+                    const { count: resultCount } = await supabaseClient
+                        .from('results')
+                        .select('*', { count: 'exact', head: true });
+                    totalResults.textContent = resultCount || 0;
+
+                } catch (err) {
+                    console.error('Error loading stats:', err);
+                }
+            }
+
+            // ============================================================
+            // DOWNLOAD RESULTS (PDF via print)
+            // ============================================================
+            downloadResultsBtn.addEventListener('click', function() {
+                window.print();
+            });
+
+            // ============================================================
+            // BOOT
+            // ============================================================
+            initSupabase();
+
+            console.log('✅ Laura Girls Secondary School DEBSite ready');
+
+        })();
+    </script>
+</body>
+</html>
