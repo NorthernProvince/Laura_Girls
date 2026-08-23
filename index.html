@@ -644,7 +644,7 @@
         }
 
         /* ============================================================
-           PRINT STYLES - A4 LANDSCAPE
+           PRINT STYLES - A4 LANDSCAPE REPORT CARD
            ============================================================ */
         @media print {
             .topbar,
@@ -682,10 +682,10 @@
                 margin: 0 !important;
             }
 
-            /* A4 Landscape */
+            /* A4 Landscape - Single Page */
             @page {
                 size: A4 landscape;
-                margin: 12mm 15mm;
+                margin: 10mm 12mm;
             }
 
             .report-card-print {
@@ -693,34 +693,67 @@
                 max-width: 100% !important;
                 padding: 0 !important;
                 margin: 0 !important;
+                page-break-after: avoid !important;
+                page-break-inside: avoid !important;
             }
 
             .report-card-print .result-card {
                 border: none !important;
                 box-shadow: none !important;
-                padding: 10px 0 !important;
+                padding: 5px 0 !important;
+                background: #fff !important;
             }
 
             .report-card-print .subject-result {
-                padding: 4px 0 !important;
-                font-size: 12px !important;
+                padding: 3px 0 !important;
+                font-size: 11px !important;
             }
 
             .report-card-print .student-info {
-                padding: 10px 14px !important;
-                font-size: 13px !important;
+                padding: 6px 10px !important;
+                font-size: 12px !important;
             }
 
             .report-card-print .summary-row {
-                padding: 10px 14px !important;
+                padding: 6px 10px !important;
             }
 
             .report-card-print .result-header {
-                margin-bottom: 12px !important;
+                margin-bottom: 8px !important;
             }
 
             .report-card-print .result-header h1 {
-                font-size: 20px !important;
+                font-size: 18px !important;
+            }
+
+            .report-card-print .result-header .logo {
+                width: 40px !important;
+                height: 40px !important;
+            }
+
+            .report-card-print table {
+                font-size: 11px !important;
+            }
+
+            .report-card-print table th,
+            .report-card-print table td {
+                padding: 4px 8px !important;
+            }
+
+            .report-card-print .badge {
+                font-size: 10px !important;
+                padding: 1px 8px !important;
+            }
+
+            .report-card-print .comment-section {
+                padding: 6px 10px !important;
+                margin-top: 6px !important;
+            }
+
+            .report-card-print .footer {
+                margin-top: 8px !important;
+                padding-top: 6px !important;
+                font-size: 9px !important;
             }
         }
 
@@ -1738,6 +1771,10 @@
 
             function displayStudentResults(student, results, term, year, testType) {
                 const classDisplay = getClassDisplay(student.class);
+
+                // Get logo HTML
+                const logoHTML = `<img src="image/logo-removebg-preview.png" alt="School Logo" style="width:50px;height:50px;object-fit:contain;border-radius:50%;border:2px solid var(--gold);">`;
+
                 studentInfo.innerHTML = `
                         <div class="grid-3">
                             <div><strong>Name:</strong> ${student.name}</div>
@@ -1759,26 +1796,40 @@
                     return;
                 }
 
+                const totalScore = results.reduce((s, r) => s + (parseInt(r.score) || 0), 0);
+                const average = (totalScore / results.length).toFixed(1);
+
                 let html = `
-                        <div class="result-card report-card-print">
-                            <div class="result-header" style="text-align:center;border-bottom:2px solid var(--gold);padding-bottom:12px;margin-bottom:16px;">
-                                <h1 style="font-family:var(--font-display);font-size:22px;color:var(--marian-blue);">Laura Girls Secondary School</h1>
-                                <p style="color:var(--ink-soft);font-size:13px;">Kasama District · Northern Province</p>
-                                <p style="color:var(--ink-faint);font-size:11px;margin-top:4px;">Student Academic Report - ${testType === 'mid_term' ? 'Mid Term' : 'End of Term'} ${term} · ${year}</p>
+                        <div class="result-card report-card-print" style="padding:12px 16px;">
+                            <!-- Header with Logo -->
+                            <div class="result-header" style="display:flex;align-items:center;gap:12px;border-bottom:2px solid var(--gold);padding-bottom:8px;margin-bottom:10px;">
+                                <div style="flex-shrink:0;">
+                                    <img src="image/logo-removebg-preview.png" alt="School Logo" style="width:50px;height:50px;object-fit:contain;border-radius:50%;border:2px solid var(--gold);">
+                                </div>
+                                <div style="flex:1;text-align:center;">
+                                    <h1 style="font-family:var(--font-display);font-size:20px;color:var(--marian-blue);margin:0;">Laura Girls Secondary School</h1>
+                                    <p style="color:var(--ink-soft);font-size:12px;margin:0;">Kasama District · Northern Province</p>
+                                    <p style="color:var(--ink-faint);font-size:10px;margin:2px 0 0;">Student Academic Report · ${testType === 'mid_term' ? 'Mid Term' : 'End of Term'} ${term} · ${year}</p>
+                                </div>
                             </div>
-                            <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px;background:var(--paper);padding:10px 14px;border-radius:8px;">
+
+                            <!-- Student Info -->
+                            <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;background:var(--paper);padding:6px 10px;border-radius:6px;margin-bottom:8px;font-size:12px;">
                                 <div><strong>Student:</strong> ${student.name}</div>
                                 <div><strong>Number:</strong> ${student.student_number}</div>
                                 <div><strong>Class:</strong> ${classDisplay}</div>
+                                <div><strong>Term:</strong> ${term} · ${year}</div>
                             </div>
-                            <div style="margin-bottom:12px;">
-                                <table style="width:100%;border-collapse:collapse;font-size:13px;">
+
+                            <!-- Results Table -->
+                            <div style="margin-bottom:8px;overflow:hidden;border:1px solid var(--border);border-radius:6px;">
+                                <table style="width:100%;border-collapse:collapse;font-size:11px;">
                                     <thead>
                                         <tr style="background:var(--marian-blue);color:#fff;">
-                                            <th style="padding:8px 12px;text-align:left;">Subject</th>
-                                            <th style="padding:8px 12px;text-align:center;">Score (%)</th>
-                                            <th style="padding:8px 12px;text-align:center;">Grade</th>
-                                            <th style="padding:8px 12px;text-align:left;">Comment</th>
+                                            <th style="padding:5px 8px;text-align:left;font-size:10px;">Subject</th>
+                                            <th style="padding:5px 8px;text-align:center;font-size:10px;">Score (%)</th>
+                                            <th style="padding:5px 8px;text-align:center;font-size:10px;">Grade</th>
+                                            <th style="padding:5px 8px;text-align:left;font-size:10px;">Comment</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -1790,41 +1841,43 @@
                     const gradeClass = getGradeClass(score);
                     html += `
                                 <tr style="border-bottom:1px solid var(--border);">
-                                    <td style="padding:6px 12px;font-weight:600;">${r.subject}</td>
-                                    <td style="padding:6px 12px;text-align:center;font-family:var(--font-mono);">${score}%</td>
-                                    <td style="padding:6px 12px;text-align:center;"><span class="badge ${gradeClass}">${grade}</span></td>
-                                    <td style="padding:6px 12px;font-style:italic;color:var(--ink-soft);">${r.comment || '-'}</td>
+                                    <td style="padding:4px 8px;font-weight:600;font-size:11px;">${r.subject}</td>
+                                    <td style="padding:4px 8px;text-align:center;font-family:var(--font-mono);font-size:11px;">${score}%</td>
+                                    <td style="padding:4px 8px;text-align:center;"><span class="badge ${gradeClass}" style="font-size:10px;padding:1px 8px;">${grade}</span></td>
+                                    <td style="padding:4px 8px;font-style:italic;color:var(--ink-soft);font-size:10px;">${r.comment || '-'}</td>
                                 </tr>
                             `;
                 });
-
-                const totalScore = results.reduce((s, r) => s + (parseInt(r.score) || 0), 0);
-                const average = (totalScore / results.length).toFixed(1);
 
                 html += `
                                     </tbody>
                                 </table>
                             </div>
-                            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:15px;background:var(--gold-tint);padding:12px 16px;border-radius:8px;margin-top:12px;">
+
+                            <!-- Summary -->
+                            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;background:var(--gold-tint);padding:6px 10px;border-radius:6px;margin-bottom:6px;">
                                 <div style="text-align:center;">
-                                    <div style="font-size:11px;color:var(--ink-faint);text-transform:uppercase;font-weight:600;">Total Score</div>
-                                    <div style="font-family:var(--font-mono);font-size:20px;font-weight:700;color:var(--marian-blue);">${totalScore}%</div>
+                                    <div style="font-size:9px;color:var(--ink-faint);text-transform:uppercase;font-weight:600;">Total Score</div>
+                                    <div style="font-family:var(--font-mono);font-size:16px;font-weight:700;color:var(--marian-blue);">${totalScore}%</div>
                                 </div>
                                 <div style="text-align:center;">
-                                    <div style="font-size:11px;color:var(--ink-faint);text-transform:uppercase;font-weight:600;">Average</div>
-                                    <div style="font-family:var(--font-mono);font-size:20px;font-weight:700;color:var(--gold);">${average}%</div>
+                                    <div style="font-size:9px;color:var(--ink-faint);text-transform:uppercase;font-weight:600;">Average</div>
+                                    <div style="font-family:var(--font-mono);font-size:16px;font-weight:700;color:var(--gold);">${average}%</div>
                                 </div>
                                 <div style="text-align:center;">
-                                    <div style="font-size:11px;color:var(--ink-faint);text-transform:uppercase;font-weight:600;">Position in Class</div>
-                                    <div style="font-family:var(--font-mono);font-size:20px;font-weight:700;color:var(--oxblood);">${student.position || 'N/A'}</div>
+                                    <div style="font-size:9px;color:var(--ink-faint);text-transform:uppercase;font-weight:600;">Position</div>
+                                    <div style="font-family:var(--font-mono);font-size:16px;font-weight:700;color:var(--oxblood);">${student.position || 'N/A'}</div>
                                 </div>
                             </div>
+
                             ${student.comment ? `
-                            <div style="margin-top:12px;padding:10px 14px;background:var(--paper);border-radius:8px;border-left:4px solid var(--gold);">
-                                <div style="font-size:11px;font-weight:600;color:var(--ink-faint);text-transform:uppercase;letter-spacing:0.5px;">Teacher's Comment</div>
-                                <div style="font-style:italic;color:var(--ink-soft);margin-top:4px;">${student.comment}</div>
+                            <div style="padding:4px 10px;background:var(--paper);border-radius:4px;border-left:3px solid var(--gold);margin-bottom:4px;">
+                                <div style="font-size:9px;font-weight:600;color:var(--ink-faint);text-transform:uppercase;letter-spacing:0.3px;">Teacher's Comment</div>
+                                <div style="font-style:italic;color:var(--ink-soft);font-size:11px;margin-top:2px;">${student.comment}</div>
                             </div>` : ''}
-                            <div style="margin-top:16px;display:flex;justify-content:space-between;font-size:10px;color:var(--ink-faint);border-top:1px solid var(--border);padding-top:10px;">
+
+                            <!-- Footer -->
+                            <div style="display:flex;justify-content:space-between;font-size:8px;color:var(--ink-faint);border-top:1px solid var(--border);padding-top:4px;margin-top:4px;">
                                 <div>Generated: ${new Date().toLocaleDateString()}</div>
                                 <div>Laura Girls Secondary School · Kasama District</div>
                             </div>
@@ -1854,7 +1907,7 @@
             }
 
             // ============================================================
-            // DOWNLOAD RESULTS (PDF via print) - Professional Layout
+            // DOWNLOAD RESULTS (PDF via print) - A4 Landscape
             // ============================================================
             downloadResultsBtn.addEventListener('click', function() {
                 // Add a class to the results card for print optimization
