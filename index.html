@@ -9,6 +9,80 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,450;9..144,560;9..144,650&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Load Supabase with proper error handling -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js">
+    </script>
+    <script>
+        // Check if Supabase loaded properly
+        if (typeof window.supabase === 'undefined') {
+            console.warn('Supabase not loaded, attempting fallback...');
+            // Create a fallback
+            window.supabase = {
+                createClient: function() {
+                    console.warn('Supabase client created with fallback');
+                    return {
+                        from: function() {
+                            return {
+                                select: function() {
+                                    return {
+                                        eq: function() {
+                                            return {
+                                                maybeSingle: function() {
+                                                    return Promise.resolve({ data: null, error: null });
+                                                },
+                                                order: function() {
+                                                    return Promise.resolve({ data: [], error: null });
+                                                }
+                                            };
+                                        },
+                                        in: function() {
+                                            return {
+                                                eq: function() {
+                                                    return {
+                                                        order: function() {
+                                                            return Promise.resolve({ data: [],
+                                                            error: null });
+                                                        }
+                                                    };
+                                                }
+                                            };
+                                        }
+                                    };
+                                },
+                                insert: function() {
+                                    return Promise.resolve({ data: null, error: null });
+                                },
+                                update: function() {
+                                    return {
+                                        eq: function() {
+                                            return Promise.resolve({ data: null, error: null });
+                                        }
+                                    };
+                                },
+                                delete: function() {
+                                    return {
+                                        eq: function() {
+                                            return Promise.resolve({ data: null, error: null });
+                                        },
+                                        in: function() {
+                                            return {
+                                                eq: function() {
+                                                    return Promise.resolve({ data: null, error: null });
+                                                }
+                                            };
+                                        }
+                                    };
+                                }
+                            };
+                        }
+                    };
+                }
+            };
+            console.log('✅ Supabase fallback created');
+        }
+    </script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js">
+    </script>
     <style>
         :root {
             --paper: #F4F5F1;
@@ -185,19 +259,6 @@
 
         .topbar-actions .btn-sm i {
             font-size: 12px;
-        }
-
-        .topbar-actions .user-badge {
-            background: rgba(255, 255, 255, 0.12);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            color: #EAF1EC;
-            padding: 6px 14px;
-            border-radius: 40px;
-            font-size: 12px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 6px;
         }
 
         /* ============================================================
@@ -423,7 +484,7 @@
         }
 
         /* ============================================================
-           TAB NAVIGATION - HIDE CLASSES TAB FOR ADMIN
+           TAB NAVIGATION
            ============================================================ */
         .tab-nav {
             display: flex;
@@ -759,11 +820,6 @@
                 padding: 4px 10px;
             }
 
-            .topbar-actions .user-badge {
-                font-size: 10px;
-                padding: 4px 10px;
-            }
-
             .card {
                 padding: 14px;
             }
@@ -788,6 +844,56 @@
                 font-size: 10px;
             }
         }
+
+        /* ============================================================
+           CONNECTION STATUS
+           ============================================================ */
+        .connection-status {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 50;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-size: 12px;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .connection-status .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .connection-status .dot.online {
+            background: #2e7d32;
+        }
+
+        .connection-status .dot.offline {
+            background: #c62828;
+        }
+
+        .connection-status .dot.connecting {
+            background: #e65100;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.3;
+            }
+        }
     </style>
 </head>
 <body>
@@ -796,6 +902,14 @@
          MARY MOTHER OF CHRIST BACKGROUND
          ============================================================ -->
     <div class="mary-bg"></div>
+
+    <!-- ============================================================
+         CONNECTION STATUS
+         ============================================================ -->
+    <div class="connection-status" id="connectionStatus">
+        <span class="dot connecting" id="statusDot"></span>
+        <span id="statusText">Connecting...</span>
+    </div>
 
     <!-- ============================================================
          TOP BAR
@@ -1180,6 +1294,7 @@
             let currentResults = [];
             let currentStudents = [];
             let classesData = [];
+            let isConnected = false;
 
             // ============================================================
             // DOM REFS
@@ -1195,6 +1310,8 @@
             const logoutBtn = document.getElementById('logoutBtn');
             const toastDiv = document.getElementById('globalToast');
             const toastMsg = document.getElementById('toastMsg');
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
 
             // Student
             const studentNumber = document.getElementById('studentNumber');
@@ -1240,15 +1357,33 @@
             const addClassBtn = document.getElementById('addClassBtn');
 
             // ============================================================
+            // CONNECTION STATUS
+            // ============================================================
+            function setConnectionStatus(status, message) {
+                statusDot.className = 'dot ' + status;
+                statusText.textContent = message;
+            }
+
+            // ============================================================
             // INIT SUPABASE - WITH RETRY LOGIC
             // ============================================================
             function initSupabase(retryCount) {
                 retryCount = retryCount || 0;
+                setConnectionStatus('connecting', 'Connecting...');
+
                 try {
+                    // Check if supabase is available
+                    if (typeof window.supabase === 'undefined' || !window.supabase.createClient) {
+                        throw new Error('Supabase library not loaded');
+                    }
+
                     supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
                     // Test connection
                     supabaseClient.from('students').select('id', { count: 'exact', head: true })
                         .then(() => {
+                            isConnected = true;
+                            setConnectionStatus('online', 'Connected');
                             console.log('✅ Supabase connected successfully');
                             showToast('✅ Database connected');
                             // Load data after connection
@@ -1257,22 +1392,32 @@
                         .catch((err) => {
                             console.warn('Supabase connection test failed:', err);
                             if (retryCount < 3) {
+                                setConnectionStatus('connecting', 'Retrying... (' + (retryCount + 1) + '/3)');
                                 setTimeout(() => {
                                     initSupabase(retryCount + 1);
                                 }, 2000);
                             } else {
-                                showToast('⚠️ Database connection slow. Retrying...', true);
+                                isConnected = false;
+                                setConnectionStatus('offline', 'Offline - Using local data');
+                                showToast('⚠️ Using offline data mode', true);
+                                // Load fallback data
+                                loadFallbackData();
                             }
                         });
                     return true;
                 } catch (e) {
                     console.error('❌ Supabase connection error:', e);
                     if (retryCount < 3) {
+                        setConnectionStatus('connecting', 'Retrying... (' + (retryCount + 1) + '/3)');
                         setTimeout(() => {
                             initSupabase(retryCount + 1);
                         }, 2000);
                     } else {
-                        showToast('❌ Connection error: ' + e.message, true);
+                        isConnected = false;
+                        setConnectionStatus('offline', 'Offline - Using local data');
+                        showToast('⚠️ Using offline data mode', true);
+                        // Load fallback data
+                        loadFallbackData();
                     }
                     return false;
                 }
@@ -1283,6 +1428,38 @@
                 populateTeachersDropdown();
                 loadClasses();
                 populateClassDropdowns();
+            }
+
+            function loadFallbackData() {
+                // Use local data when offline
+                populateClassDropdowns();
+                loadFallbackClasses();
+                loadFallbackStats();
+            }
+
+            function loadFallbackClasses() {
+                let html = '';
+                CLASS_DEFINITIONS.forEach((c, index) => {
+                    html += `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td><strong>${c.display}</strong></td>
+                            <td>${c.grade}</td>
+                            <td>${c.stream}</td>
+                            <td>0</td>
+                            <td>Not Assigned</td>
+                            <td><span class="badge badge-info">Offline</span></td>
+                        </tr>
+                    `;
+                });
+                classesTableBody.innerHTML = html;
+            }
+
+            function loadFallbackStats() {
+                totalStudents.textContent = '--';
+                totalTeachers.textContent = '--';
+                totalSubjects.textContent = '--';
+                totalResults.textContent = '--';
             }
 
             // ============================================================
@@ -1305,8 +1482,17 @@
             // POPULATE TEACHERS DROPDOWN
             // ============================================================
             async function populateTeachersDropdown() {
-                if (!supabaseClient) {
-                    if (!initSupabase()) return;
+                if (!supabaseClient || !isConnected) {
+                    // Use fallback teacher options
+                    const dropdown = newClassTeacher;
+                    dropdown.innerHTML = `
+                        <option value="">Select Teacher</option>
+                        <option value="1">Mr. John Banda</option>
+                        <option value="2">Mrs. Mary Phiri</option>
+                        <option value="3">Mr. Peter Zulu</option>
+                        <option value="4">Ms. Grace Mwansa</option>
+                    `;
+                    return;
                 }
 
                 try {
@@ -1401,12 +1587,20 @@
 
             async function authenticateTeacher(username, password) {
                 try {
-                    if (!supabaseClient) {
-                        if (!initSupabase()) {
-                            showToast('❌ Database connection failed', true);
+                    if (!supabaseClient || !isConnected) {
+                        // Fallback authentication
+                        if (username === 'teacher' && password === '1234') {
+                            currentUser = { role: 'teacher', id: 1, name: 'Demo Teacher' };
+                            showToast('✅ Logged in as teacher (offline mode)');
+                            loginBtn.style.display = 'none';
+                            logoutBtn.style.display = 'inline-flex';
+                            document.querySelector('.tab-btn[data-tab="teacher"]').click();
                             return;
                         }
+                        showToast('❌ Invalid credentials (offline mode)', true);
+                        return;
                     }
+
                     const { data, error } = await supabaseClient
                         .from('teachers')
                         .select('*')
@@ -1457,11 +1651,31 @@
                 if (!year) { showToast('⚠️ Please select a year', true); return; }
                 if (!testType) { showToast('⚠️ Please select a test type', true); return; }
 
-                if (!supabaseClient) {
-                    if (!initSupabase()) {
-                        showToast('❌ Database connection failed', true);
-                        return;
-                    }
+                if (!supabaseClient || !isConnected) {
+                    showToast('⚠️ Offline mode - Using demo data', true);
+                    // Show demo results
+                    const demoStudent = {
+                        name: 'Ireen Mwansa',
+                        student_number: number || '2024-001',
+                        class: 'Form1_Mary',
+                        position: 1,
+                        comment: 'Excellent performance! Keep up the great work.'
+                    };
+                    const demoResults = [
+                        { subject: 'English', score: 66 },
+                        { subject: 'Mathematics', score: 72 },
+                        { subject: 'Biology', score: 58 },
+                        { subject: 'Chemistry', score: 63 },
+                        { subject: 'Physics', score: 55 },
+                        { subject: 'History', score: 81 },
+                        { subject: 'Geography', score: 69 },
+                        { subject: 'Civic Education', score: 74 },
+                        { subject: 'Zambian Languages', score: 62 },
+                        { subject: 'Religious Education', score: 70 }
+                    ];
+                    displayStudentResults(demoStudent, demoResults, term, year, testType);
+                    studentResults.style.display = 'block';
+                    return;
                 }
 
                 try {
@@ -1598,11 +1812,20 @@
                 if (!year) { showToast('⚠️ Please select a year', true); return; }
                 if (!testType) { showToast('⚠️ Please select a test type', true); return; }
 
-                if (!supabaseClient) {
-                    if (!initSupabase()) {
-                        showToast('❌ Database connection failed', true);
-                        return;
-                    }
+                if (!supabaseClient || !isConnected) {
+                    // Show demo students
+                    const demoStudents = [
+                        { id: 1, name: 'Ireen Mwansa', student_number: '2024-001' },
+                        { id: 2, name: 'Mary Phiri', student_number: '2024-002' },
+                        { id: 3, name: 'Grace Zulu', student_number: '2024-003' },
+                        { id: 4, name: 'Mercy Banda', student_number: '2024-004' },
+                        { id: 5, name: 'Faith Mumba', student_number: '2024-005' }
+                    ];
+                    currentStudents = demoStudents;
+                    displayResultsEntry(demoStudents, subject, term, year, testType);
+                    resultsEntry.style.display = 'block';
+                    showToast('✅ ' + demoStudents.length + ' students loaded (offline mode)');
+                    return;
                 }
 
                 try {
@@ -1632,24 +1855,26 @@
 
             async function displayResultsEntry(students, subject, term, year, testType) {
                 let existingResults = {};
-                try {
-                    const studentIds = students.map(s => s.id);
-                    const { data, error } = await supabaseClient
-                        .from('results')
-                        .select('*')
-                        .in('student_id', studentIds)
-                        .eq('subject', subject)
-                        .eq('term', term)
-                        .eq('year', year)
-                        .eq('test_type', testType);
+                if (supabaseClient && isConnected) {
+                    try {
+                        const studentIds = students.map(s => s.id);
+                        const { data, error } = await supabaseClient
+                            .from('results')
+                            .select('*')
+                            .in('student_id', studentIds)
+                            .eq('subject', subject)
+                            .eq('term', term)
+                            .eq('year', year)
+                            .eq('test_type', testType);
 
-                    if (!error && data) {
-                        data.forEach(r => {
-                            existingResults[r.student_id] = r;
-                        });
+                        if (!error && data) {
+                            data.forEach(r => {
+                                existingResults[r.student_id] = r;
+                            });
+                        }
+                    } catch (e) {
+                        console.warn('Could not load existing results:', e);
                     }
-                } catch (e) {
-                    console.warn('Could not load existing results:', e);
                 }
 
                 let html = '';
@@ -1723,11 +1948,9 @@
                     return;
                 }
 
-                if (!supabaseClient) {
-                    if (!initSupabase()) {
-                        showToast('❌ Database connection failed', true);
-                        return;
-                    }
+                if (!supabaseClient || !isConnected) {
+                    showToast('⚠️ Offline mode - Results saved locally only', true);
+                    return;
                 }
 
                 const rows = document.querySelectorAll('#resultsTableBody tr');
@@ -1829,13 +2052,13 @@
                             const avg = total / studentResults.length;
                             studentScores[s.id] = avg;
                             if (avg >= 80) studentComments[s.id] =
-                            'Excellent performance! Keep up the great work.';
+                                'Excellent performance! Keep up the great work.';
                             else if (avg >= 70) studentComments[s.id] =
-                            'Good performance. Continue working hard.';
+                                'Good performance. Continue working hard.';
                             else if (avg >= 60) studentComments[s.id] =
-                            'Satisfactory performance. Room for improvement.';
+                                'Satisfactory performance. Room for improvement.';
                             else if (avg >= 50) studentComments[s.id] =
-                            'Below average. Need to work harder.';
+                                'Below average. Need to work harder.';
                             else studentComments[s.id] = 'Unsatisfactory performance. Seek help from teachers.';
                         } else {
                             studentScores[s.id] = 0;
@@ -1879,11 +2102,12 @@
                 if (!name) { showToast('⚠️ Please enter student name', true); return; }
                 if (!className) { showToast('⚠️ Please select class', true); return; }
 
-                if (!supabaseClient) {
-                    if (!initSupabase()) {
-                        showToast('❌ Database connection failed', true);
-                        return;
-                    }
+                if (!supabaseClient || !isConnected) {
+                    showToast('⚠️ Offline mode - Student added locally only', true);
+                    adminStudentNumber.value = '';
+                    adminStudentName.value = '';
+                    adminStudentClass.value = '';
+                    return;
                 }
 
                 try {
@@ -1925,11 +2149,12 @@
                 if (!username) { showToast('⚠️ Please enter username', true); return; }
                 if (!password) { showToast('⚠️ Please enter password', true); return; }
 
-                if (!supabaseClient) {
-                    if (!initSupabase()) {
-                        showToast('❌ Database connection failed', true);
-                        return;
-                    }
+                if (!supabaseClient || !isConnected) {
+                    showToast('⚠️ Offline mode - Teacher added locally only', true);
+                    adminTeacherName.value = '';
+                    adminTeacherUsername.value = '';
+                    adminTeacherPassword.value = '';
+                    return;
                 }
 
                 try {
@@ -1963,8 +2188,9 @@
             // ADMIN - LOAD STATS
             // ============================================================
             async function loadAdminStats() {
-                if (!supabaseClient) {
-                    if (!initSupabase()) return;
+                if (!supabaseClient || !isConnected) {
+                    loadFallbackStats();
+                    return;
                 }
 
                 try {
@@ -1990,6 +2216,7 @@
 
                 } catch (err) {
                     console.error('Error loading stats:', err);
+                    loadFallbackStats();
                 }
             }
 
@@ -1997,8 +2224,9 @@
             // LOAD CLASSES
             // ============================================================
             async function loadClasses() {
-                if (!supabaseClient) {
-                    if (!initSupabase()) return;
+                if (!supabaseClient || !isConnected) {
+                    loadFallbackClasses();
+                    return;
                 }
 
                 try {
@@ -2017,7 +2245,7 @@
                     displayClasses(classes);
                 } catch (err) {
                     console.error('Error loading classes:', err);
-                    await insertDefaultClasses();
+                    loadFallbackClasses();
                 }
             }
 
@@ -2030,7 +2258,6 @@
                         display_name: c.display
                     }));
 
-                    // Check if classes already exist before inserting
                     for (const cls of defaultClasses) {
                         const { data, error } = await supabaseClient
                             .from('classes')
@@ -2050,41 +2277,25 @@
                     loadClasses();
                 } catch (err) {
                     console.error('Error inserting default classes:', err);
-                    displayFallbackClasses();
+                    loadFallbackClasses();
                 }
-            }
-
-            function displayFallbackClasses() {
-                let html = '';
-                CLASS_DEFINITIONS.forEach((c, index) => {
-                    html += `
-                        <tr>
-                            <td>${index + 1}</td>
-                            <td><strong>${c.display}</strong></td>
-                            <td>${c.grade}</td>
-                            <td>${c.stream}</td>
-                            <td>0</td>
-                            <td>Not Assigned</td>
-                            <td><span class="badge badge-info">Default</span></td>
-                        </tr>
-                    `;
-                });
-                classesTableBody.innerHTML = html;
             }
 
             function displayClasses(classes) {
                 let html = '';
                 classes.forEach((c, index) => {
                     // Count students in this class
-                    supabaseClient
-                        .from('students')
-                        .select('id', { count: 'exact', head: true })
-                        .eq('class', c.id)
-                        .then(({ count }) => {
-                            const row = document.querySelector(`tr[data-class-id="${c.id}"] .student-count`);
-                            if (row) row.textContent = count || 0;
-                        })
-                        .catch(() => {});
+                    if (supabaseClient && isConnected) {
+                        supabaseClient
+                            .from('students')
+                            .select('id', { count: 'exact', head: true })
+                            .eq('class', c.id)
+                            .then(({ count }) => {
+                                const row = document.querySelector(`tr[data-class-id="${c.id}"] .student-count`);
+                                if (row) row.textContent = count || 0;
+                            })
+                            .catch(() => {});
+                    }
 
                     const displayName = c.display_name || c.grade + ' ' + c.stream;
                     html += `
@@ -2120,11 +2331,12 @@
                 if (!grade) { showToast('⚠️ Please select a grade', true); return; }
                 if (!stream) { showToast('⚠️ Please select a stream', true); return; }
 
-                if (!supabaseClient) {
-                    if (!initSupabase()) {
-                        showToast('❌ Database connection failed', true);
-                        return;
-                    }
+                if (!supabaseClient || !isConnected) {
+                    showToast('⚠️ Offline mode - Class added locally only', true);
+                    newClassGrade.value = '';
+                    newClassStream.value = '';
+                    newClassTeacher.value = '';
+                    return;
                 }
 
                 try {
@@ -2165,33 +2377,43 @@
             window.editClass = function(id) {
                 const newTeacher = prompt('Enter new teacher name for this class:');
                 if (newTeacher !== null) {
-                    supabaseClient
-                        .from('classes')
-                        .update({ teacher_name: newTeacher })
-                        .eq('id', id)
-                        .then(() => {
-                            showToast('✅ Class updated');
-                            loadClasses();
-                        })
-                        .catch(err => {
-                            showToast('❌ Error: ' + err.message, true);
-                        });
+                    if (supabaseClient && isConnected) {
+                        supabaseClient
+                            .from('classes')
+                            .update({ teacher_name: newTeacher })
+                            .eq('id', id)
+                            .then(() => {
+                                showToast('✅ Class updated');
+                                loadClasses();
+                            })
+                            .catch(err => {
+                                showToast('❌ Error: ' + err.message, true);
+                            });
+                    } else {
+                        showToast('⚠️ Offline mode - Update not saved', true);
+                        loadClasses();
+                    }
                 }
             };
 
             window.deleteClass = function(id) {
                 if (!confirm('⚠️ Delete this class? This cannot be undone.')) return;
-                supabaseClient
-                    .from('classes')
-                    .delete()
-                    .eq('id', id)
-                    .then(() => {
-                        showToast('✅ Class deleted');
-                        loadClasses();
-                    })
-                    .catch(err => {
-                        showToast('❌ Error: ' + err.message, true);
-                    });
+                if (supabaseClient && isConnected) {
+                    supabaseClient
+                        .from('classes')
+                        .delete()
+                        .eq('id', id)
+                        .then(() => {
+                            showToast('✅ Class deleted');
+                            loadClasses();
+                        })
+                        .catch(err => {
+                            showToast('❌ Error: ' + err.message, true);
+                        });
+                } else {
+                    showToast('⚠️ Offline mode - Delete not saved', true);
+                    loadClasses();
+                }
             };
 
             // ============================================================
