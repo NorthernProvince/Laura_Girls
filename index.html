@@ -90,48 +90,28 @@
             padding: 10px 18px;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 14px;
             box-shadow: var(--shadow-md);
-        }
-
-        .topbar .seal {
-            width: 50px;
-            height: 50px;
-            flex-shrink: 0;
-            border-radius: 50%;
-            overflow: hidden;
-            border: 3px solid var(--gold);
-            background: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 4px;
-        }
-
-        .topbar .seal img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            border-radius: 50%;
-        }
-
-        .topbar .coat-of-arms {
-            width: 45px;
-            height: 45px;
-            flex-shrink: 0;
-        }
-
-        .topbar .coat-of-arms img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.2));
         }
 
         .topbar .brand {
             flex: 1;
             min-width: 0;
             text-align: center;
+        }
+
+        .topbar .brand .coat-of-arms {
+            width: 45px;
+            height: 45px;
+            margin: 0 auto 4px;
+        }
+
+        .topbar .brand .coat-of-arms img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.2));
         }
 
         .topbar .brand .ministry {
@@ -161,34 +141,29 @@
             letter-spacing: 0.5px;
         }
 
-        .topbar-actions {
-            display: flex;
-            gap: 10px;
-            align-items: center;
+        .topbar .seal {
+            width: 45px;
+            height: 45px;
             flex-shrink: 0;
-        }
-
-        .topbar-actions .btn-sm {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            color: #EAF1EC;
-            padding: 6px 14px;
-            border-radius: 40px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid var(--gold);
+            background: #fff;
             display: flex;
             align-items: center;
-            gap: 6px;
-            transition: background 0.15s ease;
+            justify-content: center;
+            padding: 3px;
         }
 
-        .topbar-actions .btn-sm:hover {
-            background: rgba(255, 255, 255, 0.16);
+        .topbar .seal img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 50%;
         }
 
-        .topbar-actions .btn-sm i {
-            font-size: 12px;
+        .topbar-actions {
+            display: none;
         }
 
         .connection-status {
@@ -672,6 +647,23 @@
             margin-bottom: 20px;
         }
 
+        .login-modal .modal-header .modal-logo {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 10px;
+            border-radius: 50%;
+            border: 2px solid var(--gold);
+            overflow: hidden;
+            background: #fff;
+            padding: 4px;
+        }
+
+        .login-modal .modal-header .modal-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
         .login-modal .modal-header h2 {
             font-family: var(--font-display);
             color: var(--marian-blue);
@@ -765,6 +757,40 @@
             margin-top: 8px;
         }
 
+        /* Login Button - Floating */
+        .login-floating-btn {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            z-index: 50;
+            background: linear-gradient(135deg, #1a237e, #283593);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 56px;
+            height: 56px;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: var(--shadow-md);
+            transition: transform 0.2s ease, background 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-floating-btn:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, #0d1b5e, #1a237e);
+        }
+
+        .login-floating-btn.logged-in {
+            background: linear-gradient(135deg, #0f7b3a, #0a5e2b);
+        }
+
+        .login-floating-btn.logged-in:hover {
+            background: linear-gradient(135deg, #0a5e2b, #074a22);
+        }
+
         /* Excel Import */
         .import-area {
             border: 2px dashed var(--border-strong);
@@ -844,13 +870,32 @@
             font-size: 10px;
         }
 
+        /* Logout button in modal */
+        .logout-section {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .logout-section .user-info {
+            font-size: 14px;
+            color: var(--ink-soft);
+            margin-bottom: 12px;
+        }
+
+        .logout-section .user-info i {
+            color: var(--gold);
+            margin-right: 8px;
+        }
+
         @media print {
             .topbar,
             .tab-nav,
             .no-print,
             .mary-bg,
             .connection-status,
-            .login-modal {
+            .login-modal,
+            .login-floating-btn {
                 display: none !important;
             }
 
@@ -1005,12 +1050,12 @@
                 font-size: 14px;
             }
 
-            .topbar-actions .btn-sm {
-                font-size: 10px;
-                padding: 4px 10px;
+            .topbar .brand .coat-of-arms {
+                width: 35px;
+                height: 35px;
             }
 
-            .topbar .coat-of-arms {
+            .topbar .seal {
                 width: 35px;
                 height: 35px;
             }
@@ -1055,6 +1100,14 @@
             .login-modal .modal-content {
                 padding: 20px;
             }
+
+            .login-floating-btn {
+                width: 48px;
+                height: 48px;
+                font-size: 17px;
+                bottom: 70px;
+                right: 12px;
+            }
         }
     </style>
 </head>
@@ -1071,24 +1124,27 @@
     </div>
 
     <!-- ============================================================
-         TOP BAR - WITH COAT OF ARMS
+         FLOATING LOGIN BUTTON
+         ============================================================ -->
+    <button class="login-floating-btn" id="loginFloatingBtn" title="Sign In">
+        <i class="fas fa-user-circle"></i>
+    </button>
+
+    <!-- ============================================================
+         TOP BAR - WITH COAT OF ARMS ABOVE MINISTRY
          ============================================================ -->
     <div class="topbar">
-        <span class="coat-of-arms">
-            <img src="image/coat_arms.png" alt="Coat of Arms" onerror="this.style.display='none'">
-        </span>
-        <span class="seal" id="topbarSeal">
-            <img src="image/logo-removebg-preview.png" alt="School Logo" onerror="this.style.display='none'">
-        </span>
         <div class="brand">
+            <div class="coat-of-arms">
+                <img src="image/coat_arms.png" alt="Coat of Arms" onerror="this.style.display='none'">
+            </div>
             <div class="ministry">Ministry of Education</div>
             <h1>Laura Girls Secondary School</h1>
             <div class="motto">Education is the matter of the heart</div>
         </div>
-        <div class="topbar-actions">
-            <button class="btn-sm" id="loginBtn"><i class="fas fa-user-circle"></i> Login</button>
-            <button class="btn-sm" id="logoutBtn" style="display:none;"><i class="fas fa-sign-out-alt"></i> Logout</button>
-        </div>
+        <span class="seal">
+            <img src="image/logo-removebg-preview.png" alt="School Logo" onerror="this.style.display='none'">
+        </span>
     </div>
 
     <!-- ============================================================
@@ -1098,62 +1154,79 @@
         <div class="modal-content">
             <button class="close-btn" id="closeLoginModal">&times;</button>
             <div class="modal-header">
+                <div class="modal-logo">
+                    <img src="image/logo-removebg-preview.png" alt="School Logo" onerror="this.style.display='none'">
+                </div>
                 <h2><i class="fas fa-user-circle" style="color:var(--gold);"></i> Sign In</h2>
                 <p>Select your role to continue</p>
             </div>
-            <div class="login-options">
-                <button class="btn btn-student" onclick="showLoginForm('student')">
-                    <i class="fas fa-user-graduate"></i> Student
-                </button>
-                <button class="btn btn-teacher" onclick="showLoginForm('teacher')">
-                    <i class="fas fa-chalkboard-teacher"></i> Teacher
-                </button>
-                <button class="btn btn-admin" onclick="showLoginForm('admin')">
-                    <i class="fas fa-user-shield"></i> Admin
+
+            <!-- Logout Section (shown when logged in) -->
+            <div class="logout-section" id="logoutSection">
+                <div class="user-info" id="userInfoDisplay">
+                    <i class="fas fa-user-check"></i> Signed in as: <span id="loggedInUserName">User</span>
+                </div>
+                <button class="btn btn-danger btn-block" id="logoutFromModalBtn">
+                    <i class="fas fa-sign-out-alt"></i> Sign Out
                 </button>
             </div>
 
-            <!-- Student Login Form -->
-            <div class="login-form" id="studentLoginForm">
-                <div class="field">
-                    <label><i class="fas fa-id-card"></i> Student Number</label>
-                    <input type="text" id="studentLoginNumber" placeholder="e.g. 2024-001">
+            <!-- Login Options (shown when logged out) -->
+            <div id="loginOptions">
+                <div class="login-options">
+                    <button class="btn btn-student" onclick="showLoginForm('student')">
+                        <i class="fas fa-user-graduate"></i> Student
+                    </button>
+                    <button class="btn btn-teacher" onclick="showLoginForm('teacher')">
+                        <i class="fas fa-chalkboard-teacher"></i> Teacher
+                    </button>
+                    <button class="btn btn-admin" onclick="showLoginForm('admin')">
+                        <i class="fas fa-user-shield"></i> Admin
+                    </button>
                 </div>
-                <button class="btn btn-primary btn-submit" onclick="studentLogin()">
-                    <i class="fas fa-sign-in-alt"></i> View Results
-                </button>
-            </div>
 
-            <!-- Teacher Login Form -->
-            <div class="login-form" id="teacherLoginForm">
-                <div class="field">
-                    <label><i class="fas fa-user"></i> Username</label>
-                    <input type="text" id="teacherLoginUsername" placeholder="e.g. jbanda">
+                <!-- Student Login Form -->
+                <div class="login-form" id="studentLoginForm">
+                    <div class="field">
+                        <label><i class="fas fa-id-card"></i> Student Number</label>
+                        <input type="text" id="studentLoginNumber" placeholder="e.g. 2024-001">
+                    </div>
+                    <button class="btn btn-primary btn-submit" onclick="studentLogin()">
+                        <i class="fas fa-sign-in-alt"></i> View Results
+                    </button>
                 </div>
-                <div class="field">
-                    <label><i class="fas fa-lock"></i> Password</label>
-                    <input type="password" id="teacherLoginPassword" placeholder="Enter password">
-                </div>
-                <button class="btn btn-success btn-submit" onclick="teacherLogin()">
-                    <i class="fas fa-sign-in-alt"></i> Sign In as Teacher
-                </button>
-                <p style="text-align:center;font-size:11px;color:var(--ink-faint);margin-top:8px;">
-                    Default: jbanda / teacher123
-                </p>
-            </div>
 
-            <!-- Admin Login Form -->
-            <div class="login-form" id="adminLoginForm">
-                <div class="field">
-                    <label><i class="fas fa-lock"></i> Admin Password</label>
-                    <input type="password" id="adminLoginPassword" placeholder="Enter admin password">
+                <!-- Teacher Login Form -->
+                <div class="login-form" id="teacherLoginForm">
+                    <div class="field">
+                        <label><i class="fas fa-user"></i> Username</label>
+                        <input type="text" id="teacherLoginUsername" placeholder="e.g. jbanda">
+                    </div>
+                    <div class="field">
+                        <label><i class="fas fa-lock"></i> Password</label>
+                        <input type="password" id="teacherLoginPassword" placeholder="Enter password">
+                    </div>
+                    <button class="btn btn-success btn-submit" onclick="teacherLogin()">
+                        <i class="fas fa-sign-in-alt"></i> Sign In as Teacher
+                    </button>
+                    <p style="text-align:center;font-size:11px;color:var(--ink-faint);margin-top:8px;">
+                        Default: jbanda / teacher123
+                    </p>
                 </div>
-                <button class="btn btn-danger btn-submit" onclick="adminLogin()">
-                    <i class="fas fa-sign-in-alt"></i> Sign In as Admin
-                </button>
-                <p style="text-align:center;font-size:11px;color:var(--ink-faint);margin-top:8px;">
-                    Default: admin123
-                </p>
+
+                <!-- Admin Login Form -->
+                <div class="login-form" id="adminLoginForm">
+                    <div class="field">
+                        <label><i class="fas fa-lock"></i> Admin Password</label>
+                        <input type="password" id="adminLoginPassword" placeholder="Enter admin password">
+                    </div>
+                    <button class="btn btn-danger btn-submit" onclick="adminLogin()">
+                        <i class="fas fa-sign-in-alt"></i> Sign In as Admin
+                    </button>
+                    <p style="text-align:center;font-size:11px;color:var(--ink-faint);margin-top:8px;">
+                        Default: admin123
+                    </p>
+                </div>
             </div>
         </div>
     </div>
@@ -1641,14 +1714,18 @@
                 admin: document.getElementById('adminSection'),
                 classes: document.getElementById('classesSection')
             };
-            const loginBtn = document.getElementById('loginBtn');
-            const logoutBtn = document.getElementById('logoutBtn');
+            const loginFloatingBtn = document.getElementById('loginFloatingBtn');
             const toastDiv = document.getElementById('globalToast');
             const toastMsg = document.getElementById('toastMsg');
             const statusDot = document.getElementById('statusDot');
             const statusText = document.getElementById('statusText');
             const loginModal = document.getElementById('loginModal');
             const closeLoginModal = document.getElementById('closeLoginModal');
+            const logoutSection = document.getElementById('logoutSection');
+            const loginOptions = document.getElementById('loginOptions');
+            const userInfoDisplay = document.getElementById('userInfoDisplay');
+            const loggedInUserName = document.getElementById('loggedInUserName');
+            const logoutFromModalBtn = document.getElementById('logoutFromModalBtn');
 
             // Student
             const studentNumber = document.getElementById('studentNumber');
@@ -1731,6 +1808,7 @@
             // ============================================================
             function openLoginModal(role) {
                 loginModal.classList.add('active');
+                updateLoginUI();
                 if (role) {
                     showLoginForm(role);
                 }
@@ -1751,6 +1829,26 @@
 
             window.showLoginForm = showLoginForm;
 
+            function updateLoginUI() {
+                if (currentUser) {
+                    logoutSection.style.display = 'block';
+                    loginOptions.style.display = 'none';
+                    let displayName = 'User';
+                    if (currentUser.role === 'student') displayName = 'Student: ' + currentUser.id;
+                    else if (currentUser.role === 'teacher') displayName = 'Teacher: ' + (currentUser.name || currentUser.id);
+                    else if (currentUser.role === 'admin') displayName = 'Administrator';
+                    loggedInUserName.textContent = displayName;
+                    // Update floating button
+                    loginFloatingBtn.innerHTML = '<i class="fas fa-user-check"></i>';
+                    loginFloatingBtn.classList.add('logged-in');
+                } else {
+                    logoutSection.style.display = 'none';
+                    loginOptions.style.display = 'block';
+                    loginFloatingBtn.innerHTML = '<i class="fas fa-user-circle"></i>';
+                    loginFloatingBtn.classList.remove('logged-in');
+                }
+            }
+
             closeLoginModal.addEventListener('click', function() {
                 loginModal.classList.remove('active');
             });
@@ -1759,6 +1857,17 @@
                 if (e.target === this) {
                     loginModal.classList.remove('active');
                 }
+            });
+
+            // Floating login button
+            loginFloatingBtn.addEventListener('click', function() {
+                openLoginModal();
+            });
+
+            // Logout from modal
+            logoutFromModalBtn.addEventListener('click', function() {
+                performLogout();
+                loginModal.classList.remove('active');
             });
 
             // ============================================================
@@ -1772,9 +1881,8 @@
                 }
                 currentUser = { role: 'student', id: studentId };
                 showToast('✅ Logged in as student: ' + studentId);
-                loginBtn.style.display = 'none';
-                logoutBtn.style.display = 'inline-flex';
                 loginModal.classList.remove('active');
+                updateLoginUI();
                 document.querySelector('.tab-btn[data-tab="student"]').click();
             }
             window.studentLogin = studentLogin;
@@ -1794,9 +1902,8 @@
                 if (password === 'admin123') {
                     currentUser = { role: 'admin' };
                     showToast('✅ Logged in as Admin');
-                    loginBtn.style.display = 'none';
-                    logoutBtn.style.display = 'inline-flex';
                     loginModal.classList.remove('active');
+                    updateLoginUI();
                     document.querySelector('.tab-btn[data-tab="admin"]').click();
                     adminLocked.style.display = 'none';
                     adminContent.style.display = 'block';
@@ -1807,6 +1914,19 @@
                 }
             }
             window.adminLogin = adminLogin;
+
+            function performLogout() {
+                currentUser = null;
+                updateLoginUI();
+                showToast('🔒 Logged out');
+                studentResults.style.display = 'none';
+                resultsEntry.style.display = 'none';
+                teacherLocked.style.display = 'block';
+                teacherContent.style.display = 'none';
+                adminLocked.style.display = 'block';
+                adminContent.style.display = 'none';
+                document.querySelector('.tab-btn[data-tab="student"]').click();
+            }
 
             // ============================================================
             // AUTHENTICATE TEACHER
@@ -1827,9 +1947,8 @@
                             name: validTeachers[username].name
                         };
                         showToast('✅ Logged in as teacher: ' + validTeachers[username].name);
-                        loginBtn.style.display = 'none';
-                        logoutBtn.style.display = 'inline-flex';
                         loginModal.classList.remove('active');
+                        updateLoginUI();
                         teacherLocked.style.display = 'none';
                         teacherContent.style.display = 'block';
                         document.querySelector('.tab-btn[data-tab="teacher"]').click();
@@ -1862,9 +1981,8 @@
 
                     currentUser = { role: 'teacher', id: data.id, name: data.name };
                     showToast('✅ Logged in as teacher: ' + data.name);
-                    loginBtn.style.display = 'none';
-                    logoutBtn.style.display = 'inline-flex';
                     loginModal.classList.remove('active');
+                    updateLoginUI();
                     teacherLocked.style.display = 'none';
                     teacherContent.style.display = 'block';
                     document.querySelector('.tab-btn[data-tab="teacher"]').click();
@@ -1875,27 +1993,6 @@
                     console.error(err);
                 }
             }
-
-            // ============================================================
-            // LOGIN BUTTON - OPENS MODAL
-            // ============================================================
-            loginBtn.addEventListener('click', function() {
-                openLoginModal();
-            });
-
-            logoutBtn.addEventListener('click', function() {
-                currentUser = null;
-                loginBtn.style.display = 'inline-flex';
-                logoutBtn.style.display = 'none';
-                showToast('🔒 Logged out');
-                studentResults.style.display = 'none';
-                resultsEntry.style.display = 'none';
-                teacherLocked.style.display = 'block';
-                teacherContent.style.display = 'none';
-                adminLocked.style.display = 'block';
-                adminContent.style.display = 'none';
-                document.querySelector('.tab-btn[data-tab="student"]').click();
-            });
 
             // ============================================================
             // INIT SUPABASE
@@ -1946,6 +2043,7 @@
                 loadClasses();
                 populateClassDropdowns();
                 populateImportClassDropdowns();
+                updateLoginUI();
             }
 
             function loadFallbackData() {
@@ -1953,6 +2051,7 @@
                 populateImportClassDropdowns();
                 loadFallbackClasses();
                 loadFallbackStats();
+                updateLoginUI();
             }
 
             function loadFallbackClasses() {
@@ -2759,7 +2858,6 @@
                             continue;
                         }
 
-                        // Find student
                         const { data: student, error: studentError } = await supabaseClient
                             .from('students')
                             .select('id')
@@ -2771,7 +2869,6 @@
                             continue;
                         }
 
-                        // Check if result exists
                         const { data: existing, error: existingError } = await supabaseClient
                             .from('results')
                             .select('id')
@@ -2783,13 +2880,11 @@
                             .maybeSingle();
 
                         if (existing) {
-                            // Update existing
                             await supabaseClient
                                 .from('results')
                                 .update({ score: Math.min(Math.max(score, 0), 100) })
                                 .eq('id', existing.id);
                         } else {
-                            // Insert new
                             await supabaseClient
                                 .from('results')
                                 .insert({
@@ -2811,7 +2906,6 @@
                     this.innerHTML = '<i class="fas fa-upload"></i> Import Results';
                     this.disabled = false;
 
-                    // Refresh students
                     loadStudentsBtn.click();
 
                 } catch (err) {
@@ -3378,6 +3472,9 @@
             console.log('📊 Excel Import:');
             console.log('   Supported format: .xlsx, .xls');
             console.log('   Expected columns: Student Number, Score');
+
+            // Update login UI on load
+            updateLoginUI();
 
         })();
     </script>
