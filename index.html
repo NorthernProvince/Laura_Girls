@@ -1178,7 +1178,7 @@
             "use strict";
 
             // ============================================================
-            // CONFIG - UPDATED WITH CORRECT SUPABASE URL
+            // CONFIG - CORRECT SUPABASE URL FROM YOUR SCREENSHOT
             // ============================================================
             const SUPABASE_URL = 'https://yhmjidkrwtxckecvjixo.supabase.co';
             const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlobWppZGtyd3R4Y2tlY3ZqaXhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQyNzg2OTUsImV4cCI6MjA1OTg1NDY5NX0.4c2aXXkWlUER9h1jr7yQXwGO5ck88UQ-Zd_k0MbKHAI';
@@ -1295,6 +1295,7 @@
 
                     supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                     console.log('✅ Supabase client created');
+                    console.log('📡 Connecting to:', SUPABASE_URL);
 
                     // Test connection
                     supabaseClient.from('students').select('id', { count: 'exact', head: true })
@@ -2288,6 +2289,7 @@
             initSupabase();
 
             console.log('✅ Laura Girls Secondary School ready');
+            console.log('📡 Using Supabase URL:', SUPABASE_URL);
 
         })();
     </script>
