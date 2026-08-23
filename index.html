@@ -6,9 +6,6 @@
     <title>Laura Girls Secondary School</title>
     <meta name="description" content="Official school website for Laura Girls Secondary School - Kasama District, Zambia">
     <meta name="theme-color" content="#1a237e">
-    <meta property="og:title" content="Laura Girls Secondary School">
-    <meta property="og:description" content="Official school website for Laura Girls Secondary School - Kasama District">
-    <meta property="og:type" content="website">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,450;9..144,560;9..144,650&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -647,13 +644,14 @@
         }
 
         /* ============================================================
-           PRINT STYLES
+           PRINT STYLES - A4 LANDSCAPE
            ============================================================ */
         @media print {
             .topbar,
             .tab-nav,
             .no-print,
-            .mary-bg {
+            .mary-bg,
+            .connection-status {
                 display: none !important;
             }
 
@@ -680,6 +678,49 @@
 
             body {
                 background: #fff !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            /* A4 Landscape */
+            @page {
+                size: A4 landscape;
+                margin: 12mm 15mm;
+            }
+
+            .report-card-print {
+                width: 100% !important;
+                max-width: 100% !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            .report-card-print .result-card {
+                border: none !important;
+                box-shadow: none !important;
+                padding: 10px 0 !important;
+            }
+
+            .report-card-print .subject-result {
+                padding: 4px 0 !important;
+                font-size: 12px !important;
+            }
+
+            .report-card-print .student-info {
+                padding: 10px 14px !important;
+                font-size: 13px !important;
+            }
+
+            .report-card-print .summary-row {
+                padding: 10px 14px !important;
+            }
+
+            .report-card-print .result-header {
+                margin-bottom: 12px !important;
+            }
+
+            .report-card-print .result-header h1 {
+                font-size: 20px !important;
             }
         }
 
@@ -830,9 +871,9 @@
             <img src="image/logo-removebg-preview.png" alt="School Logo" onerror="this.style.display='none'">
         </span>
         <div class="brand">
-            <div class="ministry"><i class="fas fa-cross" style="color:#B8862E;margin-right:4px;"></i> Ministry of Education</div>
+            <div class="ministry">Ministry of Education</div>
             <h1>Laura Girls Secondary School</h1>
-            <div class="motto"><i class="fas fa-heart" style="color:#fff;"></i> Education is the matter of the heart <i class="fas fa-heart" style="color:#fff;"></i></div>
+            <div class="motto">Education is the matter of the heart</div>
         </div>
         <div class="topbar-actions">
             <button class="btn-sm" id="loginBtn"><i class="fas fa-sign-in-alt"></i> Login</button>
@@ -847,8 +888,8 @@
              ============================================================ -->
         <div class="tab-nav" id="tabNav">
             <button class="tab-btn active" data-tab="student"><i class="fas fa-user-graduate"></i> Student</button>
-            <button class="tab-btn" data-tab="teacher"><i class="fas fa-chalkboard-teacher"></i> Teacher</button>
-            <button class="tab-btn" data-tab="admin"><i class="fas fa-user-shield"></i> Admin</button>
+            <button class="tab-btn" data-tab="teacher" id="teacherTabBtn"><i class="fas fa-chalkboard-teacher"></i> Teacher</button>
+            <button class="tab-btn" data-tab="admin" id="adminTabBtn"><i class="fas fa-user-shield"></i> Admin</button>
             <button class="tab-btn hidden-tab" data-tab="classes"><i class="fas fa-users"></i> Classes</button>
         </div>
 
@@ -906,10 +947,10 @@
                     </div>
                     <div id="studentInfo"></div>
                 </div>
-                <div class="card">
+                <div class="card" id="resultsCard">
                     <div class="card-header">
                         <h2><i class="fas fa-list"></i> Results</h2>
-                        <button class="btn btn-sm btn-success" id="downloadResultsBtn"><i class="fas fa-download"></i> Download PDF</button>
+                        <button class="btn btn-sm btn-success no-print" id="downloadResultsBtn"><i class="fas fa-file-pdf"></i> Download PDF</button>
                     </div>
                     <div id="resultsContent"></div>
                 </div>
@@ -917,233 +958,263 @@
         </div>
 
         <!-- ============================================================
-             TEACHER SECTION
+             TEACHER SECTION - SECURED
              ============================================================ -->
         <div class="section" id="teacherSection">
-            <div class="card">
+            <div class="card" id="teacherLocked">
                 <div class="card-header">
-                    <h2><i class="fas fa-chalkboard-teacher"></i> Teacher Dashboard</h2>
-                    <span class="subtitle">Enter and manage student results</span>
+                    <h2><i class="fas fa-lock"></i> Teacher Access Required</h2>
+                    <span class="subtitle">Please login as a teacher to access this section</span>
                 </div>
-                <div class="grid-3">
-                    <div class="field">
-                        <label><i class="fas fa-users"></i> Class</label>
-                        <select id="teacherClass">
-                            <option value="">Select Class</option>
-                        </select>
-                    </div>
-                    <div class="field">
-                        <label><i class="fas fa-book"></i> Subject</label>
-                        <select id="teacherSubject">
-                            <option value="">Select Subject</option>
-                            <option value="English">English</option>
-                            <option value="Mathematics">Mathematics</option>
-                            <option value="Biology">Biology</option>
-                            <option value="Chemistry">Chemistry</option>
-                            <option value="Physics">Physics</option>
-                            <option value="History">History</option>
-                            <option value="Geography">Geography</option>
-                            <option value="Civic Education">Civic Education</option>
-                            <option value="Zambian Languages">Zambian Languages</option>
-                            <option value="Religious Education">Religious Education</option>
-                            <option value="Commerce">Commerce</option>
-                            <option value="Principles of Accounts">Principles of Accounts</option>
-                            <option value="Agricultural Science">Agricultural Science</option>
-                            <option value="Computer Studies">Computer Studies</option>
-                        </select>
-                    </div>
-                    <div class="field">
-                        <label><i class="fas fa-calendar-alt"></i> Term</label>
-                        <select id="teacherTerm">
-                            <option value="">Select Term</option>
-                            <option value="1">Term 1</option>
-                            <option value="2">Term 2</option>
-                            <option value="3">Term 3</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="grid-3">
-                    <div class="field">
-                        <label><i class="fas fa-calendar-year"></i> Year</label>
-                        <select id="teacherYear">
-                            <option value="">Select Year</option>
-                            <option value="2024">2024</option>
-                            <option value="2025">2025</option>
-                            <option value="2026">2026</option>
-                        </select>
-                    </div>
-                    <div class="field">
-                        <label><i class="fas fa-tag"></i> Test Type</label>
-                        <select id="teacherTestType">
-                            <option value="">Select Test Type</option>
-                            <option value="mid_term">Mid Term</option>
-                            <option value="end_term">End of Term</option>
-                        </select>
-                    </div>
-                    <div class="field" style="justify-content:flex-end;">
-                        <button class="btn btn-primary" id="loadStudentsBtn"><i class="fas fa-users"></i> Load Students</button>
-                    </div>
+                <div style="text-align:center;padding:40px 20px;">
+                    <i class="fas fa-chalkboard-teacher" style="font-size:48px;color:var(--gold);margin-bottom:16px;display:block;"></i>
+                    <p style="color:var(--ink-soft);margin-bottom:16px;">This section is restricted to registered teachers only.</p>
+                    <button class="btn btn-primary" onclick="document.getElementById('loginBtn').click();">
+                        <i class="fas fa-sign-in-alt"></i> Login as Teacher
+                    </button>
                 </div>
             </div>
-
-            <!-- Results Entry -->
-            <div id="resultsEntry" style="display:none;">
+            <div id="teacherContent" style="display:none;">
                 <div class="card">
                     <div class="card-header">
-                        <h2><i class="fas fa-edit"></i> Enter Results</h2>
-                        <button class="btn btn-sm btn-success" id="saveResultsBtn"><i class="fas fa-save"></i> Save All</button>
+                        <h2><i class="fas fa-chalkboard-teacher"></i> Teacher Dashboard</h2>
+                        <span class="subtitle">Enter and manage student results</span>
                     </div>
-                    <div class="table-wrapper">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Student Name</th>
-                                    <th>Student Number</th>
-                                    <th>Score (%)</th>
-                                    <th>Grade</th>
-                                    <th>Comment</th>
-                                </tr>
-                            </thead>
-                            <tbody id="resultsTableBody">
-                                <tr><td colspan="6" style="text-align:center;color:var(--ink-faint);">No students loaded. Please select class and subject.</td></tr>
-                            </tbody>
-                        </table>
+                    <div class="grid-3">
+                        <div class="field">
+                            <label><i class="fas fa-users"></i> Class</label>
+                            <select id="teacherClass">
+                                <option value="">Select Class</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label><i class="fas fa-book"></i> Subject</label>
+                            <select id="teacherSubject">
+                                <option value="">Select Subject</option>
+                                <option value="English">English</option>
+                                <option value="Mathematics">Mathematics</option>
+                                <option value="Biology">Biology</option>
+                                <option value="Chemistry">Chemistry</option>
+                                <option value="Physics">Physics</option>
+                                <option value="History">History</option>
+                                <option value="Geography">Geography</option>
+                                <option value="Civic Education">Civic Education</option>
+                                <option value="Zambian Languages">Zambian Languages</option>
+                                <option value="Religious Education">Religious Education</option>
+                                <option value="Commerce">Commerce</option>
+                                <option value="Principles of Accounts">Principles of Accounts</option>
+                                <option value="Agricultural Science">Agricultural Science</option>
+                                <option value="Computer Studies">Computer Studies</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label><i class="fas fa-calendar-alt"></i> Term</label>
+                            <select id="teacherTerm">
+                                <option value="">Select Term</option>
+                                <option value="1">Term 1</option>
+                                <option value="2">Term 2</option>
+                                <option value="3">Term 3</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="grid-3">
+                        <div class="field">
+                            <label><i class="fas fa-calendar-year"></i> Year</label>
+                            <select id="teacherYear">
+                                <option value="">Select Year</option>
+                                <option value="2024">2024</option>
+                                <option value="2025">2025</option>
+                                <option value="2026">2026</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label><i class="fas fa-tag"></i> Test Type</label>
+                            <select id="teacherTestType">
+                                <option value="">Select Test Type</option>
+                                <option value="mid_term">Mid Term</option>
+                                <option value="end_term">End of Term</option>
+                            </select>
+                        </div>
+                        <div class="field" style="justify-content:flex-end;">
+                            <button class="btn btn-primary" id="loadStudentsBtn"><i class="fas fa-users"></i> Load Students</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Entry -->
+                <div id="resultsEntry" style="display:none;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2><i class="fas fa-edit"></i> Enter Results</h2>
+                            <button class="btn btn-sm btn-success" id="saveResultsBtn"><i class="fas fa-save"></i> Save All</button>
+                        </div>
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Student Name</th>
+                                        <th>Student Number</th>
+                                        <th>Score (%)</th>
+                                        <th>Grade</th>
+                                        <th>Comment</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="resultsTableBody">
+                                    <tr><td colspan="6" style="text-align:center;color:var(--ink-faint);">No students loaded. Please select class and subject.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- ============================================================
-             ADMIN SECTION
+             ADMIN SECTION - SECURED
              ============================================================ -->
         <div class="section" id="adminSection">
-            <div class="card">
+            <div class="card" id="adminLocked">
                 <div class="card-header">
-                    <h2><i class="fas fa-user-shield"></i> Admin Dashboard</h2>
-                    <span class="subtitle">Manage users, classes, and terms</span>
+                    <h2><i class="fas fa-lock"></i> Admin Access Required</h2>
+                    <span class="subtitle">Please login as an administrator to access this section</span>
                 </div>
-                <div class="grid-4">
-                    <div class="stat-card">
-                        <div class="icon"><i class="fas fa-users"></i></div>
-                        <div class="number" id="totalStudents">0</div>
-                        <div class="label">Total Students</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="icon"><i class="fas fa-user-tie"></i></div>
-                        <div class="number" id="totalTeachers">0</div>
-                        <div class="label">Total Teachers</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="icon"><i class="fas fa-book"></i></div>
-                        <div class="number" id="totalSubjects">0</div>
-                        <div class="label">Total Subjects</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="icon"><i class="fas fa-file-alt"></i></div>
-                        <div class="number" id="totalResults">0</div>
-                        <div class="label">Total Results</div>
-                    </div>
+                <div style="text-align:center;padding:40px 20px;">
+                    <i class="fas fa-user-shield" style="font-size:48px;color:var(--gold);margin-bottom:16px;display:block;"></i>
+                    <p style="color:var(--ink-soft);margin-bottom:16px;">This section is restricted to administrators only.</p>
+                    <button class="btn btn-primary" onclick="document.getElementById('loginBtn').click();">
+                        <i class="fas fa-sign-in-alt"></i> Login as Admin
+                    </button>
                 </div>
             </div>
-
-            <div class="grid-2">
+            <div id="adminContent" style="display:none;">
                 <div class="card">
                     <div class="card-header">
-                        <h2><i class="fas fa-user-plus"></i> Add Student</h2>
+                        <h2><i class="fas fa-user-shield"></i> Admin Dashboard</h2>
+                        <span class="subtitle">Manage users, classes, and terms</span>
                     </div>
-                    <div class="field">
-                        <label>Student Number</label>
-                        <input type="text" id="adminStudentNumber" placeholder="e.g. 2024-001">
+                    <div class="grid-4">
+                        <div class="stat-card">
+                            <div class="icon"><i class="fas fa-users"></i></div>
+                            <div class="number" id="totalStudents">0</div>
+                            <div class="label">Total Students</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="icon"><i class="fas fa-user-tie"></i></div>
+                            <div class="number" id="totalTeachers">0</div>
+                            <div class="label">Total Teachers</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="icon"><i class="fas fa-book"></i></div>
+                            <div class="number" id="totalSubjects">0</div>
+                            <div class="label">Total Subjects</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="icon"><i class="fas fa-file-alt"></i></div>
+                            <div class="number" id="totalResults">0</div>
+                            <div class="label">Total Results</div>
+                        </div>
                     </div>
-                    <div class="field">
-                        <label>Full Name</label>
-                        <input type="text" id="adminStudentName" placeholder="e.g. Mary Mwansa">
-                    </div>
-                    <div class="field">
-                        <label>Class</label>
-                        <select id="adminStudentClass">
-                            <option value="">Select Class</option>
-                        </select>
-                    </div>
-                    <button class="btn btn-success btn-block" id="addStudentBtn"><i class="fas fa-plus"></i> Add Student</button>
                 </div>
 
-                <div class="card">
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2><i class="fas fa-user-plus"></i> Add Student</h2>
+                        </div>
+                        <div class="field">
+                            <label>Student Number</label>
+                            <input type="text" id="adminStudentNumber" placeholder="e.g. 2024-001">
+                        </div>
+                        <div class="field">
+                            <label>Full Name</label>
+                            <input type="text" id="adminStudentName" placeholder="e.g. Mary Mwansa">
+                        </div>
+                        <div class="field">
+                            <label>Class</label>
+                            <select id="adminStudentClass">
+                                <option value="">Select Class</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-success btn-block" id="addStudentBtn"><i class="fas fa-plus"></i> Add Student</button>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h2><i class="fas fa-user-plus"></i> Add Teacher</h2>
+                        </div>
+                        <div class="field">
+                            <label>Teacher Name</label>
+                            <input type="text" id="adminTeacherName" placeholder="e.g. Mr. John Banda">
+                        </div>
+                        <div class="field">
+                            <label>Username</label>
+                            <input type="text" id="adminTeacherUsername" placeholder="e.g. jbanda">
+                        </div>
+                        <div class="field">
+                            <label>Password</label>
+                            <input type="password" id="adminTeacherPassword" placeholder="Enter password">
+                        </div>
+                        <button class="btn btn-success btn-block" id="addTeacherBtn"><i class="fas fa-plus"></i> Add Teacher</button>
+                    </div>
+                </div>
+
+                <!-- Classes section moved inside admin -->
+                <div class="card" id="adminClassesSection">
                     <div class="card-header">
-                        <h2><i class="fas fa-user-plus"></i> Add Teacher</h2>
+                        <h2><i class="fas fa-users"></i> Class Management</h2>
+                        <span class="subtitle">View and manage all classes</span>
                     </div>
-                    <div class="field">
-                        <label>Teacher Name</label>
-                        <input type="text" id="adminTeacherName" placeholder="e.g. Mr. John Banda">
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Class Name</th>
+                                    <th>Grade Level</th>
+                                    <th>Stream</th>
+                                    <th>Total Students</th>
+                                    <th>Class Teacher</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="classesTableBody">
+                                <tr><td colspan="7" style="text-align:center;color:var(--ink-faint);">Loading classes...</td></tr>
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="field">
-                        <label>Username</label>
-                        <input type="text" id="adminTeacherUsername" placeholder="e.g. jbanda">
-                    </div>
-                    <div class="field">
-                        <label>Password</label>
-                        <input type="password" id="adminTeacherPassword" placeholder="Enter password">
-                    </div>
-                    <button class="btn btn-success btn-block" id="addTeacherBtn"><i class="fas fa-plus"></i> Add Teacher</button>
-                </div>
-            </div>
-
-            <!-- Classes section moved inside admin -->
-            <div class="card" id="adminClassesSection">
-                <div class="card-header">
-                    <h2><i class="fas fa-users"></i> Class Management</h2>
-                    <span class="subtitle">View and manage all classes</span>
-                </div>
-                <div class="table-wrapper">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Class Name</th>
-                                <th>Grade Level</th>
-                                <th>Stream</th>
-                                <th>Total Students</th>
-                                <th>Class Teacher</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="classesTableBody">
-                            <tr><td colspan="7" style="text-align:center;color:var(--ink-faint);">Loading classes...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div style="margin-top:16px;">
-                    <div class="grid-3">
-                        <div class="field">
-                            <label><i class="fas fa-graduation-cap"></i> Grade Level</label>
-                            <select id="newClassGrade">
-                                <option value="">Select Grade</option>
-                                <option value="Form1">Form 1</option>
-                                <option value="Form2">Form 2</option>
-                                <option value="Grade10">Grade 10</option>
-                                <option value="Grade11">Grade 11</option>
-                                <option value="Grade12">Grade 12</option>
-                            </select>
+                    <div style="margin-top:16px;">
+                        <div class="grid-3">
+                            <div class="field">
+                                <label><i class="fas fa-graduation-cap"></i> Grade Level</label>
+                                <select id="newClassGrade">
+                                    <option value="">Select Grade</option>
+                                    <option value="Form1">Form 1</option>
+                                    <option value="Form2">Form 2</option>
+                                    <option value="Grade10">Grade 10</option>
+                                    <option value="Grade11">Grade 11</option>
+                                    <option value="Grade12">Grade 12</option>
+                                </select>
+                            </div>
+                            <div class="field">
+                                <label><i class="fas fa-layer-group"></i> Stream</label>
+                                <select id="newClassStream">
+                                    <option value="">Select Stream</option>
+                                    <option value="Mary">Mary</option>
+                                    <option value="Joseph">Joseph</option>
+                                    <option value="Mazz">Mazz</option>
+                                    <option value="Laura">Laura</option>
+                                </select>
+                            </div>
+                            <div class="field">
+                                <label><i class="fas fa-user-tie"></i> Class Teacher</label>
+                                <select id="newClassTeacher">
+                                    <option value="">Select Teacher</option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="field">
-                            <label><i class="fas fa-layer-group"></i> Stream</label>
-                            <select id="newClassStream">
-                                <option value="">Select Stream</option>
-                                <option value="Mary">Mary</option>
-                                <option value="Joseph">Joseph</option>
-                                <option value="Mazz">Mazz</option>
-                                <option value="Laura">Laura</option>
-                            </select>
-                        </div>
-                        <div class="field">
-                            <label><i class="fas fa-user-tie"></i> Class Teacher</label>
-                            <select id="newClassTeacher">
-                                <option value="">Select Teacher</option>
-                            </select>
-                        </div>
+                        <button class="btn btn-success btn-block" id="addClassBtn"><i class="fas fa-plus"></i> Add Class</button>
                     </div>
-                    <button class="btn btn-success btn-block" id="addClassBtn"><i class="fas fa-plus"></i> Add Class</button>
                 </div>
             </div>
         </div>
@@ -1154,7 +1225,7 @@
         <div class="section" id="classesSection" style="display:none;"></div>
 
         <div class="footer-note">
-            <i class="fas fa-cross"></i> Laura Girls Secondary School · Kasama District · Under the Patronage of Mary, Mother of Christ &copy; 2026
+            Laura Girls Secondary School · Kasama District · Under the Patronage of Mary, Mother of Christ &copy; 2026
         </div>
     </div>
 
@@ -1244,6 +1315,8 @@
             const resultsEntry = document.getElementById('resultsEntry');
             const resultsTableBody = document.getElementById('resultsTableBody');
             const saveResultsBtn = document.getElementById('saveResultsBtn');
+            const teacherLocked = document.getElementById('teacherLocked');
+            const teacherContent = document.getElementById('teacherContent');
 
             // Admin
             const adminStudentNumber = document.getElementById('adminStudentNumber');
@@ -1258,6 +1331,8 @@
             const totalTeachers = document.getElementById('totalTeachers');
             const totalSubjects = document.getElementById('totalSubjects');
             const totalResults = document.getElementById('totalResults');
+            const adminLocked = document.getElementById('adminLocked');
+            const adminContent = document.getElementById('adminContent');
 
             // Classes
             const classesTableBody = document.getElementById('classesTableBody');
@@ -1285,7 +1360,6 @@
 
                     supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                     console.log('✅ Supabase client created');
-                    console.log('📡 Connecting to:', SUPABASE_URL);
 
                     // Test connection
                     supabaseClient.from('students').select('id', { count: 'exact', head: true })
@@ -1426,13 +1500,52 @@
             }
 
             // ============================================================
-            // TAB SWITCHING
+            // TAB SWITCHING WITH SECURITY
             // ============================================================
             tabBtns.forEach(btn => {
                 btn.addEventListener('click', function() {
+                    const tab = this.dataset.tab;
+
+                    // Check if trying to access teacher tab
+                    if (tab === 'teacher') {
+                        if (!currentUser || currentUser.role !== 'teacher') {
+                            teacherLocked.style.display = 'block';
+                            teacherContent.style.display = 'none';
+                            tabBtns.forEach(b => b.classList.remove('active'));
+                            this.classList.add('active');
+                            Object.keys(sections).forEach(key => {
+                                sections[key].classList.toggle('active', key === tab);
+                            });
+                            return;
+                        } else {
+                            teacherLocked.style.display = 'none';
+                            teacherContent.style.display = 'block';
+                        }
+                    }
+
+                    // Check if trying to access admin tab
+                    if (tab === 'admin') {
+                        if (!currentUser || currentUser.role !== 'admin') {
+                            adminLocked.style.display = 'block';
+                            adminContent.style.display = 'none';
+                            tabBtns.forEach(b => b.classList.remove('active'));
+                            this.classList.add('active');
+                            Object.keys(sections).forEach(key => {
+                                sections[key].classList.toggle('active', key === tab);
+                            });
+                            if (tab === 'admin') {
+                                loadAdminStats();
+                                loadClasses();
+                            }
+                            return;
+                        } else {
+                            adminLocked.style.display = 'none';
+                            adminContent.style.display = 'block';
+                        }
+                    }
+
                     tabBtns.forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
-                    const tab = this.dataset.tab;
                     Object.keys(sections).forEach(key => {
                         sections[key].classList.toggle('active', key === tab);
                     });
@@ -1471,6 +1584,9 @@
                         loginBtn.style.display = 'none';
                         logoutBtn.style.display = 'inline-flex';
                         document.querySelector('.tab-btn[data-tab="admin"]').click();
+                        // Unlock admin content
+                        adminLocked.style.display = 'none';
+                        adminContent.style.display = 'block';
                         loadAdminStats();
                         loadClasses();
                     } else {
@@ -1487,6 +1603,9 @@
                             showToast('✅ Logged in as teacher (offline mode)');
                             loginBtn.style.display = 'none';
                             logoutBtn.style.display = 'inline-flex';
+                            // Unlock teacher content
+                            teacherLocked.style.display = 'none';
+                            teacherContent.style.display = 'block';
                             document.querySelector('.tab-btn[data-tab="teacher"]').click();
                             return;
                         }
@@ -1513,6 +1632,9 @@
                     showToast('✅ Logged in as teacher: ' + data.name);
                     loginBtn.style.display = 'none';
                     logoutBtn.style.display = 'inline-flex';
+                    // Unlock teacher content
+                    teacherLocked.style.display = 'none';
+                    teacherContent.style.display = 'block';
                     document.querySelector('.tab-btn[data-tab="teacher"]').click();
                     loadAdminStats();
                 } catch (err) {
@@ -1528,6 +1650,11 @@
                 showToast('🔒 Logged out');
                 studentResults.style.display = 'none';
                 resultsEntry.style.display = 'none';
+                // Lock teacher and admin sections
+                teacherLocked.style.display = 'block';
+                teacherContent.style.display = 'none';
+                adminLocked.style.display = 'block';
+                adminContent.style.display = 'none';
             });
 
             // ============================================================
@@ -1545,7 +1672,6 @@
                 if (!testType) { showToast('⚠️ Please select a test type', true); return; }
 
                 if (!supabaseClient || !isConnected) {
-                    // Show demo results
                     const demoStudent = {
                         name: 'Ireen Mwansa',
                         student_number: number || '2024-001',
@@ -1634,37 +1760,76 @@
                 }
 
                 let html = `
-                        <div class="result-card">
-                            <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
-                                <div class="total-score">Total: ${results.reduce((s,r) => s + (parseInt(r.score) || 0), 0)}%</div>
-                                <div class="average-score">Average: ${(results.reduce((s,r) => s + (parseInt(r.score) || 0), 0) / results.length).toFixed(1)}%</div>
-                                <div class="position">Position: ${student.position || 'N/A'}</div>
+                        <div class="result-card report-card-print">
+                            <div class="result-header" style="text-align:center;border-bottom:2px solid var(--gold);padding-bottom:12px;margin-bottom:16px;">
+                                <h1 style="font-family:var(--font-display);font-size:22px;color:var(--marian-blue);">Laura Girls Secondary School</h1>
+                                <p style="color:var(--ink-soft);font-size:13px;">Kasama District · Northern Province</p>
+                                <p style="color:var(--ink-faint);font-size:11px;margin-top:4px;">Student Academic Report - ${testType === 'mid_term' ? 'Mid Term' : 'End of Term'} ${term} · ${year}</p>
                             </div>
-                    `;
+                            <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px;background:var(--paper);padding:10px 14px;border-radius:8px;">
+                                <div><strong>Student:</strong> ${student.name}</div>
+                                <div><strong>Number:</strong> ${student.student_number}</div>
+                                <div><strong>Class:</strong> ${classDisplay}</div>
+                            </div>
+                            <div style="margin-bottom:12px;">
+                                <table style="width:100%;border-collapse:collapse;font-size:13px;">
+                                    <thead>
+                                        <tr style="background:var(--marian-blue);color:#fff;">
+                                            <th style="padding:8px 12px;text-align:left;">Subject</th>
+                                            <th style="padding:8px 12px;text-align:center;">Score (%)</th>
+                                            <th style="padding:8px 12px;text-align:center;">Grade</th>
+                                            <th style="padding:8px 12px;text-align:left;">Comment</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                `;
 
                 results.forEach(r => {
                     const score = parseInt(r.score) || 0;
                     const grade = getGrade(score);
                     const gradeClass = getGradeClass(score);
                     html += `
-                            <div class="subject-result">
-                                <span class="subject-name">${r.subject}</span>
-                                <span class="subject-score">${score}%</span>
-                                <span class="subject-grade ${gradeClass}">${grade}</span>
-                            </div>
-                        `;
+                                <tr style="border-bottom:1px solid var(--border);">
+                                    <td style="padding:6px 12px;font-weight:600;">${r.subject}</td>
+                                    <td style="padding:6px 12px;text-align:center;font-family:var(--font-mono);">${score}%</td>
+                                    <td style="padding:6px 12px;text-align:center;"><span class="badge ${gradeClass}">${grade}</span></td>
+                                    <td style="padding:6px 12px;font-style:italic;color:var(--ink-soft);">${r.comment || '-'}</td>
+                                </tr>
+                            `;
                 });
 
-                if (student.comment) {
-                    html += `
-                            <div class="comment">
-                                <i class="fas fa-quote-left" style="color:var(--gold-dark);margin-right:6px;"></i>
-                                ${student.comment}
-                            </div>
-                        `;
-                }
+                const totalScore = results.reduce((s, r) => s + (parseInt(r.score) || 0), 0);
+                const average = (totalScore / results.length).toFixed(1);
 
-                html += `</div>`;
+                html += `
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:15px;background:var(--gold-tint);padding:12px 16px;border-radius:8px;margin-top:12px;">
+                                <div style="text-align:center;">
+                                    <div style="font-size:11px;color:var(--ink-faint);text-transform:uppercase;font-weight:600;">Total Score</div>
+                                    <div style="font-family:var(--font-mono);font-size:20px;font-weight:700;color:var(--marian-blue);">${totalScore}%</div>
+                                </div>
+                                <div style="text-align:center;">
+                                    <div style="font-size:11px;color:var(--ink-faint);text-transform:uppercase;font-weight:600;">Average</div>
+                                    <div style="font-family:var(--font-mono);font-size:20px;font-weight:700;color:var(--gold);">${average}%</div>
+                                </div>
+                                <div style="text-align:center;">
+                                    <div style="font-size:11px;color:var(--ink-faint);text-transform:uppercase;font-weight:600;">Position in Class</div>
+                                    <div style="font-family:var(--font-mono);font-size:20px;font-weight:700;color:var(--oxblood);">${student.position || 'N/A'}</div>
+                                </div>
+                            </div>
+                            ${student.comment ? `
+                            <div style="margin-top:12px;padding:10px 14px;background:var(--paper);border-radius:8px;border-left:4px solid var(--gold);">
+                                <div style="font-size:11px;font-weight:600;color:var(--ink-faint);text-transform:uppercase;letter-spacing:0.5px;">Teacher's Comment</div>
+                                <div style="font-style:italic;color:var(--ink-soft);margin-top:4px;">${student.comment}</div>
+                            </div>` : ''}
+                            <div style="margin-top:16px;display:flex;justify-content:space-between;font-size:10px;color:var(--ink-faint);border-top:1px solid var(--border);padding-top:10px;">
+                                <div>Generated: ${new Date().toLocaleDateString()}</div>
+                                <div>Laura Girls Secondary School · Kasama District</div>
+                            </div>
+                        </div>
+                    `;
                 resultsContent.innerHTML = html;
             }
 
@@ -1689,9 +1854,31 @@
             }
 
             // ============================================================
+            // DOWNLOAD RESULTS (PDF via print) - Professional Layout
+            // ============================================================
+            downloadResultsBtn.addEventListener('click', function() {
+                // Add a class to the results card for print optimization
+                const resultsCard = document.getElementById('resultsCard');
+                resultsCard.classList.add('report-card-print');
+
+                // Print the page
+                window.print();
+
+                // Remove the class after print
+                setTimeout(() => {
+                    resultsCard.classList.remove('report-card-print');
+                }, 1000);
+            });
+
+            // ============================================================
             // TEACHER - LOAD STUDENTS
             // ============================================================
             loadStudentsBtn.addEventListener('click', async function() {
+                if (!currentUser || currentUser.role !== 'teacher') {
+                    showToast('🔒 Please login as a teacher first', true);
+                    return;
+                }
+
                 const className = teacherClass.value;
                 const subject = teacherSubject.value;
                 const term = teacherTerm.value;
@@ -1975,6 +2162,11 @@
             // ADMIN - ADD STUDENT
             // ============================================================
             addStudentBtn.addEventListener('click', async function() {
+                if (!currentUser || currentUser.role !== 'admin') {
+                    showToast('🔒 Please login as admin first', true);
+                    return;
+                }
+
                 const number = adminStudentNumber.value.trim();
                 const name = adminStudentName.value.trim();
                 const className = adminStudentClass.value;
@@ -2022,6 +2214,11 @@
             // ADMIN - ADD TEACHER
             // ============================================================
             addTeacherBtn.addEventListener('click', async function() {
+                if (!currentUser || currentUser.role !== 'admin') {
+                    showToast('🔒 Please login as admin first', true);
+                    return;
+                }
+
                 const name = adminTeacherName.value.trim();
                 const username = adminTeacherUsername.value.trim();
                 const password = adminTeacherPassword.value.trim();
@@ -2173,6 +2370,11 @@
             // ADD CLASS
             // ============================================================
             addClassBtn.addEventListener('click', async function() {
+                if (!currentUser || currentUser.role !== 'admin') {
+                    showToast('🔒 Please login as admin first', true);
+                    return;
+                }
+
                 const grade = newClassGrade.value;
                 const stream = newClassStream.value;
                 const teacherId = newClassTeacher.value;
@@ -2224,6 +2426,11 @@
             // GLOBAL FUNCTIONS FOR CLASS ACTIONS
             // ============================================================
             window.editClass = function(id) {
+                if (!currentUser || currentUser.role !== 'admin') {
+                    showToast('🔒 Please login as admin first', true);
+                    return;
+                }
+
                 const newTeacher = prompt('Enter new teacher name for this class:');
                 if (newTeacher !== null) {
                     if (supabaseClient && isConnected) {
@@ -2246,6 +2453,11 @@
             };
 
             window.deleteClass = function(id) {
+                if (!currentUser || currentUser.role !== 'admin') {
+                    showToast('🔒 Please login as admin first', true);
+                    return;
+                }
+
                 if (!confirm('⚠️ Delete this class? This cannot be undone.')) return;
                 if (supabaseClient && isConnected) {
                     supabaseClient
@@ -2266,20 +2478,12 @@
             };
 
             // ============================================================
-            // DOWNLOAD RESULTS (PDF via print)
-            // ============================================================
-            downloadResultsBtn.addEventListener('click', function() {
-                window.print();
-            });
-
-            // ============================================================
             // BOOT
             // ============================================================
             // Initialize Supabase
             initSupabase();
 
             console.log('✅ Laura Girls Secondary School ready');
-            console.log('📡 Using Supabase URL:', SUPABASE_URL);
 
         })();
     </script>
