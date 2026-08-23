@@ -3,47 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Laura Girls Secondary School - DEBSite</title>
-    <meta name="description" content="Official school management system for Laura Girls Secondary School - Kasama District">
+    <title>Laura Girls Secondary School - Report Card</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,450;9..144,560;9..144,650&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js"></script>
-    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
     <style>
-        :root {
-            --paper: #F4F5F1;
-            --surface: #FFFFFF;
-            --surface-sunken: #EDF0EA;
-            --ink: #15201A;
-            --ink-soft: #4B5A50;
-            --ink-faint: #8A968C;
-            --border: #DCE3DB;
-            --border-strong: #C3CDC1;
-            --green: #0B3D2E;
-            --green-dark: #082A20;
-            --green-tint: #E5EEE8;
-            --brass: #B8862E;
-            --brass-dark: #8C6A22;
-            --brass-tint: #F6EDD9;
-            --plum: #4B2E62;
-            --plum-dark: #37224A;
-            --plum-tint: #EFE8F3;
-            --oxblood: #8C2F2F;
-            --oxblood-dark: #6E2222;
-            --oxblood-tint: #F5E6E6;
-            --font-display: 'Fraunces', serif;
-            --font-body: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-            --font-mono: 'IBM Plex Mono', monospace;
-            --radius-sm: 10px;
-            --radius-md: 16px;
-            --radius-lg: 24px;
-            --shadow-sm: 0 1px 2px rgba(21, 32, 26, 0.06);
-            --shadow-md: 0 8px 24px rgba(21, 32, 26, 0.09);
-            --shadow-lg: 0 24px 60px rgba(21, 32, 26, 0.18);
-        }
-
         * {
             margin: 0;
             padding: 0;
@@ -51,1669 +16,902 @@
         }
 
         body {
-            font-family: var(--font-body);
-            background: var(--paper);
-            color: var(--ink);
-            min-height: 100vh;
-            line-height: 1.5;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        /* ============================================================
-           TOP BAR
-           ============================================================ */
-        .topbar {
-            position: sticky;
-            top: 0;
-            z-index: 40;
-            background: var(--green);
-            border-bottom: 1px solid var(--green-dark);
-            padding: 12px 18px;
+            font-family: 'IBM Plex Sans', Arial, sans-serif;
+            background: #e8ecf0;
             display: flex;
-            align-items: center;
-            gap: 14px;
-            box-shadow: var(--shadow-sm);
-        }
-        .topbar .seal {
-            width: 38px;
-            height: 38px;
-            flex-shrink: 0;
-        }
-        .topbar .brand {
-            flex: 1;
-            min-width: 0;
-        }
-        .topbar .brand .eyebrow {
-            font-size: 10px;
-            letter-spacing: 1.6px;
-            text-transform: uppercase;
-            color: var(--brass);
-            font-weight: 600;
-        }
-        .topbar .brand h1 {
-            font-family: var(--font-display);
-            font-weight: 560;
-            font-size: 17px;
-            color: #fff;
-            letter-spacing: 0.2px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .topbar .brand h1 span {
-            color: var(--brass);
-        }
-        .topbar-actions {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-shrink: 0;
-        }
-        .topbar-actions .btn-sm {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            color: #EAF1EC;
-            padding: 6px 14px;
-            border-radius: 40px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: background 0.15s ease;
-        }
-        .topbar-actions .btn-sm:hover {
-            background: rgba(255, 255, 255, 0.16);
-        }
-        .topbar-actions .btn-sm i {
-            font-size: 12px;
-        }
-        .topbar-actions .user-badge {
-            background: rgba(255, 255, 255, 0.12);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            color: #EAF1EC;
-            padding: 6px 14px;
-            border-radius: 40px;
-            font-size: 12px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        /* ============================================================
-           SHELL & SECTIONS
-           ============================================================ */
-        .shell {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 20px 16px 60px;
-        }
-
-        .section {
-            display: none;
-        }
-        .section.active {
-            display: block;
-        }
-
-        /* ============================================================
-           CARDS & COMPONENTS
-           ============================================================ */
-        .card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            padding: 20px;
-            margin-bottom: 18px;
-            box-shadow: var(--shadow-sm);
-        }
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid var(--green-tint);
-        }
-        .card-header h2 {
-            font-family: var(--font-display);
-            font-weight: 560;
-            font-size: 18px;
-            color: var(--green-dark);
-        }
-        .card-header h2 i {
-            color: var(--brass-dark);
-            margin-right: 8px;
-        }
-        .card-header .subtitle {
-            font-size: 13px;
-            color: var(--ink-faint);
-        }
-
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-        .grid-3 {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 16px;
-        }
-        .grid-4 {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr;
-            gap: 16px;
-        }
-
-        @media (max-width: 768px) {
-            .grid-2,
-            .grid-3,
-            .grid-4 {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .field {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            width: 100%;
-        }
-        .field label {
-            font-size: 12.5px;
-            font-weight: 600;
-            color: var(--ink-soft);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .field label i {
-            color: var(--green);
-            width: 16px;
-            font-size: 13px;
-        }
-        .field input,
-        .field select,
-        .field textarea {
-            background: var(--paper);
-            border: 1.5px solid var(--border);
-            border-radius: 12px;
-            padding: 10px 13px;
-            font-size: 14px;
-            outline: none;
-            width: 100%;
-            color: var(--ink);
-            font-family: var(--font-body);
-            transition: border-color 0.12s ease, background 0.12s ease;
-        }
-        .field input:focus,
-        .field select:focus,
-        .field textarea:focus {
-            border-color: var(--green);
-            background: var(--surface);
-            box-shadow: 0 0 0 3px var(--green-tint);
-        }
-        .field textarea {
-            resize: vertical;
-            min-height: 60px;
-        }
-
-        .btn {
-            background: var(--green);
-            border: 1px solid var(--green-dark);
-            padding: 12px 20px;
-            border-radius: 60px;
-            color: #fff;
-            font-weight: 700;
-            font-size: 14px;
-            display: inline-flex;
-            align-items: center;
             justify-content: center;
-            gap: 8px;
-            cursor: pointer;
-            transition: transform 0.1s ease, background 0.15s ease;
-            border: none;
-            font-family: var(--font-body);
-        }
-        .btn:active {
-            transform: scale(0.97);
-            background: var(--green-dark);
-        }
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        .btn-primary {
-            background: var(--green);
-            color: #fff;
-        }
-        .btn-primary:hover {
-            background: var(--green-dark);
-        }
-        .btn-success {
-            background: #0f7b3a;
-            color: #fff;
-        }
-        .btn-success:hover {
-            background: #0a5e2b;
-        }
-        .btn-danger {
-            background: var(--oxblood);
-            color: #fff;
-        }
-        .btn-danger:hover {
-            background: var(--oxblood-dark);
-        }
-        .btn-warning {
-            background: #d4a017;
-            color: #fff;
-        }
-        .btn-warning:hover {
-            background: #b8860b;
-        }
-        .btn-outline {
-            background: transparent;
-            border: 1.5px solid var(--green);
-            color: var(--green);
-        }
-        .btn-outline:hover {
-            background: var(--green-tint);
-        }
-        .btn-sm {
-            padding: 8px 16px;
-            font-size: 12.5px;
-        }
-        .btn-block {
-            width: 100%;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
         }
 
         /* ============================================================
-           TAB NAVIGATION
+           REPORT CARD CONTAINER
            ============================================================ */
-        .tab-nav {
-            display: flex;
-            background: var(--surface-sunken);
-            border-radius: 40px;
-            padding: 5px;
-            margin-bottom: 20px;
-            border: 1px solid var(--border);
-            gap: 4px;
-            flex-wrap: wrap;
+        .report-card {
+            width: 297mm;
+            /* A4 landscape width */
+            max-width: 100%;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            padding: 30px 35px;
+            position: relative;
+            overflow: hidden;
         }
-        .tab-nav .tab-btn {
+
+        /* ============================================================
+           HEADER
+           ============================================================ */
+        .report-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border-bottom: 3px double #0B3D2E;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+
+        .report-header .logo {
+            width: 80px;
+            height: 80px;
+            flex-shrink: 0;
+        }
+
+        .report-header .logo img,
+        .report-header .logo svg {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .report-header .school-info {
             flex: 1;
             text-align: center;
-            padding: 10px 14px;
-            border-radius: 36px;
+        }
+
+        .report-header .school-info .top-line {
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #B8862E;
             font-weight: 600;
-            font-size: 13px;
-            color: var(--ink-soft);
-            cursor: pointer;
-            background: transparent;
-            border: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 7px;
-            transition: 0.16s ease;
-            min-width: 80px;
         }
-        .tab-nav .tab-btn.active {
-            background: var(--green);
-            color: #fff;
-            box-shadow: var(--shadow-sm);
+
+        .report-header .school-info h1 {
+            font-family: 'Fraunces', serif;
+            font-weight: 650;
+            font-size: 26px;
+            color: #0B3D2E;
+            letter-spacing: 0.5px;
+            margin: 2px 0;
         }
-        .tab-nav .tab-btn i {
+
+        .report-header .school-info .subtitle {
             font-size: 14px;
+            color: #4B5A50;
+            font-weight: 500;
+        }
+
+        .report-header .school-info .motto {
+            font-size: 12px;
+            color: #8A968C;
+            font-style: italic;
+            margin-top: 2px;
+        }
+
+        .report-header .report-type {
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .report-header .report-type .badge {
+            background: #0B3D2E;
+            color: #fff;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+        }
+
+        .report-header .report-type .date {
+            font-size: 11px;
+            color: #8A968C;
+            margin-top: 6px;
         }
 
         /* ============================================================
-           RESULT TABLE
+           STUDENT INFO
            ============================================================ */
-        .table-wrapper {
-            overflow-x: auto;
-            border: 1px solid var(--border);
-            border-radius: 12px;
+        .student-info {
+            background: #F4F5F1;
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px 30px;
+            border: 1px solid #DCE3DB;
         }
+
+        .student-info .info-item {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+            font-size: 14px;
+        }
+
+        .student-info .info-item .label {
+            font-weight: 600;
+            color: #4B5A50;
+            min-width: 110px;
+        }
+
+        .student-info .info-item .value {
+            font-weight: 600;
+            color: #0B3D2E;
+        }
+
+        /* ============================================================
+           RESULTS TABLE
+           ============================================================ */
+        .results-section {
+            margin-bottom: 20px;
+        }
+
+        .results-section .section-title {
+            font-family: 'Fraunces', serif;
+            font-weight: 560;
+            font-size: 18px;
+            color: #0B3D2E;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .results-section .section-title i {
+            color: #B8862E;
+        }
+
+        .table-wrapper {
+            border: 1px solid #DCE3DB;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
         .table-wrapper table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 13px;
-            min-width: 600px;
+            font-size: 14px;
         }
+
         .table-wrapper table thead {
-            background: var(--green);
-            color: #fff;
+            background: #0B3D2E;
+            color: #ffffff;
         }
+
         .table-wrapper table th {
-            padding: 10px 12px;
+            padding: 12px 16px;
             text-align: left;
             font-weight: 600;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-            white-space: nowrap;
-        }
-        .table-wrapper table td {
-            padding: 8px 12px;
-            border-bottom: 1px solid var(--border);
-            vertical-align: middle;
-        }
-        .table-wrapper table tbody tr:nth-child(even) {
-            background: var(--paper);
-        }
-        .table-wrapper table tbody tr:hover {
-            background: var(--green-tint);
-        }
-        .table-wrapper table .totals-row {
-            background: var(--green-tint) !important;
-            font-weight: 700;
-        }
-        .table-wrapper table .totals-row td {
-            border-top: 2px solid var(--green);
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 40px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-        .badge-success {
-            background: #e8f5e9;
-            color: #2e7d32;
-        }
-        .badge-warning {
-            background: #fff3e0;
-            color: #e65100;
-        }
-        .badge-danger {
-            background: #ffebee;
-            color: #c62828;
-        }
-        .badge-info {
-            background: #e3f2fd;
-            color: #0d47a1;
-        }
-
-        /* ============================================================
-           STAT CARDS
-           ============================================================ */
-        .stat-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 16px;
-            text-align: center;
-            box-shadow: var(--shadow-sm);
-        }
-        .stat-card .number {
-            font-family: var(--font-mono);
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--green-dark);
-        }
-        .stat-card .label {
-            font-size: 11px;
-            color: var(--ink-faint);
+            font-size: 12px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-top: 4px;
-        }
-        .stat-card .icon {
-            font-size: 24px;
-            color: var(--brass-dark);
-            margin-bottom: 6px;
         }
 
-        /* ============================================================
-           TOAST
-           ============================================================ */
-        .toast {
-            position: fixed;
-            left: 50%;
-            bottom: 26px;
-            transform: translateX(-50%) translateY(20px);
-            background: var(--ink);
-            color: #fff;
-            padding: 12px 20px;
-            border-radius: 60px;
-            font-size: 13.5px;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 9px;
-            box-shadow: var(--shadow-lg);
-            z-index: 200;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s ease, transform 0.2s ease;
-            max-width: 88vw;
-        }
-        .toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-            pointer-events: auto;
-        }
-        .toast i {
-            color: var(--brass);
-        }
-        .toast.error i {
-            color: #E8898F;
+        .table-wrapper table td {
+            padding: 10px 16px;
+            border-bottom: 1px solid #DCE3DB;
+            vertical-align: middle;
         }
 
-        /* ============================================================
-           PRINT STYLES
-           ============================================================ */
-        @media print {
-            .topbar,
-            .tab-nav,
-            .no-print {
-                display: none !important;
-            }
-            .section {
-                display: block !important;
-            }
-            .card {
-                box-shadow: none !important;
-                border: 1px solid #ddd !important;
-                break-inside: avoid;
-            }
-            .table-wrapper {
-                border: 1px solid #ddd !important;
-            }
-            .table-wrapper table th {
-                background: #333 !important;
-                color: #fff !important;
-            }
-            body {
-                background: #fff !important;
-            }
+        .table-wrapper table tbody tr:nth-child(even) {
+            background: #F4F5F1;
         }
 
-        /* ============================================================
-           RESULTS CARD (Student View)
-           ============================================================ */
-        .result-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            padding: 20px;
-            margin-bottom: 16px;
-            box-shadow: var(--shadow-sm);
-            border-left: 4px solid var(--brass);
-        }
-        .result-card .subject-result {
-            display: flex;
-            justify-content: space-between;
-            padding: 6px 0;
-            border-bottom: 1px solid var(--border);
-        }
-        .result-card .subject-result:last-child {
+        .table-wrapper table tbody tr:last-child td {
             border-bottom: none;
         }
-        .result-card .subject-name {
+
+        .table-wrapper table .subject-name {
             font-weight: 600;
+            color: #15201A;
         }
-        .result-card .subject-score {
-            font-family: var(--font-mono);
+
+        .table-wrapper table .score {
+            font-family: 'IBM Plex Mono', monospace;
             font-weight: 600;
+            font-size: 15px;
         }
-        .result-card .subject-grade {
-            font-weight: 600;
-            padding: 2px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-        }
-        .result-card .total-score {
-            font-size: 18px;
+
+        .grade-badge {
+            display: inline-block;
+            padding: 3px 14px;
+            border-radius: 40px;
+            font-size: 13px;
             font-weight: 700;
-            color: var(--green-dark);
+            text-align: center;
+            min-width: 36px;
         }
-        .result-card .average-score {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--brass-dark);
+
+        .grade-A {
+            background: #E8F5E9;
+            color: #2E7D32;
         }
-        .result-card .position {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--oxblood);
+        .grade-B {
+            background: #E3F2FD;
+            color: #0D47A1;
         }
-        .result-card .comment {
+        .grade-C {
+            background: #FFF3E0;
+            color: #E65100;
+        }
+        .grade-D {
+            background: #FFF8E1;
+            color: #F57F17;
+        }
+        .grade-F {
+            background: #FFEBEE;
+            color: #C62828;
+        }
+
+        .comment-cell {
+            font-size: 13px;
+            color: #4B5A50;
             font-style: italic;
-            color: var(--ink-soft);
-            padding: 8px 12px;
-            background: var(--paper);
+        }
+
+        /* ============================================================
+           SUMMARY ROW
+           ============================================================ */
+        .summary-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            background: #F4F5F1;
             border-radius: 10px;
-            margin-top: 8px;
+            padding: 14px 20px;
+            border: 1px solid #DCE3DB;
+            margin-top: 16px;
+        }
+
+        .summary-row .summary-item {
+            text-align: center;
+        }
+
+        .summary-row .summary-item .label {
+            font-size: 11px;
+            color: #8A968C;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .summary-row .summary-item .value {
+            font-family: 'Fraunces', serif;
+            font-size: 22px;
+            font-weight: 650;
+            color: #0B3D2E;
+            margin-top: 2px;
+        }
+
+        .summary-row .summary-item .value.total {
+            color: #0B3D2E;
+        }
+        .summary-row .summary-item .value.average {
+            color: #B8862E;
+        }
+        .summary-row .summary-item .value.position {
+            color: #8C2F2F;
+        }
+
+        /* ============================================================
+           COMMENT SECTION
+           ============================================================ */
+        .comment-section {
+            margin-top: 16px;
+            padding: 14px 20px;
+            background: #F8F9FA;
+            border-radius: 10px;
+            border-left: 4px solid #B8862E;
+        }
+
+        .comment-section .comment-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #4B5A50;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .comment-section .comment-text {
+            font-size: 14px;
+            color: #15201A;
+            margin-top: 4px;
+            font-style: italic;
         }
 
         /* ============================================================
            FOOTER
            ============================================================ */
-        .footer-note {
-            font-size: 11px;
-            color: var(--ink-faint);
-            text-align: center;
-            margin-top: 30px;
+        .report-footer {
+            margin-top: 25px;
             padding-top: 16px;
-            border-top: 1px solid var(--border);
-            letter-spacing: 0.3px;
+            border-top: 2px solid #DCE3DB;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            color: #8A968C;
+        }
+
+        .report-footer .signatures {
+            display: flex;
+            gap: 40px;
+        }
+
+        .report-footer .signatures .sig-item {
+            text-align: center;
+        }
+
+        .report-footer .signatures .sig-item .line {
+            width: 130px;
+            border-bottom: 1px solid #15201A;
+            margin-bottom: 4px;
+        }
+
+        .report-footer .signatures .sig-item .title {
+            font-size: 10px;
+            color: #8A968C;
+        }
+
+        .report-footer .powered {
+            font-size: 10px;
+            color: #B8862E;
+        }
+
+        /* ============================================================
+           PRINT STYLES - A4 LANDSCAPE
+           ============================================================ */
+        @media print {
+            body {
+                background: #ffffff !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                display: block !important;
+                min-height: auto !important;
+            }
+
+            .report-card {
+                width: 100% !important;
+                max-width: 100% !important;
+                border-radius: 0 !important;
+                box-shadow: none !important;
+                padding: 15mm 18mm !important;
+                min-height: 100vh !important;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            .report-header .logo {
+                width: 70px !important;
+                height: 70px !important;
+            }
+
+            .report-header .school-info h1 {
+                font-size: 22px !important;
+            }
+
+            .student-info {
+                padding: 12px 16px !important;
+            }
+
+            .student-info .info-item {
+                font-size: 12px !important;
+            }
+
+            .table-wrapper table {
+                font-size: 12px !important;
+            }
+
+            .table-wrapper table th {
+                padding: 8px 12px !important;
+                font-size: 10px !important;
+            }
+
+            .table-wrapper table td {
+                padding: 7px 12px !important;
+            }
+
+            .grade-badge {
+                font-size: 11px !important;
+                padding: 2px 10px !important;
+            }
+
+            .summary-row .summary-item .value {
+                font-size: 18px !important;
+            }
+
+            .report-footer {
+                font-size: 10px !important;
+            }
+
+            .report-footer .signatures .sig-item .line {
+                width: 100px !important;
+            }
         }
 
         /* ============================================================
            RESPONSIVE
            ============================================================ */
-        @media (max-width: 480px) {
-            .topbar .brand h1 {
-                font-size: 14px;
+        @media (max-width: 768px) {
+            .report-card {
+                padding: 20px;
+                width: 100%;
             }
-            .topbar-actions .btn-sm {
-                font-size: 10px;
-                padding: 4px 10px;
+
+            .report-header {
+                flex-wrap: wrap;
+                justify-content: center;
+                text-align: center;
+                gap: 12px;
             }
-            .topbar-actions .user-badge {
-                font-size: 10px;
-                padding: 4px 10px;
+
+            .report-header .logo {
+                width: 60px;
+                height: 60px;
             }
-            .card {
-                padding: 14px;
+
+            .report-header .school-info h1 {
+                font-size: 20px;
             }
-            .tab-nav .tab-btn {
-                font-size: 11px;
-                padding: 8px 10px;
-                min-width: 60px;
+
+            .report-header .report-type {
+                text-align: center;
+                width: 100%;
             }
+
+            .student-info {
+                grid-template-columns: 1fr 1fr;
+                gap: 6px 16px;
+                padding: 12px 14px;
+            }
+
+            .student-info .info-item .label {
+                min-width: 80px;
+                font-size: 12px;
+            }
+
+            .student-info .info-item .value {
+                font-size: 12px;
+            }
+
+            .summary-row {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            .report-footer {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+
+            .report-footer .signatures {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 20px;
+            }
+
             .table-wrapper table {
                 font-size: 11px;
-                min-width: 450px;
             }
+
             .table-wrapper table th,
             .table-wrapper table td {
                 padding: 6px 8px;
+            }
+
+            .grade-badge {
+                font-size: 10px;
+                padding: 2px 8px;
+                min-width: 28px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .report-card {
+                padding: 14px;
+            }
+
+            .report-header .school-info h1 {
+                font-size: 17px;
+            }
+
+            .student-info {
+                grid-template-columns: 1fr;
+                gap: 4px;
+            }
+
+            .student-info .info-item .label {
+                min-width: 70px;
+                font-size: 11px;
+            }
+        }
+
+        /* ============================================================
+           DOWNLOAD BUTTON
+           ============================================================ */
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #0B3D2E;
+            color: #fff;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 60px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s ease;
+            margin-top: 16px;
+            font-family: 'IBM Plex Sans', Arial, sans-serif;
+        }
+
+        .download-btn:hover {
+            background: #082A20;
+        }
+
+        .download-btn i {
+            font-size: 16px;
+        }
+
+        .print-controls {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        @media print {
+            .print-controls {
+                display: none !important;
             }
         }
     </style>
 </head>
 <body>
 
-    <!-- ============================================================
-         TOP BAR
-         ============================================================ -->
-    <div class="topbar">
-        <span class="seal" id="topbarSeal"></span>
-        <div class="brand">
-            <div class="eyebrow">Republic of Zambia · Ministry of Education</div>
-            <h1>Laura Girls Secondary School <span>· DEBSite</span></h1>
-        </div>
-        <div class="topbar-actions">
-            <span class="user-badge" id="userBadge"><i class="fas fa-user"></i> Guest</span>
-            <button class="btn-sm" id="loginBtn"><i class="fas fa-sign-in-alt"></i> Login</button>
-            <button class="btn-sm" id="logoutBtn" style="display:none;"><i class="fas fa-sign-out-alt"></i> Logout</button>
-        </div>
-    </div>
-
-    <div class="shell" id="app">
+    <div class="report-card" id="reportCard">
 
         <!-- ============================================================
-             TAB NAVIGATION
+             HEADER
              ============================================================ -->
-        <div class="tab-nav" id="tabNav">
-            <button class="tab-btn active" data-tab="student"><i class="fas fa-user-graduate"></i> Student</button>
-            <button class="tab-btn" data-tab="teacher"><i class="fas fa-chalkboard-teacher"></i> Teacher</button>
-            <button class="tab-btn" data-tab="admin"><i class="fas fa-user-shield"></i> Admin</button>
-        </div>
-
-        <!-- ============================================================
-             STUDENT SECTION
-             ============================================================ -->
-        <div class="section active" id="studentSection">
-            <div class="card">
-                <div class="card-header">
-                    <h2><i class="fas fa-search"></i> Check Your Results</h2>
-                    <span class="subtitle">Enter your details to view results</span>
-                </div>
-                <div class="grid-2">
-                    <div class="field">
-                        <label><i class="fas fa-id-card"></i> Student Number</label>
-                        <input type="text" id="studentNumber" placeholder="e.g. 2024-001">
-                    </div>
-                    <div class="field">
-                        <label><i class="fas fa-calendar-alt"></i> Term</label>
-                        <select id="studentTerm">
-                            <option value="">Select Term</option>
-                            <option value="1">Term 1</option>
-                            <option value="2">Term 2</option>
-                            <option value="3">Term 3</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="grid-2">
-                    <div class="field">
-                        <label><i class="fas fa-calendar-year"></i> Year</label>
-                        <select id="studentYear">
-                            <option value="">Select Year</option>
-                            <option value="2024">2024</option>
-                            <option value="2025">2025</option>
-                            <option value="2026">2026</option>
-                        </select>
-                    </div>
-                    <div class="field">
-                        <label><i class="fas fa-tag"></i> Test Type</label>
-                        <select id="studentTestType">
-                            <option value="">Select Test Type</option>
-                            <option value="mid_term">Mid Term</option>
-                            <option value="end_term">End of Term</option>
-                        </select>
-                    </div>
-                </div>
-                <button class="btn btn-primary btn-block" id="viewResultsBtn"><i class="fas fa-eye"></i> View Results</button>
+        <div class="report-header">
+            <div class="logo" id="schoolLogo">
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+                    <circle cx="50" cy="50" r="47" fill="none" stroke="#B8862E" stroke-width="1.6"/>
+                    <circle cx="50" cy="50" r="41" fill="none" stroke="#B8862E" stroke-width="1"/>
+                    <path d="M50 24 L54.8 34.4 66.2 36 57.6 43.9 59.7 55.2 50 49.4 40.3 55.2 42.4 43.9 33.8 36 45.2 34.4 Z" fill="#B8862E"/>
+                    <text x="50" y="66" text-anchor="middle" font-size="8.4" letter-spacing="1" fill="#0B3D2E" font-family="IBM Plex Sans, sans-serif" font-weight="700">LAURA GIRLS</text>
+                    <text x="50" y="76" text-anchor="middle" font-size="6.4" letter-spacing="0.6" fill="#0B3D2E" font-family="IBM Plex Sans, sans-serif" font-weight="500">KASAMA DISTRICT</text>
+                </svg>
             </div>
-
-            <!-- Results Display -->
-            <div id="studentResults" style="display:none;">
-                <div class="card" id="studentInfoCard">
-                    <div class="card-header">
-                        <h2><i class="fas fa-user-graduate"></i> Student Information</h2>
-                    </div>
-                    <div id="studentInfo"></div>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <h2><i class="fas fa-list"></i> Results</h2>
-                        <button class="btn btn-sm btn-success" id="downloadResultsBtn"><i class="fas fa-download"></i> Download PDF</button>
-                    </div>
-                    <div id="resultsContent"></div>
-                </div>
+            <div class="school-info">
+                <div class="top-line">Republic of Zambia · Ministry of Education</div>
+                <h1>Laura Girls Secondary School</h1>
+                <div class="subtitle">Kasama District · Northern Province</div>
+                <div class="motto">"Excellence in Education, Empowering the Girl Child"</div>
+            </div>
+            <div class="report-type">
+                <span class="badge">Report Card</span>
+                <div class="date">Issued: <span id="reportDate">2026-08-23</span></div>
             </div>
         </div>
 
         <!-- ============================================================
-             TEACHER SECTION
+             STUDENT INFORMATION
              ============================================================ -->
-        <div class="section" id="teacherSection">
-            <div class="card">
-                <div class="card-header">
-                    <h2><i class="fas fa-chalkboard-teacher"></i> Teacher Dashboard</h2>
-                    <span class="subtitle">Enter and manage student results</span>
-                </div>
-                <div class="grid-3">
-                    <div class="field">
-                        <label><i class="fas fa-users"></i> Class</label>
-                        <select id="teacherClass">
-                            <option value="">Select Class</option>
-                            <option value="10A">Grade 10A</option>
-                            <option value="10B">Grade 10B</option>
-                            <option value="11A">Grade 11A</option>
-                            <option value="11B">Grade 11B</option>
-                            <option value="12A">Grade 12A</option>
-                            <option value="12B">Grade 12B</option>
-                        </select>
-                    </div>
-                    <div class="field">
-                        <label><i class="fas fa-book"></i> Subject</label>
-                        <select id="teacherSubject">
-                            <option value="">Select Subject</option>
-                            <option value="English">English</option>
-                            <option value="Mathematics">Mathematics</option>
-                            <option value="Biology">Biology</option>
-                            <option value="Chemistry">Chemistry</option>
-                            <option value="Physics">Physics</option>
-                            <option value="History">History</option>
-                            <option value="Geography">Geography</option>
-                            <option value="Civic Education">Civic Education</option>
-                            <option value="Zambian Languages">Zambian Languages</option>
-                            <option value="Religious Education">Religious Education</option>
-                        </select>
-                    </div>
-                    <div class="field">
-                        <label><i class="fas fa-calendar-alt"></i> Term</label>
-                        <select id="teacherTerm">
-                            <option value="">Select Term</option>
-                            <option value="1">Term 1</option>
-                            <option value="2">Term 2</option>
-                            <option value="3">Term 3</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="grid-3">
-                    <div class="field">
-                        <label><i class="fas fa-calendar-year"></i> Year</label>
-                        <select id="teacherYear">
-                            <option value="">Select Year</option>
-                            <option value="2024">2024</option>
-                            <option value="2025">2025</option>
-                            <option value="2026">2026</option>
-                        </select>
-                    </div>
-                    <div class="field">
-                        <label><i class="fas fa-tag"></i> Test Type</label>
-                        <select id="teacherTestType">
-                            <option value="">Select Test Type</option>
-                            <option value="mid_term">Mid Term</option>
-                            <option value="end_term">End of Term</option>
-                        </select>
-                    </div>
-                    <div class="field" style="justify-content:flex-end;">
-                        <button class="btn btn-primary" id="loadStudentsBtn"><i class="fas fa-users"></i> Load Students</button>
-                    </div>
-                </div>
+        <div class="student-info">
+            <div class="info-item">
+                <span class="label"><i class="fas fa-user"></i> Name:</span>
+                <span class="value" id="studentName">Ireen Mwansa</span>
             </div>
-
-            <!-- Results Entry -->
-            <div id="resultsEntry" style="display:none;">
-                <div class="card">
-                    <div class="card-header">
-                        <h2><i class="fas fa-edit"></i> Enter Results</h2>
-                        <button class="btn btn-sm btn-success" id="saveResultsBtn"><i class="fas fa-save"></i> Save All</button>
-                    </div>
-                    <div class="table-wrapper">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Student Name</th>
-                                    <th>Student Number</th>
-                                    <th>Score (%)</th>
-                                    <th>Grade</th>
-                                    <th>Comment</th>
-                                </tr>
-                            </thead>
-                            <tbody id="resultsTableBody">
-                                <tr><td colspan="6" style="text-align:center;color:var(--ink-faint);">No students loaded. Please select class and subject.</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+            <div class="info-item">
+                <span class="label"><i class="fas fa-id-card"></i> Student Number:</span>
+                <span class="value" id="studentNumber">2468</span>
+            </div>
+            <div class="info-item">
+                <span class="label"><i class="fas fa-users"></i> Class:</span>
+                <span class="value" id="studentClass">10A</span>
+            </div>
+            <div class="info-item">
+                <span class="label"><i class="fas fa-calendar-alt"></i> Term:</span>
+                <span class="value" id="studentTerm">1</span>
+            </div>
+            <div class="info-item">
+                <span class="label"><i class="fas fa-calendar-year"></i> Year:</span>
+                <span class="value" id="studentYear">2026</span>
+            </div>
+            <div class="info-item">
+                <span class="label"><i class="fas fa-tag"></i> Test Type:</span>
+                <span class="value" id="studentTestType">Mid Term</span>
             </div>
         </div>
 
         <!-- ============================================================
-             ADMIN SECTION
+             RESULTS TABLE
              ============================================================ -->
-        <div class="section" id="adminSection">
-            <div class="card">
-                <div class="card-header">
-                    <h2><i class="fas fa-user-shield"></i> Admin Dashboard</h2>
-                    <span class="subtitle">Manage users, classes, and terms</span>
-                </div>
-                <div class="grid-4">
-                    <div class="stat-card">
-                        <div class="icon"><i class="fas fa-users"></i></div>
-                        <div class="number" id="totalStudents">0</div>
-                        <div class="label">Total Students</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="icon"><i class="fas fa-user-tie"></i></div>
-                        <div class="number" id="totalTeachers">0</div>
-                        <div class="label">Total Teachers</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="icon"><i class="fas fa-book"></i></div>
-                        <div class="number" id="totalSubjects">0</div>
-                        <div class="label">Total Subjects</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="icon"><i class="fas fa-file-alt"></i></div>
-                        <div class="number" id="totalResults">0</div>
-                        <div class="label">Total Results</div>
-                    </div>
-                </div>
+        <div class="results-section">
+            <div class="section-title">
+                <i class="fas fa-list-ul"></i> Subject Results
             </div>
-
-            <div class="grid-2">
-                <div class="card">
-                    <div class="card-header">
-                        <h2><i class="fas fa-user-plus"></i> Add Student</h2>
-                    </div>
-                    <div class="field">
-                        <label>Student Number</label>
-                        <input type="text" id="adminStudentNumber" placeholder="e.g. 2024-001">
-                    </div>
-                    <div class="field">
-                        <label>Full Name</label>
-                        <input type="text" id="adminStudentName" placeholder="e.g. Mary Mwansa">
-                    </div>
-                    <div class="field">
-                        <label>Class</label>
-                        <select id="adminStudentClass">
-                            <option value="">Select Class</option>
-                            <option value="10A">Grade 10A</option>
-                            <option value="10B">Grade 10B</option>
-                            <option value="11A">Grade 11A</option>
-                            <option value="11B">Grade 11B</option>
-                            <option value="12A">Grade 12A</option>
-                            <option value="12B">Grade 12B</option>
-                        </select>
-                    </div>
-                    <button class="btn btn-success btn-block" id="addStudentBtn"><i class="fas fa-plus"></i> Add Student</button>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <h2><i class="fas fa-user-plus"></i> Add Teacher</h2>
-                    </div>
-                    <div class="field">
-                        <label>Teacher Name</label>
-                        <input type="text" id="adminTeacherName" placeholder="e.g. Mr. John Banda">
-                    </div>
-                    <div class="field">
-                        <label>Username</label>
-                        <input type="text" id="adminTeacherUsername" placeholder="e.g. jbanda">
-                    </div>
-                    <div class="field">
-                        <label>Password</label>
-                        <input type="password" id="adminTeacherPassword" placeholder="Enter password">
-                    </div>
-                    <button class="btn btn-success btn-block" id="addTeacherBtn"><i class="fas fa-plus"></i> Add Teacher</button>
-                </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width:30px;">#</th>
+                            <th style="text-align:left;">Subject</th>
+                            <th style="text-align:center;width:100px;">Score (%)</th>
+                            <th style="text-align:center;width:80px;">Grade</th>
+                            <th style="text-align:left;">Comment</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsTableBody">
+                        <tr>
+                            <td>1</td>
+                            <td class="subject-name">English</td>
+                            <td class="score" style="text-align:center;">66</td>
+                            <td style="text-align:center;"><span class="grade-badge grade-C">C</span></td>
+                            <td class="comment-cell">Good performance. Continue working hard.</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td class="subject-name">Mathematics</td>
+                            <td class="score" style="text-align:center;">72</td>
+                            <td style="text-align:center;"><span class="grade-badge grade-B">B</span></td>
+                            <td class="comment-cell">Good understanding of concepts.</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td class="subject-name">Biology</td>
+                            <td class="score" style="text-align:center;">58</td>
+                            <td style="text-align:center;"><span class="grade-badge grade-D">D</span></td>
+                            <td class="comment-cell">Needs more focus on practical work.</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td class="subject-name">Chemistry</td>
+                            <td class="score" style="text-align:center;">63</td>
+                            <td style="text-align:center;"><span class="grade-badge grade-C">C</span></td>
+                            <td class="comment-cell">Satisfactory performance.</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td class="subject-name">Physics</td>
+                            <td class="score" style="text-align:center;">55</td>
+                            <td style="text-align:center;"><span class="grade-badge grade-D">D</span></td>
+                            <td class="comment-cell">Requires more practice.</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td class="subject-name">History</td>
+                            <td class="score" style="text-align:center;">81</td>
+                            <td style="text-align:center;"><span class="grade-badge grade-A">A</span></td>
+                            <td class="comment-cell">Excellent understanding of historical events.</td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td class="subject-name">Geography</td>
+                            <td class="score" style="text-align:center;">69</td>
+                            <td style="text-align:center;"><span class="grade-badge grade-C">C</span></td>
+                            <td class="comment-cell">Good grasp of geographical concepts.</td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td class="subject-name">Civic Education</td>
+                            <td class="score" style="text-align:center;">74</td>
+                            <td style="text-align:center;"><span class="grade-badge grade-B">B</span></td>
+                            <td class="comment-cell">Very good participation in class.</td>
+                        </tr>
+                        <tr>
+                            <td>9</td>
+                            <td class="subject-name">Zambian Languages</td>
+                            <td class="score" style="text-align:center;">62</td>
+                            <td style="text-align:center;"><span class="grade-badge grade-C">C</span></td>
+                            <td class="comment-cell">Improvement needed in grammar.</td>
+                        </tr>
+                        <tr>
+                            <td>10</td>
+                            <td class="subject-name">Religious Education</td>
+                            <td class="score" style="text-align:center;">70</td>
+                            <td style="text-align:center;"><span class="grade-badge grade-B">B</span></td>
+                            <td class="comment-cell">Good understanding of moral values.</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
-        <div class="footer-note">
-            Laura Girls Secondary School · Kasama District &copy; 2026 &nbsp;·&nbsp; Powered by DEBSite
+        <!-- ============================================================
+             SUMMARY ROW
+             ============================================================ -->
+        <div class="summary-row">
+            <div class="summary-item">
+                <div class="label">Total Score</div>
+                <div class="value total" id="totalScore">66%</div>
+            </div>
+            <div class="summary-item">
+                <div class="label">Average</div>
+                <div class="value average" id="averageScore">66.0%</div>
+            </div>
+            <div class="summary-item">
+                <div class="label">Position in Class</div>
+                <div class="value position" id="classPosition">1</div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+             GENERAL COMMENT
+             ============================================================ -->
+        <div class="comment-section" id="generalCommentSection">
+            <div class="comment-label"><i class="fas fa-quote-left"></i> Teacher's General Comment</div>
+            <div class="comment-text" id="generalComment">
+                Ireen has shown consistent improvement this term. Her performance in History and Civic Education is outstanding. 
+                She needs to focus more on Biology and Physics to improve her overall average. With continued dedication, she has 
+                the potential to be among the top students. Keep up the good work!
+            </div>
+        </div>
+
+        <!-- ============================================================
+             FOOTER
+             ============================================================ -->
+        <div class="report-footer">
+            <div class="signatures">
+                <div class="sig-item">
+                    <div class="line">&nbsp;</div>
+                    <div class="title">Class Teacher</div>
+                </div>
+                <div class="sig-item">
+                    <div class="line">&nbsp;</div>
+                    <div class="title">Head of Department</div>
+                </div>
+                <div class="sig-item">
+                    <div class="line">&nbsp;</div>
+                    <div class="title">Principal</div>
+                </div>
+            </div>
+            <div class="powered">
+                <i class="fas fa-graduation-cap"></i> Laura Girls DEBSite &copy; 2026
+            </div>
         </div>
     </div>
 
     <!-- ============================================================
-         TOAST
+         PRINT CONTROLS
          ============================================================ -->
-    <div class="toast" id="globalToast"><i class="fas fa-check-circle"></i> <span id="toastMsg">Saved</span></div>
+    <div class="print-controls no-print" style="position:fixed;bottom:30px;left:50%;transform:translateX(-50%);z-index:100;display:flex;gap:12px;">
+        <button class="download-btn" onclick="window.print()">
+            <i class="fas fa-print"></i> Print / Download PDF
+        </button>
+        <button class="download-btn" onclick="window.close()" style="background:#8C2F2F;">
+            <i class="fas fa-times"></i> Close
+        </button>
+    </div>
 
     <script>
         (function() {
             "use strict";
 
             // ============================================================
-            // CONFIG
+            // SET REPORT DATE
             // ============================================================
-            const SUPABASE_URL = 'https://yhmjidkrwtxckecvjixo.supabase.co';
-            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlobWppZGtyd3R4Y2tlY3ZqaXhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc0MzYzMDksImV4cCI6MjEwMzAxMjMwOX0.db6y1ac6HIMt4v_AW9M-IvypHXSz1aoMA-X3bAvpKnI';
-
-            const SCHOOL_NAME = 'Laura Girls Secondary School';
-            const SCHOOL_DISTRICT = 'Kasama';
-
-            // ============================================================
-            // STATE
-            // ============================================================
-            let supabaseClient = null;
-            let currentUser = null;
-            let currentResults = [];
-            let currentStudents = [];
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('en-ZM', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            document.getElementById('reportDate').textContent = dateStr;
 
             // ============================================================
-            // SEAL
+            // DEMO DATA - Replace with actual data from your database
             // ============================================================
-            function sealMarkup(ringColor, inkColor) {
-                ringColor = ringColor || '#B8862E';
-                inkColor = inkColor || '#0B3D2E';
-                return '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">' +
-                    '<circle cx="50" cy="50" r="47" fill="none" stroke="' + ringColor + '" stroke-width="1.6"/>' +
-                    '<circle cx="50" cy="50" r="41" fill="none" stroke="' + ringColor + '" stroke-width="1"/>' +
-                    '<path d="M50 24 L54.8 34.4 66.2 36 57.6 43.9 59.7 55.2 50 49.4 40.3 55.2 42.4 43.9 33.8 36 45.2 34.4 Z" fill="' +
-                    ringColor + '"/>' +
-                    '<text x="50" y="66" text-anchor="middle" font-size="8.4" letter-spacing="1" fill="' + inkColor +
-                    '" font-family="IBM Plex Sans, sans-serif" font-weight="700">LAURA GIRLS</text>' +
-                    '<text x="50" y="76" text-anchor="middle" font-size="6.4" letter-spacing="0.6" fill="' + inkColor +
-                    '" font-family="IBM Plex Sans, sans-serif" font-weight="500">KASAMA DISTRICT</text>' +
-                    '</svg>';
-            }
-            document.getElementById('topbarSeal').innerHTML = sealMarkup('#E7C77A', '#ffffff');
-
-            // ============================================================
-            // DOM REFS
-            // ============================================================
-            const tabBtns = document.querySelectorAll('.tab-btn');
-            const sections = {
-                student: document.getElementById('studentSection'),
-                teacher: document.getElementById('teacherSection'),
-                admin: document.getElementById('adminSection')
+            const reportData = {
+                student: {
+                    name: 'Ireen Mwansa',
+                    number: '2468',
+                    class: '10A',
+                    term: '1',
+                    year: '2026',
+                    testType: 'Mid Term'
+                },
+                results: [
+                    { subject: 'English', score: 66, grade: 'C', comment: 'Good performance. Continue working hard.' },
+                    { subject: 'Mathematics', score: 72, grade: 'B', comment: 'Good understanding of concepts.' },
+                    { subject: 'Biology', score: 58, grade: 'D', comment: 'Needs more focus on practical work.' },
+                    { subject: 'Chemistry', score: 63, grade: 'C', comment: 'Satisfactory performance.' },
+                    { subject: 'Physics', score: 55, grade: 'D', comment: 'Requires more practice.' },
+                    { subject: 'History', score: 81, grade: 'A', comment: 'Excellent understanding of historical events.' },
+                    { subject: 'Geography', score: 69, grade: 'C', comment: 'Good grasp of geographical concepts.' },
+                    { subject: 'Civic Education', score: 74, grade: 'B', comment: 'Very good participation in class.' },
+                    { subject: 'Zambian Languages', score: 62, grade: 'C', comment: 'Improvement needed in grammar.' },
+                    { subject: 'Religious Education', score: 70, grade: 'B', comment: 'Good understanding of moral values.' }
+                ],
+                summary: {
+                    total: 66,
+                    average: 66.0,
+                    position: 1
+                },
+                generalComment: 'Ireen has shown consistent improvement this term. Her performance in History and Civic Education is outstanding. She needs to focus more on Biology and Physics to improve her overall average. With continued dedication, she has the potential to be among the top students. Keep up the good work!'
             };
-            const loginBtn = document.getElementById('loginBtn');
-            const logoutBtn = document.getElementById('logoutBtn');
-            const userBadge = document.getElementById('userBadge');
-            const toastDiv = document.getElementById('globalToast');
-            const toastMsg = document.getElementById('toastMsg');
-
-            // Student
-            const studentNumber = document.getElementById('studentNumber');
-            const studentTerm = document.getElementById('studentTerm');
-            const studentYear = document.getElementById('studentYear');
-            const studentTestType = document.getElementById('studentTestType');
-            const viewResultsBtn = document.getElementById('viewResultsBtn');
-            const studentResults = document.getElementById('studentResults');
-            const studentInfo = document.getElementById('studentInfo');
-            const resultsContent = document.getElementById('resultsContent');
-            const downloadResultsBtn = document.getElementById('downloadResultsBtn');
-
-            // Teacher
-            const teacherClass = document.getElementById('teacherClass');
-            const teacherSubject = document.getElementById('teacherSubject');
-            const teacherTerm = document.getElementById('teacherTerm');
-            const teacherYear = document.getElementById('teacherYear');
-            const teacherTestType = document.getElementById('teacherTestType');
-            const loadStudentsBtn = document.getElementById('loadStudentsBtn');
-            const resultsEntry = document.getElementById('resultsEntry');
-            const resultsTableBody = document.getElementById('resultsTableBody');
-            const saveResultsBtn = document.getElementById('saveResultsBtn');
-
-            // Admin
-            const adminStudentNumber = document.getElementById('adminStudentNumber');
-            const adminStudentName = document.getElementById('adminStudentName');
-            const adminStudentClass = document.getElementById('adminStudentClass');
-            const addStudentBtn = document.getElementById('addStudentBtn');
-            const adminTeacherName = document.getElementById('adminTeacherName');
-            const adminTeacherUsername = document.getElementById('adminTeacherUsername');
-            const adminTeacherPassword = document.getElementById('adminTeacherPassword');
-            const addTeacherBtn = document.getElementById('addTeacherBtn');
-            const totalStudents = document.getElementById('totalStudents');
-            const totalTeachers = document.getElementById('totalTeachers');
-            const totalSubjects = document.getElementById('totalSubjects');
-            const totalResults = document.getElementById('totalResults');
 
             // ============================================================
-            // INIT SUPABASE
+            // POPULATE REPORT CARD
             // ============================================================
-            function initSupabase() {
-                try {
-                    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                    console.log('✅ Supabase connected');
-                    return true;
-                } catch (e) {
-                    console.error('❌ Supabase connection error:', e);
-                    showToast('❌ Connection error: ' + e.message);
-                    return false;
-                }
-            }
-
-            // ============================================================
-            // TAB SWITCHING
-            // ============================================================
-            tabBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    tabBtns.forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    const tab = this.dataset.tab;
-                    Object.keys(sections).forEach(key => {
-                        sections[key].classList.toggle('active', key === tab);
-                    });
-                    if (tab === 'admin') {
-                        loadAdminStats();
-                    }
-                });
-            });
-
-            // ============================================================
-            // TOAST
-            // ============================================================
-            let toastTimer = null;
-
-            function showToast(msg, isError = false) {
-                toastMsg.textContent = msg;
-                toastDiv.classList.toggle('error', isError);
-                toastDiv.classList.add('show');
-                clearTimeout(toastTimer);
-                toastTimer = setTimeout(() => toastDiv.classList.remove('show'), 4000);
-            }
-
-            // ============================================================
-            // LOGIN / LOGOUT
-            // ============================================================
-            loginBtn.addEventListener('click', function() {
-                const role = prompt('Enter role (student/teacher/admin):');
-                if (!role) return;
-                if (role === 'student') {
-                    const studentId = prompt('Enter your student number:');
-                    if (!studentId) return;
-                    currentUser = { role: 'student', id: studentId };
-                    userBadge.innerHTML = '<i class="fas fa-user-graduate"></i> ' + studentId;
-                    showToast('✅ Logged in as student: ' + studentId);
-                    loginBtn.style.display = 'none';
-                    logoutBtn.style.display = 'inline-flex';
-                    // Switch to student tab
-                    document.querySelector('.tab-btn[data-tab="student"]').click();
-                } else if (role === 'teacher') {
-                    const username = prompt('Enter your username:');
-                    if (!username) return;
-                    const password = prompt('Enter your password:');
-                    if (!password) return;
-                    // Simple auth - check if teacher exists
-                    authenticateTeacher(username, password);
-                } else if (role === 'admin') {
-                    const password = prompt('Enter admin password:');
-                    if (password === 'admin123') {
-                        currentUser = { role: 'admin' };
-                        userBadge.innerHTML = '<i class="fas fa-user-shield"></i> Admin';
-                        showToast('✅ Logged in as Admin');
-                        loginBtn.style.display = 'none';
-                        logoutBtn.style.display = 'inline-flex';
-                        document.querySelector('.tab-btn[data-tab="admin"]').click();
-                        loadAdminStats();
-                    } else {
-                        showToast('❌ Invalid admin password', true);
-                    }
-                }
-            });
-
-            async function authenticateTeacher(username, password) {
-                try {
-                    if (!supabaseClient && !initSupabase()) {
-                        showToast('❌ Database connection failed', true);
-                        return;
-                    }
-                    const { data, error } = await supabaseClient
-                        .from('teachers')
-                        .select('*')
-                        .eq('username', username)
-                        .maybeSingle();
-
-                    if (error) throw error;
-                    if (!data) {
-                        showToast('❌ Teacher not found', true);
-                        return;
-                    }
-                    if (data.password !== password) {
-                        showToast('❌ Invalid password', true);
-                        return;
-                    }
-                    currentUser = { role: 'teacher', id: data.id, name: data.name };
-                    userBadge.innerHTML = '<i class="fas fa-chalkboard-teacher"></i> ' + data.name;
-                    showToast('✅ Logged in as teacher: ' + data.name);
-                    loginBtn.style.display = 'none';
-                    logoutBtn.style.display = 'inline-flex';
-                    document.querySelector('.tab-btn[data-tab="teacher"]').click();
-                    // Load admin stats for teacher
-                    loadAdminStats();
-                } catch (err) {
-                    showToast('❌ Error: ' + err.message, true);
-                    console.error(err);
-                }
-            }
-
-            logoutBtn.addEventListener('click', function() {
-                currentUser = null;
-                userBadge.innerHTML = '<i class="fas fa-user"></i> Guest';
-                loginBtn.style.display = 'inline-flex';
-                logoutBtn.style.display = 'none';
-                showToast('🔒 Logged out');
-                // Clear results
-                studentResults.style.display = 'none';
-                resultsEntry.style.display = 'none';
-            });
-
-            // ============================================================
-            // STUDENT - VIEW RESULTS
-            // ============================================================
-            viewResultsBtn.addEventListener('click', async function() {
-                const number = studentNumber.value.trim();
-                const term = studentTerm.value;
-                const year = studentYear.value;
-                const testType = studentTestType.value;
-
-                if (!number) { showToast('⚠️ Please enter your student number', true); return; }
-                if (!term) { showToast('⚠️ Please select a term', true); return; }
-                if (!year) { showToast('⚠️ Please select a year', true); return; }
-                if (!testType) { showToast('⚠️ Please select a test type', true); return; }
-
-                if (!supabaseClient && !initSupabase()) {
-                    showToast('❌ Database connection failed', true);
-                    return;
-                }
-
-                try {
-                    showToast('🔄 Loading results...');
-                    // Get student info
-                    const { data: studentData, error: studentError } = await supabaseClient
-                        .from('students')
-                        .select('*')
-                        .eq('student_number', number)
-                        .maybeSingle();
-
-                    if (studentError) throw studentError;
-                    if (!studentData) {
-                        showToast('❌ Student not found', true);
-                        return;
-                    }
-
-                    // Get results
-                    const { data: resultsData, error: resultsError } = await supabaseClient
-                        .from('results')
-                        .select('*')
-                        .eq('student_id', studentData.id)
-                        .eq('term', term)
-                        .eq('year', year)
-                        .eq('test_type', testType);
-
-                    if (resultsError) throw resultsError;
-
-                    currentResults = resultsData || [];
-
-                    // Display results
-                    displayStudentResults(studentData, resultsData, term, year, testType);
-                    studentResults.style.display = 'block';
-
-                    if (resultsData.length === 0) {
-                        showToast('📭 No results found for this term');
-                    } else {
-                        showToast('✅ Results loaded successfully');
-                    }
-
-                } catch (err) {
-                    showToast('❌ Error: ' + err.message, true);
-                    console.error(err);
-                }
-            });
-
-            function displayStudentResults(student, results, term, year, testType) {
+            function populateReportCard(data) {
                 // Student info
-                studentInfo.innerHTML = `
-                    <div class="grid-3">
-                        <div><strong>Name:</strong> ${student.name}</div>
-                        <div><strong>Student Number:</strong> ${student.student_number}</div>
-                        <div><strong>Class:</strong> ${student.class}</div>
-                        <div><strong>Term:</strong> ${term}</div>
-                        <div><strong>Year:</strong> ${year}</div>
-                        <div><strong>Test Type:</strong> ${testType === 'mid_term' ? 'Mid Term' : 'End of Term'}</div>
-                    </div>
-                `;
+                document.getElementById('studentName').textContent = data.student.name;
+                document.getElementById('studentNumber').textContent = data.student.number;
+                document.getElementById('studentClass').textContent = data.student.class;
+                document.getElementById('studentTerm').textContent = data.student.term;
+                document.getElementById('studentYear').textContent = data.student.year;
+                document.getElementById('studentTestType').textContent = data.student.testType;
 
-                if (!results || results.length === 0) {
-                    resultsContent.innerHTML = `
-                        <div style="text-align:center;padding:30px;color:var(--ink-faint);">
-                            <i class="fas fa-folder-open" style="font-size:30px;display:block;margin-bottom:12px;"></i>
-                            <p>No results available for this term.</p>
-                        </div>
-                    `;
-                    return;
-                }
-
-                // Calculate totals
-                let totalScore = 0;
-                let subjectCount = 0;
-                let html = `
-                    <div class="result-card">
-                        <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
-                            <div class="total-score">Total: ${results.reduce((s,r) => s + (parseInt(r.score) || 0), 0)}%</div>
-                            <div class="average-score">Average: ${(results.reduce((s,r) => s + (parseInt(r.score) || 0), 0) / results.length).toFixed(1)}%</div>
-                            <div class="position">Position: ${student.position || 'N/A'}</div>
-                        </div>
-                `;
-
-                results.forEach(r => {
-                    const score = parseInt(r.score) || 0;
-                    const grade = getGrade(score);
-                    const gradeClass = getGradeClass(score);
-                    html += `
-                        <div class="subject-result">
-                            <span class="subject-name">${r.subject}</span>
-                            <span class="subject-score">${score}%</span>
-                            <span class="subject-grade ${gradeClass}">${grade}</span>
-                        </div>
-                    `;
-                });
-
-                if (student.comment) {
-                    html += `
-                        <div class="comment">
-                            <i class="fas fa-quote-left" style="color:var(--brass-dark);margin-right:6px;"></i>
-                            ${student.comment}
-                        </div>
-                    `;
-                }
-
-                html += `</div>`;
-                resultsContent.innerHTML = html;
-            }
-
-            function getGrade(score) {
-                if (score >= 80) return 'A';
-                if (score >= 70) return 'B';
-                if (score >= 60) return 'C';
-                if (score >= 50) return 'D';
-                return 'F';
-            }
-
-            function getGradeClass(score) {
-                if (score >= 80) return 'badge-success';
-                if (score >= 60) return 'badge-info';
-                if (score >= 50) return 'badge-warning';
-                return 'badge-danger';
-            }
-
-            // ============================================================
-            // TEACHER - LOAD STUDENTS
-            // ============================================================
-            loadStudentsBtn.addEventListener('click', async function() {
-                const className = teacherClass.value;
-                const subject = teacherSubject.value;
-                const term = teacherTerm.value;
-                const year = teacherYear.value;
-                const testType = teacherTestType.value;
-
-                if (!className) { showToast('⚠️ Please select a class', true); return; }
-                if (!subject) { showToast('⚠️ Please select a subject', true); return; }
-                if (!term) { showToast('⚠️ Please select a term', true); return; }
-                if (!year) { showToast('⚠️ Please select a year', true); return; }
-                if (!testType) { showToast('⚠️ Please select a test type', true); return; }
-
-                if (!supabaseClient && !initSupabase()) {
-                    showToast('❌ Database connection failed', true);
-                    return;
-                }
-
-                try {
-                    showToast('🔄 Loading students...');
-                    // Get students in the class
-                    const { data: studentsData, error: studentsError } = await supabaseClient
-                        .from('students')
-                        .select('*')
-                        .eq('class', className)
-                        .order('name');
-
-                    if (studentsError) throw studentsError;
-                    if (!studentsData || studentsData.length === 0) {
-                        showToast('⚠️ No students found in this class', true);
-                        return;
-                    }
-
-                    currentStudents = studentsData;
-                    displayResultsEntry(studentsData, subject, term, year, testType);
-                    resultsEntry.style.display = 'block';
-                    showToast('✅ ' + studentsData.length + ' students loaded');
-
-                } catch (err) {
-                    showToast('❌ Error: ' + err.message, true);
-                    console.error(err);
-                }
-            });
-
-            async function displayResultsEntry(students, subject, term, year, testType) {
-                // Check if results already exist for these students
-                let existingResults = {};
-                try {
-                    const studentIds = students.map(s => s.id);
-                    const { data, error } = await supabaseClient
-                        .from('results')
-                        .select('*')
-                        .in('student_id', studentIds)
-                        .eq('subject', subject)
-                        .eq('term', term)
-                        .eq('year', year)
-                        .eq('test_type', testType);
-
-                    if (!error && data) {
-                        data.forEach(r => {
-                            existingResults[r.student_id] = r;
-                        });
-                    }
-                } catch (e) {
-                    console.warn('Could not load existing results:', e);
-                }
-
+                // Results table
+                const tbody = document.getElementById('resultsTableBody');
                 let html = '';
-                students.forEach((student, index) => {
-                    const existing = existingResults[student.id];
-                    const score = existing ? existing.score : '';
-                    const comment = existing ? existing.comment || '' : '';
+                data.results.forEach((result, index) => {
+                    const gradeClass = getGradeClass(result.score);
                     html += `
-                        <tr data-student-id="${student.id}">
+                        <tr>
                             <td>${index + 1}</td>
-                            <td><strong>${student.name}</strong></td>
-                            <td>${student.student_number}</td>
-                            <td>
-                                <input type="number" min="0" max="100" class="score-input" value="${score}" 
-                                    style="width:70px;padding:6px 8px;border-radius:8px;border:1.5px solid var(--border);text-align:center;">
-                            </td>
-                            <td class="grade-display">${score ? getGrade(parseInt(score)) : '-'}</td>
-                            <td>
-                                <input type="text" class="comment-input" value="${comment}" 
-                                    placeholder="Comment..." style="width:100%;padding:6px 8px;border-radius:8px;border:1.5px solid var(--border);font-size:12px;">
-                            </td>
+                            <td class="subject-name">${result.subject}</td>
+                            <td class="score" style="text-align:center;">${result.score}</td>
+                            <td style="text-align:center;"><span class="grade-badge ${gradeClass}">${result.grade}</span></td>
+                            <td class="comment-cell">${result.comment || '-'}</td>
                         </tr>
                     `;
                 });
+                tbody.innerHTML = html;
 
-                resultsTableBody.innerHTML = html;
+                // Summary
+                document.getElementById('totalScore').textContent = data.summary.total + '%';
+                document.getElementById('averageScore').textContent = data.summary.average.toFixed(1) + '%';
+                document.getElementById('classPosition').textContent = data.summary.position;
 
-                // Auto-calculate grade on score change
-                document.querySelectorAll('.score-input').forEach(input => {
-                    input.addEventListener('input', function() {
-                        const row = this.closest('tr');
-                        const gradeDisplay = row.querySelector('.grade-display');
-                        const score = parseInt(this.value);
-                        if (!isNaN(score) && score >= 0 && score <= 100) {
-                            gradeDisplay.textContent = getGrade(score);
-                            gradeDisplay.className = 'grade-display ' + getGradeClass(score);
-                        } else {
-                            gradeDisplay.textContent = '-';
-                            gradeDisplay.className = 'grade-display';
-                        }
-                    });
-                });
+                // General comment
+                document.getElementById('generalComment').textContent = data.generalComment;
+            }
 
-                // Apply initial grades
-                document.querySelectorAll('.score-input').forEach(input => {
-                    const score = parseInt(input.value);
-                    if (!isNaN(score) && score >= 0 && score <= 100) {
-                        const row = input.closest('tr');
-                        const gradeDisplay = row.querySelector('.grade-display');
-                        gradeDisplay.textContent = getGrade(score);
-                        gradeDisplay.className = 'grade-display ' + getGradeClass(score);
-                    }
-                });
+            function getGradeClass(score) {
+                if (score >= 80) return 'grade-A';
+                if (score >= 70) return 'grade-B';
+                if (score >= 60) return 'grade-C';
+                if (score >= 50) return 'grade-D';
+                return 'grade-F';
             }
 
             // ============================================================
-            // TEACHER - SAVE RESULTS
+            // POPULATE
             // ============================================================
-            saveResultsBtn.addEventListener('click', async function() {
-                if (!currentUser || currentUser.role !== 'teacher') {
-                    showToast('🔒 Please login as a teacher first', true);
-                    return;
-                }
+            populateReportCard(reportData);
 
-                const className = teacherClass.value;
-                const subject = teacherSubject.value;
-                const term = teacherTerm.value;
-                const year = teacherYear.value;
-                const testType = teacherTestType.value;
-
-                if (!className || !subject || !term || !year || !testType) {
-                    showToast('⚠️ Please select all fields', true);
-                    return;
-                }
-
-                if (!supabaseClient && !initSupabase()) {
-                    showToast('❌ Database connection failed', true);
-                    return;
-                }
-
-                // Collect results
-                const rows = document.querySelectorAll('#resultsTableBody tr');
-                const resultsToSave = [];
-                let hasErrors = false;
-
-                rows.forEach(row => {
-                    const studentId = row.dataset.studentId;
-                    const scoreInput = row.querySelector('.score-input');
-                    const commentInput = row.querySelector('.comment-input');
-                    const score = parseInt(scoreInput.value);
-
-                    if (isNaN(score) || score < 0 || score > 100) {
-                        // Skip if no valid score
-                        return;
-                    }
-
-                    resultsToSave.push({
-                        student_id: studentId,
-                        subject: subject,
-                        term: term,
-                        year: year,
-                        test_type: testType,
-                        score: score,
-                        comment: commentInput.value || '',
-                        teacher_id: currentUser.id
-                    });
-                });
-
-                if (resultsToSave.length === 0) {
-                    showToast('⚠️ No valid scores to save', true);
-                    return;
-                }
-
-                try {
-                    showToast('🔄 Saving results...');
-                    saveResultsBtn.disabled = true;
-                    saveResultsBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-
-                    // Delete existing results for these students and subject/term
-                    const studentIds = [...new Set(resultsToSave.map(r => r.student_id))];
-                    await supabaseClient
-                        .from('results')
-                        .delete()
-                        .in('student_id', studentIds)
-                        .eq('subject', subject)
-                        .eq('term', term)
-                        .eq('year', year)
-                        .eq('test_type', testType);
-
-                    // Insert new results
-                    const { error } = await supabaseClient
-                        .from('results')
-                        .insert(resultsToSave);
-
-                    if (error) throw error;
-
-                    // Calculate and update positions
-                    await updateClassPositions(className, term, year, testType);
-
-                    showToast('✅ ' + resultsToSave.length + ' results saved successfully!');
-                    saveResultsBtn.innerHTML = '<i class="fas fa-save"></i> Save All';
-                    saveResultsBtn.disabled = false;
-
-                } catch (err) {
-                    showToast('❌ Error: ' + err.message, true);
-                    console.error(err);
-                    saveResultsBtn.innerHTML = '<i class="fas fa-save"></i> Save All';
-                    saveResultsBtn.disabled = false;
+            // ============================================================
+            // KEYBOARD SHORTCUT - Ctrl+P to print
+            // ============================================================
+            document.addEventListener('keydown', function(e) {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+                    // Allow default print behavior
                 }
             });
 
-            // ============================================================
-            // UPDATE CLASS POSITIONS
-            // ============================================================
-            async function updateClassPositions(className, term, year, testType) {
-                try {
-                    // Get all students in class
-                    const { data: students, error: studentError } = await supabaseClient
-                        .from('students')
-                        .select('id, name')
-                        .eq('class', className);
-
-                    if (studentError) throw studentError;
-                    if (!students || students.length === 0) return;
-
-                    // Get all results for these students for this term
-                    const studentIds = students.map(s => s.id);
-                    const { data: results, error: resultsError } = await supabaseClient
-                        .from('results')
-                        .select('student_id, score')
-                        .in('student_id', studentIds)
-                        .eq('term', term)
-                        .eq('year', year)
-                        .eq('test_type', testType);
-
-                    if (resultsError) throw resultsError;
-
-                    // Calculate average per student
-                    const studentScores = {};
-                    const studentComments = {};
-
-                    students.forEach(s => {
-                        const studentResults = results.filter(r => r.student_id === s.id);
-                        if (studentResults.length > 0) {
-                            const total = studentResults.reduce((sum, r) => sum + (parseInt(r.score) || 0), 0);
-                            const avg = total / studentResults.length;
-                            studentScores[s.id] = avg;
-                            // Generate comment based on average
-                            if (avg >= 80) studentComments[s.id] = 'Excellent performance! Keep up the great work.';
-                            else if (avg >= 70) studentComments[s.id] = 'Good performance. Continue working hard.';
-                            else if (avg >= 60) studentComments[s.id] = 'Satisfactory performance. Room for improvement.';
-                            else if (avg >= 50) studentComments[s.id] = 'Below average. Need to work harder.';
-                            else studentComments[s.id] = 'Unsatisfactory performance. Seek help from teachers.';
-                        } else {
-                            studentScores[s.id] = 0;
-                            studentComments[s.id] = 'No results recorded.';
-                        }
-                    });
-
-                    // Sort by average (descending)
-                    const sorted = Object.keys(studentScores).sort((a, b) => studentScores[b] - studentScores[a]);
-
-                    // Assign positions and update students
-                    const updates = sorted.map((id, index) => {
-                        return {
-                            id: id,
-                            position: index + 1,
-                            comment: studentComments[id] || ''
-                        };
-                    });
-
-                    // Update each student
-                    for (const update of updates) {
-                        await supabaseClient
-                            .from('students')
-                            .update({ position: update.position, comment: update.comment })
-                            .eq('id', update.id);
-                    }
-
-                    console.log('✅ Positions updated for class', className);
-
-                } catch (err) {
-                    console.error('Error updating positions:', err);
-                }
-            }
-
-            // ============================================================
-            // ADMIN - ADD STUDENT
-            // ============================================================
-            addStudentBtn.addEventListener('click', async function() {
-                const number = adminStudentNumber.value.trim();
-                const name = adminStudentName.value.trim();
-                const className = adminStudentClass.value;
-
-                if (!number) { showToast('⚠️ Please enter student number', true); return; }
-                if (!name) { showToast('⚠️ Please enter student name', true); return; }
-                if (!className) { showToast('⚠️ Please select class', true); return; }
-
-                if (!supabaseClient && !initSupabase()) {
-                    showToast('❌ Database connection failed', true);
-                    return;
-                }
-
-                try {
-                    const { error } = await supabaseClient
-                        .from('students')
-                        .insert({
-                            student_number: number,
-                            name: name,
-                            class: className
-                        });
-
-                    if (error) throw error;
-
-                    showToast('✅ Student added successfully!');
-                    adminStudentNumber.value = '';
-                    adminStudentName.value = '';
-                    adminStudentClass.value = '';
-                    loadAdminStats();
-
-                } catch (err) {
-                    if (err.message.includes('duplicate')) {
-                        showToast('❌ Student number already exists', true);
-                    } else {
-                        showToast('❌ Error: ' + err.message, true);
-                    }
-                    console.error(err);
-                }
-            });
-
-            // ============================================================
-            // ADMIN - ADD TEACHER
-            // ============================================================
-            addTeacherBtn.addEventListener('click', async function() {
-                const name = adminTeacherName.value.trim();
-                const username = adminTeacherUsername.value.trim();
-                const password = adminTeacherPassword.value.trim();
-
-                if (!name) { showToast('⚠️ Please enter teacher name', true); return; }
-                if (!username) { showToast('⚠️ Please enter username', true); return; }
-                if (!password) { showToast('⚠️ Please enter password', true); return; }
-
-                if (!supabaseClient && !initSupabase()) {
-                    showToast('❌ Database connection failed', true);
-                    return;
-                }
-
-                try {
-                    const { error } = await supabaseClient
-                        .from('teachers')
-                        .insert({
-                            name: name,
-                            username: username,
-                            password: password
-                        });
-
-                    if (error) throw error;
-
-                    showToast('✅ Teacher added successfully!');
-                    adminTeacherName.value = '';
-                    adminTeacherUsername.value = '';
-                    adminTeacherPassword.value = '';
-                    loadAdminStats();
-
-                } catch (err) {
-                    if (err.message.includes('duplicate')) {
-                        showToast('❌ Username already exists', true);
-                    } else {
-                        showToast('❌ Error: ' + err.message, true);
-                    }
-                    console.error(err);
-                }
-            });
-
-            // ============================================================
-            // ADMIN - LOAD STATS
-            // ============================================================
-            async function loadAdminStats() {
-                if (!supabaseClient && !initSupabase()) return;
-
-                try {
-                    // Count students
-                    const { count: studentCount } = await supabaseClient
-                        .from('students')
-                        .select('*', { count: 'exact', head: true });
-                    totalStudents.textContent = studentCount || 0;
-
-                    // Count teachers
-                    const { count: teacherCount } = await supabaseClient
-                        .from('teachers')
-                        .select('*', { count: 'exact', head: true });
-                    totalTeachers.textContent = teacherCount || 0;
-
-                    // Count subjects (hardcoded for now)
-                    const subjects = ['English', 'Mathematics', 'Biology', 'Chemistry', 'Physics', 'History', 'Geography', 'Civic Education', 'Zambian Languages', 'Religious Education'];
-                    totalSubjects.textContent = subjects.length;
-
-                    // Count results
-                    const { count: resultCount } = await supabaseClient
-                        .from('results')
-                        .select('*', { count: 'exact', head: true });
-                    totalResults.textContent = resultCount || 0;
-
-                } catch (err) {
-                    console.error('Error loading stats:', err);
-                }
-            }
-
-            // ============================================================
-            // DOWNLOAD RESULTS (PDF via print)
-            // ============================================================
-            downloadResultsBtn.addEventListener('click', function() {
-                window.print();
-            });
-
-            // ============================================================
-            // BOOT
-            // ============================================================
-            initSupabase();
-
-            console.log('✅ Laura Girls Secondary School DEBSite ready');
+            console.log('✅ Laura Girls Report Card ready');
 
         })();
     </script>
