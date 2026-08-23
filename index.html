@@ -148,6 +148,62 @@
             letter-spacing: 0.5px;
         }
 
+        /* ============================================================
+           CONNECTION STATUS - MOVED TO BOTTOM
+           ============================================================ */
+        .connection-status {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 50;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-size: 11px;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(10px);
+        }
+
+        .connection-status .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .connection-status .dot.online {
+            background: #2e7d32;
+            animation: none;
+        }
+
+        .connection-status .dot.offline {
+            background: #c62828;
+            animation: none;
+        }
+
+        .connection-status .dot.connecting {
+            background: #e65100;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        /* ============================================================
+           TOP BAR ACTIONS - CLEANER
+           ============================================================ */
         .topbar-actions {
             display: flex;
             gap: 10px;
@@ -178,53 +234,22 @@
             font-size: 12px;
         }
 
-        .connection-status {
-            position: fixed;
-            top: 80px;
-            right: 20px;
-            z-index: 50;
-            padding: 8px 16px;
+        .topbar-actions .user-badge {
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            color: #EAF1EC;
+            padding: 6px 14px;
             border-radius: 40px;
             font-size: 12px;
             font-weight: 600;
-            background: rgba(255, 255, 255, 0.95);
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow-sm);
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
-        .connection-status .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            display: inline-block;
-        }
-
-        .connection-status .dot.online {
-            background: #2e7d32;
-        }
-
-        .connection-status .dot.offline {
-            background: #c62828;
-        }
-
-        .connection-status .dot.connecting {
-            background: #e65100;
-            animation: pulse 1s infinite;
-        }
-
-        @keyframes pulse {
-            0%,
-            100% {
-                opacity: 1;
-            }
-            50% {
-                opacity: 0.3;
-            }
-        }
-
+        /* ============================================================
+           SHELL & SECTIONS
+           ============================================================ */
         .shell {
             max-width: 1100px;
             margin: 0 auto;
@@ -578,7 +603,7 @@
         .toast {
             position: fixed;
             left: 50%;
-            bottom: 26px;
+            bottom: 80px;
             transform: translateX(-50%) translateY(20px);
             background: var(--ink);
             color: #fff;
@@ -799,6 +824,19 @@
             .topbar .brand .motto {
                 font-size: 10px;
             }
+
+            .connection-status {
+                bottom: 10px;
+                right: 10px;
+                font-size: 10px;
+                padding: 6px 12px;
+            }
+
+            .toast {
+                bottom: 70px;
+                font-size: 12px;
+                padding: 10px 16px;
+            }
         }
     </style>
 </head>
@@ -806,11 +844,17 @@
 
     <div class="mary-bg"></div>
 
+    <!-- ============================================================
+         CONNECTION STATUS - MOVED TO BOTTOM RIGHT
+         ============================================================ -->
     <div class="connection-status" id="connectionStatus">
         <span class="dot connecting" id="statusDot"></span>
         <span id="statusText">Connecting...</span>
     </div>
 
+    <!-- ============================================================
+         TOP BAR - CLEAN WITH ONLY LOGIN/LOGOUT
+         ============================================================ -->
     <div class="topbar">
         <span class="seal" id="topbarSeal">
             <img src="image/logo-removebg-preview.png" alt="School Logo" onerror="this.style.display='none'">
@@ -1480,13 +1524,20 @@
             });
 
             // ============================================================
-            // LOGIN / LOGOUT - FIXED TEACHER LOGIN
+            // LOGIN / LOGOUT - CLEAN TEACHER LOGIN
             // ============================================================
             loginBtn.addEventListener('click', function() {
-                const role = prompt('Enter role (student/teacher/admin):\n\nStudent: Enter your student number\nTeacher: Enter username and password\nAdmin: Enter admin password');
-                if (!role) return;
+                const choice = prompt(
+                    'Select login type:\n\n' +
+                    '1. Student - Enter your student number\n' +
+                    '2. Teacher - Enter username and password\n' +
+                    '3. Admin - Enter admin password\n\n' +
+                    'Enter the number (1, 2, or 3):'
+                );
 
-                if (role === 'student') {
+                if (!choice) return;
+
+                if (choice === '1' || choice.toLowerCase() === 'student') {
                     const studentId = prompt('Enter your student number:');
                     if (!studentId) return;
                     currentUser = { role: 'student', id: studentId };
@@ -1494,13 +1545,13 @@
                     loginBtn.style.display = 'none';
                     logoutBtn.style.display = 'inline-flex';
                     document.querySelector('.tab-btn[data-tab="student"]').click();
-                } else if (role === 'teacher') {
+                } else if (choice === '2' || choice.toLowerCase() === 'teacher') {
                     const username = prompt('Enter your teacher username:');
                     if (!username) return;
                     const password = prompt('Enter your teacher password:');
                     if (!password) return;
                     authenticateTeacher(username, password);
-                } else if (role === 'admin') {
+                } else if (choice === '3' || choice.toLowerCase() === 'admin') {
                     const password = prompt('Enter admin password:');
                     if (password === 'admin123') {
                         currentUser = { role: 'admin' };
@@ -1513,41 +1564,46 @@
                         loadAdminStats();
                         loadClasses();
                     } else {
-                        showToast('❌ Invalid admin password. Default admin password is: admin123', true);
+                        showToast('❌ Invalid admin password. Default: admin123', true);
                     }
+                } else {
+                    showToast('❌ Invalid choice. Please enter 1, 2, or 3.', true);
                 }
             });
 
             async function authenticateTeacher(username, password) {
                 try {
-                    if (!supabaseClient || !isConnected) {
-                        // Offline mode - hardcoded teacher accounts
-                        const validTeachers = {
-                            'jbanda': { id: 1, name: 'Mr. John Banda', password: 'teacher123' },
-                            'mphiri': { id: 2, name: 'Mrs. Mary Phiri', password: 'teacher123' },
-                            'pzulu': { id: 3, name: 'Mr. Peter Zulu', password: 'teacher123' },
-                            'gmwansa': { id: 4, name: 'Ms. Grace Mwansa', password: 'teacher123' }
-                        };
+                    // Default teacher accounts
+                    const validTeachers = {
+                        'jbanda': { id: 1, name: 'Mr. John Banda', password: 'teacher123' },
+                        'mphiri': { id: 2, name: 'Mrs. Mary Phiri', password: 'teacher123' },
+                        'pzulu': { id: 3, name: 'Mr. Peter Zulu', password: 'teacher123' },
+                        'gmwansa': { id: 4, name: 'Ms. Grace Mwansa', password: 'teacher123' }
+                    };
 
-                        if (validTeachers[username] && validTeachers[username].password === password) {
-                            currentUser = {
-                                role: 'teacher',
-                                id: validTeachers[username].id,
-                                name: validTeachers[username].name
-                            };
-                            showToast('✅ Logged in as teacher: ' + validTeachers[username].name);
-                            loginBtn.style.display = 'none';
-                            logoutBtn.style.display = 'inline-flex';
-                            teacherLocked.style.display = 'none';
-                            teacherContent.style.display = 'block';
-                            document.querySelector('.tab-btn[data-tab="teacher"]').click();
-                            return;
-                        }
-                        showToast('❌ Invalid teacher credentials. Default: jbanda / teacher123', true);
+                    // Check offline first
+                    if (validTeachers[username] && validTeachers[username].password === password) {
+                        currentUser = {
+                            role: 'teacher',
+                            id: validTeachers[username].id,
+                            name: validTeachers[username].name
+                        };
+                        showToast('✅ Logged in as teacher: ' + validTeachers[username].name);
+                        loginBtn.style.display = 'none';
+                        logoutBtn.style.display = 'inline-flex';
+                        teacherLocked.style.display = 'none';
+                        teacherContent.style.display = 'block';
+                        document.querySelector('.tab-btn[data-tab="teacher"]').click();
                         return;
                     }
 
-                    // Online mode - check database
+                    // If not connected, show error
+                    if (!supabaseClient || !isConnected) {
+                        showToast('❌ Invalid credentials. Default: jbanda / teacher123', true);
+                        return;
+                    }
+
+                    // Check database
                     const { data, error } = await supabaseClient
                         .from('teachers')
                         .select('*')
@@ -1557,8 +1613,7 @@
                     if (error) throw error;
 
                     if (!data) {
-                        showToast('❌ Teacher not found. Username: ' + username + ' does not exist.', true);
-                        showToast('ℹ️ Default teacher accounts: jbanda, mphiri, pzulu, gmwansa (password: teacher123)', true);
+                        showToast('❌ Teacher not found. Default: jbanda, mphiri, pzulu, gmwansa (password: teacher123)', true);
                         return;
                     }
 
@@ -2429,13 +2484,13 @@
 
             console.log('✅ Laura Girls Secondary School ready');
 
-            // Show teacher login hint
-            console.log('📝 Default Teacher Accounts:');
-            console.log('   jbanda / teacher123  - Mr. John Banda');
-            console.log('   mphiri / teacher123  - Mrs. Mary Phiri');
-            console.log('   pzulu / teacher123   - Mr. Peter Zulu');
-            console.log('   gmwansa / teacher123 - Ms. Grace Mwansa');
-            console.log('   admin / admin123     - Admin User');
+            // Show login info in console
+            console.log('📝 Default Login Credentials:');
+            console.log('   Teacher: jbanda / teacher123  - Mr. John Banda');
+            console.log('   Teacher: mphiri / teacher123  - Mrs. Mary Phiri');
+            console.log('   Teacher: pzulu / teacher123   - Mr. Peter Zulu');
+            console.log('   Teacher: gmwansa / teacher123 - Ms. Grace Mwansa');
+            console.log('   Admin: admin / admin123');
 
         })();
     </script>
