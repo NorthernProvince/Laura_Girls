@@ -59,9 +59,6 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* ============================================================
-           MARY MOTHER OF CHRIST BACKGROUND
-           ============================================================ */
         .mary-bg {
             position: fixed;
             top: 0;
@@ -84,9 +81,6 @@
             pointer-events: none;
         }
 
-        /* ============================================================
-           TOP BAR
-           ============================================================ */
         .topbar {
             position: sticky;
             top: 0;
@@ -154,11 +148,6 @@
             letter-spacing: 0.5px;
         }
 
-        .topbar .brand .motto i {
-            color: #fff;
-            margin: 0 4px;
-        }
-
         .topbar-actions {
             display: flex;
             gap: 10px;
@@ -189,9 +178,6 @@
             font-size: 12px;
         }
 
-        /* ============================================================
-           CONNECTION STATUS
-           ============================================================ */
         .connection-status {
             position: fixed;
             top: 80px;
@@ -239,9 +225,6 @@
             }
         }
 
-        /* ============================================================
-           SHELL & SECTIONS
-           ============================================================ */
         .shell {
             max-width: 1100px;
             margin: 0 auto;
@@ -255,9 +238,6 @@
             display: block;
         }
 
-        /* ============================================================
-           CARDS & COMPONENTS
-           ============================================================ */
         .card {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
@@ -441,9 +421,6 @@
             width: 100%;
         }
 
-        /* ============================================================
-           TAB NAVIGATION
-           ============================================================ */
         .tab-nav {
             display: flex;
             background: rgba(255, 255, 255, 0.9);
@@ -490,9 +467,6 @@
             display: none;
         }
 
-        /* ============================================================
-           RESULT TABLE
-           ============================================================ */
         .table-wrapper {
             overflow-x: auto;
             border: 1px solid var(--border);
@@ -569,9 +543,6 @@
             color: #0d47a1;
         }
 
-        /* ============================================================
-           STAT CARDS
-           ============================================================ */
         .stat-card {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
@@ -604,9 +575,6 @@
             margin-bottom: 6px;
         }
 
-        /* ============================================================
-           TOAST
-           ============================================================ */
         .toast {
             position: fixed;
             left: 50%;
@@ -643,9 +611,6 @@
             color: #E8898F;
         }
 
-        /* ============================================================
-           PRINT STYLES - A4 LANDSCAPE REPORT CARD
-           ============================================================ */
         @media print {
             .topbar,
             .tab-nav,
@@ -682,7 +647,6 @@
                 margin: 0 !important;
             }
 
-            /* A4 Landscape - Single Page */
             @page {
                 size: A4 landscape;
                 margin: 10mm 12mm;
@@ -704,31 +668,8 @@
                 background: #fff !important;
             }
 
-            .report-card-print .subject-result {
-                padding: 3px 0 !important;
-                font-size: 11px !important;
-            }
-
-            .report-card-print .student-info {
-                padding: 6px 10px !important;
-                font-size: 12px !important;
-            }
-
-            .report-card-print .summary-row {
-                padding: 6px 10px !important;
-            }
-
-            .report-card-print .result-header {
-                margin-bottom: 8px !important;
-            }
-
             .report-card-print .result-header h1 {
                 font-size: 18px !important;
-            }
-
-            .report-card-print .result-header .logo {
-                width: 40px !important;
-                height: 40px !important;
             }
 
             .report-card-print table {
@@ -744,22 +685,8 @@
                 font-size: 10px !important;
                 padding: 1px 8px !important;
             }
-
-            .report-card-print .comment-section {
-                padding: 6px 10px !important;
-                margin-top: 6px !important;
-            }
-
-            .report-card-print .footer {
-                margin-top: 8px !important;
-                padding-top: 6px !important;
-                font-size: 9px !important;
-            }
         }
 
-        /* ============================================================
-           RESULTS CARD (Student View)
-           ============================================================ */
         .result-card {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
@@ -825,9 +752,6 @@
             margin-top: 8px;
         }
 
-        /* ============================================================
-           FOOTER
-           ============================================================ */
         .footer-note {
             font-size: 11px;
             color: var(--ink-faint);
@@ -842,9 +766,6 @@
             color: var(--gold);
         }
 
-        /* ============================================================
-           RESPONSIVE
-           ============================================================ */
         @media (max-width: 480px) {
             .topbar .brand h1 {
                 font-size: 14px;
@@ -883,22 +804,13 @@
 </head>
 <body>
 
-    <!-- ============================================================
-         MARY MOTHER OF CHRIST BACKGROUND
-         ============================================================ -->
     <div class="mary-bg"></div>
 
-    <!-- ============================================================
-         CONNECTION STATUS
-         ============================================================ -->
     <div class="connection-status" id="connectionStatus">
         <span class="dot connecting" id="statusDot"></span>
         <span id="statusText">Connecting...</span>
     </div>
 
-    <!-- ============================================================
-         TOP BAR
-         ============================================================ -->
     <div class="topbar">
         <span class="seal" id="topbarSeal">
             <img src="image/logo-removebg-preview.png" alt="School Logo" onerror="this.style.display='none'">
@@ -916,9 +828,6 @@
 
     <div class="shell" id="app">
 
-        <!-- ============================================================
-             TAB NAVIGATION
-             ============================================================ -->
         <div class="tab-nav" id="tabNav">
             <button class="tab-btn active" data-tab="student"><i class="fas fa-user-graduate"></i> Student</button>
             <button class="tab-btn" data-tab="teacher" id="teacherTabBtn"><i class="fas fa-chalkboard-teacher"></i> Teacher</button>
@@ -926,9 +835,7 @@
             <button class="tab-btn hidden-tab" data-tab="classes"><i class="fas fa-users"></i> Classes</button>
         </div>
 
-        <!-- ============================================================
-             STUDENT SECTION
-             ============================================================ -->
+        <!-- STUDENT SECTION -->
         <div class="section active" id="studentSection">
             <div class="card">
                 <div class="card-header">
@@ -972,7 +879,6 @@
                 <button class="btn btn-primary btn-block" id="viewResultsBtn"><i class="fas fa-eye"></i> View Results</button>
             </div>
 
-            <!-- Results Display -->
             <div id="studentResults" style="display:none;">
                 <div class="card" id="studentInfoCard">
                     <div class="card-header">
@@ -990,9 +896,7 @@
             </div>
         </div>
 
-        <!-- ============================================================
-             TEACHER SECTION - SECURED
-             ============================================================ -->
+        <!-- TEACHER SECTION - SECURED -->
         <div class="section" id="teacherSection">
             <div class="card" id="teacherLocked">
                 <div class="card-header">
@@ -1074,7 +978,6 @@
                     </div>
                 </div>
 
-                <!-- Results Entry -->
                 <div id="resultsEntry" style="display:none;">
                     <div class="card">
                         <div class="card-header">
@@ -1103,9 +1006,7 @@
             </div>
         </div>
 
-        <!-- ============================================================
-             ADMIN SECTION - SECURED
-             ============================================================ -->
+        <!-- ADMIN SECTION - SECURED -->
         <div class="section" id="adminSection">
             <div class="card" id="adminLocked">
                 <div class="card-header">
@@ -1192,7 +1093,6 @@
                     </div>
                 </div>
 
-                <!-- Classes section moved inside admin -->
                 <div class="card" id="adminClassesSection">
                     <div class="card-header">
                         <h2><i class="fas fa-users"></i> Class Management</h2>
@@ -1252,9 +1152,6 @@
             </div>
         </div>
 
-        <!-- ============================================================
-             CLASSES SECTION - HIDDEN (moved to admin)
-             ============================================================ -->
         <div class="section" id="classesSection" style="display:none;"></div>
 
         <div class="footer-note">
@@ -1262,9 +1159,6 @@
         </div>
     </div>
 
-    <!-- ============================================================
-         TOAST
-         ============================================================ -->
     <div class="toast" id="globalToast"><i class="fas fa-check-circle"></i> <span id="toastMsg">Saved</span></div>
 
     <script>
@@ -1277,7 +1171,6 @@
             const SUPABASE_URL = 'https://yhmjidkrwtxckecvjixo.supabase.co';
             const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlobWppZGtyd3R4Y2tlY3ZqaXhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc0MzYzMDksImV4cCI6MjEwMzAxMjMwOX0.db6y1ac6HIMt4v_AW9M-IvypHXSz1aoMA-X3bAvpKnI';
 
-            // Class definitions
             const CLASS_DEFINITIONS = [
                 { id: 'Form1_Mary', grade: 'Form1', stream: 'Mary', display: 'Form 1 Mary' },
                 { id: 'Form1_Joseph', grade: 'Form1', stream: 'Joseph', display: 'Form 1 Joseph' },
@@ -1394,7 +1287,6 @@
                     supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                     console.log('✅ Supabase client created');
 
-                    // Test connection
                     supabaseClient.from('students').select('id', { count: 'exact', head: true })
                         .then(({ data, error }) => {
                             if (error) {
@@ -1539,7 +1431,6 @@
                 btn.addEventListener('click', function() {
                     const tab = this.dataset.tab;
 
-                    // Check if trying to access teacher tab
                     if (tab === 'teacher') {
                         if (!currentUser || currentUser.role !== 'teacher') {
                             teacherLocked.style.display = 'block';
@@ -1556,7 +1447,6 @@
                         }
                     }
 
-                    // Check if trying to access admin tab
                     if (tab === 'admin') {
                         if (!currentUser || currentUser.role !== 'admin') {
                             adminLocked.style.display = 'block';
@@ -1590,11 +1480,12 @@
             });
 
             // ============================================================
-            // LOGIN / LOGOUT
+            // LOGIN / LOGOUT - FIXED TEACHER LOGIN
             // ============================================================
             loginBtn.addEventListener('click', function() {
-                const role = prompt('Enter role (student/teacher/admin):');
+                const role = prompt('Enter role (student/teacher/admin):\n\nStudent: Enter your student number\nTeacher: Enter username and password\nAdmin: Enter admin password');
                 if (!role) return;
+
                 if (role === 'student') {
                     const studentId = prompt('Enter your student number:');
                     if (!studentId) return;
@@ -1604,9 +1495,9 @@
                     logoutBtn.style.display = 'inline-flex';
                     document.querySelector('.tab-btn[data-tab="student"]').click();
                 } else if (role === 'teacher') {
-                    const username = prompt('Enter your username:');
+                    const username = prompt('Enter your teacher username:');
                     if (!username) return;
-                    const password = prompt('Enter your password:');
+                    const password = prompt('Enter your teacher password:');
                     if (!password) return;
                     authenticateTeacher(username, password);
                 } else if (role === 'admin') {
@@ -1617,13 +1508,12 @@
                         loginBtn.style.display = 'none';
                         logoutBtn.style.display = 'inline-flex';
                         document.querySelector('.tab-btn[data-tab="admin"]').click();
-                        // Unlock admin content
                         adminLocked.style.display = 'none';
                         adminContent.style.display = 'block';
                         loadAdminStats();
                         loadClasses();
                     } else {
-                        showToast('❌ Invalid admin password', true);
+                        showToast('❌ Invalid admin password. Default admin password is: admin123', true);
                     }
                 }
             });
@@ -1631,21 +1521,33 @@
             async function authenticateTeacher(username, password) {
                 try {
                     if (!supabaseClient || !isConnected) {
-                        if (username === 'teacher' && password === '1234') {
-                            currentUser = { role: 'teacher', id: 1, name: 'Demo Teacher' };
-                            showToast('✅ Logged in as teacher (offline mode)');
+                        // Offline mode - hardcoded teacher accounts
+                        const validTeachers = {
+                            'jbanda': { id: 1, name: 'Mr. John Banda', password: 'teacher123' },
+                            'mphiri': { id: 2, name: 'Mrs. Mary Phiri', password: 'teacher123' },
+                            'pzulu': { id: 3, name: 'Mr. Peter Zulu', password: 'teacher123' },
+                            'gmwansa': { id: 4, name: 'Ms. Grace Mwansa', password: 'teacher123' }
+                        };
+
+                        if (validTeachers[username] && validTeachers[username].password === password) {
+                            currentUser = {
+                                role: 'teacher',
+                                id: validTeachers[username].id,
+                                name: validTeachers[username].name
+                            };
+                            showToast('✅ Logged in as teacher: ' + validTeachers[username].name);
                             loginBtn.style.display = 'none';
                             logoutBtn.style.display = 'inline-flex';
-                            // Unlock teacher content
                             teacherLocked.style.display = 'none';
                             teacherContent.style.display = 'block';
                             document.querySelector('.tab-btn[data-tab="teacher"]').click();
                             return;
                         }
-                        showToast('❌ Invalid credentials (offline mode)', true);
+                        showToast('❌ Invalid teacher credentials. Default: jbanda / teacher123', true);
                         return;
                     }
 
+                    // Online mode - check database
                     const { data, error } = await supabaseClient
                         .from('teachers')
                         .select('*')
@@ -1653,23 +1555,27 @@
                         .maybeSingle();
 
                     if (error) throw error;
+
                     if (!data) {
-                        showToast('❌ Teacher not found', true);
+                        showToast('❌ Teacher not found. Username: ' + username + ' does not exist.', true);
+                        showToast('ℹ️ Default teacher accounts: jbanda, mphiri, pzulu, gmwansa (password: teacher123)', true);
                         return;
                     }
+
                     if (data.password !== password) {
-                        showToast('❌ Invalid password', true);
+                        showToast('❌ Invalid password for ' + username, true);
                         return;
                     }
+
                     currentUser = { role: 'teacher', id: data.id, name: data.name };
                     showToast('✅ Logged in as teacher: ' + data.name);
                     loginBtn.style.display = 'none';
                     logoutBtn.style.display = 'inline-flex';
-                    // Unlock teacher content
                     teacherLocked.style.display = 'none';
                     teacherContent.style.display = 'block';
                     document.querySelector('.tab-btn[data-tab="teacher"]').click();
                     loadAdminStats();
+
                 } catch (err) {
                     showToast('❌ Error: ' + err.message, true);
                     console.error(err);
@@ -1683,7 +1589,6 @@
                 showToast('🔒 Logged out');
                 studentResults.style.display = 'none';
                 resultsEntry.style.display = 'none';
-                // Lock teacher and admin sections
                 teacherLocked.style.display = 'block';
                 teacherContent.style.display = 'none';
                 adminLocked.style.display = 'block';
@@ -1772,9 +1677,6 @@
             function displayStudentResults(student, results, term, year, testType) {
                 const classDisplay = getClassDisplay(student.class);
 
-                // Get logo HTML
-                const logoHTML = `<img src="image/logo-removebg-preview.png" alt="School Logo" style="width:50px;height:50px;object-fit:contain;border-radius:50%;border:2px solid var(--gold);">`;
-
                 studentInfo.innerHTML = `
                         <div class="grid-3">
                             <div><strong>Name:</strong> ${student.name}</div>
@@ -1801,7 +1703,6 @@
 
                 let html = `
                         <div class="result-card report-card-print" style="padding:12px 16px;">
-                            <!-- Header with Logo -->
                             <div class="result-header" style="display:flex;align-items:center;gap:12px;border-bottom:2px solid var(--gold);padding-bottom:8px;margin-bottom:10px;">
                                 <div style="flex-shrink:0;">
                                     <img src="image/logo-removebg-preview.png" alt="School Logo" style="width:50px;height:50px;object-fit:contain;border-radius:50%;border:2px solid var(--gold);">
@@ -1813,7 +1714,6 @@
                                 </div>
                             </div>
 
-                            <!-- Student Info -->
                             <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;background:var(--paper);padding:6px 10px;border-radius:6px;margin-bottom:8px;font-size:12px;">
                                 <div><strong>Student:</strong> ${student.name}</div>
                                 <div><strong>Number:</strong> ${student.student_number}</div>
@@ -1821,7 +1721,6 @@
                                 <div><strong>Term:</strong> ${term} · ${year}</div>
                             </div>
 
-                            <!-- Results Table -->
                             <div style="margin-bottom:8px;overflow:hidden;border:1px solid var(--border);border-radius:6px;">
                                 <table style="width:100%;border-collapse:collapse;font-size:11px;">
                                     <thead>
@@ -1854,7 +1753,6 @@
                                 </table>
                             </div>
 
-                            <!-- Summary -->
                             <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;background:var(--gold-tint);padding:6px 10px;border-radius:6px;margin-bottom:6px;">
                                 <div style="text-align:center;">
                                     <div style="font-size:9px;color:var(--ink-faint);text-transform:uppercase;font-weight:600;">Total Score</div>
@@ -1876,7 +1774,6 @@
                                 <div style="font-style:italic;color:var(--ink-soft);font-size:11px;margin-top:2px;">${student.comment}</div>
                             </div>` : ''}
 
-                            <!-- Footer -->
                             <div style="display:flex;justify-content:space-between;font-size:8px;color:var(--ink-faint);border-top:1px solid var(--border);padding-top:4px;margin-top:4px;">
                                 <div>Generated: ${new Date().toLocaleDateString()}</div>
                                 <div>Laura Girls Secondary School · Kasama District</div>
@@ -1907,17 +1804,12 @@
             }
 
             // ============================================================
-            // DOWNLOAD RESULTS (PDF via print) - A4 Landscape
+            // DOWNLOAD RESULTS (PDF via print)
             // ============================================================
             downloadResultsBtn.addEventListener('click', function() {
-                // Add a class to the results card for print optimization
                 const resultsCard = document.getElementById('resultsCard');
                 resultsCard.classList.add('report-card-print');
-
-                // Print the page
                 window.print();
-
-                // Remove the class after print
                 setTimeout(() => {
                     resultsCard.classList.remove('report-card-print');
                 }, 1000);
@@ -2533,10 +2425,17 @@
             // ============================================================
             // BOOT
             // ============================================================
-            // Initialize Supabase
             initSupabase();
 
             console.log('✅ Laura Girls Secondary School ready');
+
+            // Show teacher login hint
+            console.log('📝 Default Teacher Accounts:');
+            console.log('   jbanda / teacher123  - Mr. John Banda');
+            console.log('   mphiri / teacher123  - Mrs. Mary Phiri');
+            console.log('   pzulu / teacher123   - Mr. Peter Zulu');
+            console.log('   gmwansa / teacher123 - Ms. Grace Mwansa');
+            console.log('   admin / admin123     - Admin User');
 
         })();
     </script>
