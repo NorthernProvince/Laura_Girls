@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>Laura Girls Secondary School</title>
-    <meta name="description" content="Official school website for Laura Girls Secondary School - Kasama District">
+    <meta name="description" content="Official school website for Laura Girls Secondary School - Kasama District, Zambia">
+    <meta name="theme-color" content="#1a237e">
+    <meta property="og:title" content="Laura Girls Secondary School">
+    <meta property="og:description" content="Official school website for Laura Girls Secondary School - Kasama District">
+    <meta property="og:type" content="website">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,450;9..144,560;9..144,650&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -23,9 +27,6 @@
             --ink-faint: #8A968C;
             --border: #DCE3DB;
             --border-strong: #C3CDC1;
-            --green: #0B3D2E;
-            --green-dark: #082A20;
-            --green-tint: #E5EEE8;
             --gold: #B8862E;
             --gold-dark: #8C6A22;
             --gold-tint: #F6EDD9;
@@ -402,54 +403,43 @@
             background: linear-gradient(135deg, #1a237e, #283593);
             color: #fff;
         }
-
         .btn-primary:hover {
             background: linear-gradient(135deg, #0d1b5e, #1a237e);
         }
-
         .btn-success {
             background: linear-gradient(135deg, #0f7b3a, #0a5e2b);
             color: #fff;
         }
-
         .btn-success:hover {
             background: linear-gradient(135deg, #0a5e2b, #074a22);
         }
-
         .btn-danger {
             background: linear-gradient(135deg, #8C2F2F, #6E2222);
             color: #fff;
         }
-
         .btn-danger:hover {
             background: linear-gradient(135deg, #6E2222, #5a1c1c);
         }
-
         .btn-warning {
             background: linear-gradient(135deg, #d4a017, #b8860b);
             color: #fff;
         }
-
         .btn-warning:hover {
             background: linear-gradient(135deg, #b8860b, #9a7209);
         }
-
         .btn-outline {
             background: transparent;
             border: 1.5px solid #1a237e;
             color: #1a237e;
             box-shadow: none;
         }
-
         .btn-outline:hover {
             background: var(--marian-blue-tint);
         }
-
         .btn-sm {
             padding: 8px 16px;
             font-size: 12.5px;
         }
-
         .btn-block {
             width: 100%;
         }
@@ -1178,10 +1168,10 @@
             "use strict";
 
             // ============================================================
-            // CONFIG - CORRECT SUPABASE URL FROM YOUR SCREENSHOT
+            // CONFIG - CORRECT SUPABASE CREDENTIALS
             // ============================================================
             const SUPABASE_URL = 'https://yhmjidkrwtxckecvjixo.supabase.co';
-            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlobWppZGtyd3R4Y2tlY3ZqaXhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQyNzg2OTUsImV4cCI6MjA1OTg1NDY5NX0.4c2aXXkWlUER9h1jr7yQXwGO5ck88UQ-Zd_k0MbKHAI';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlobWppZGtyd3R4Y2tlY3ZqaXhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc0MzYzMDksImV4cCI6MjEwMzAxMjMwOX0.db6y1ac6HIMt4v_AW9M-IvypHXSz1aoMA-X3bAvpKnI';
 
             // Class definitions
             const CLASS_DEFINITIONS = [
@@ -1346,16 +1336,16 @@
                 let html = '';
                 CLASS_DEFINITIONS.forEach((c, index) => {
                     html += `
-                        <tr>
-                            <td>${index + 1}</td>
-                            <td><strong>${c.display}</strong></td>
-                            <td>${c.grade}</td>
-                            <td>${c.stream}</td>
-                            <td>0</td>
-                            <td>Not Assigned</td>
-                            <td><span class="badge badge-info">Offline</span></td>
-                        </tr>
-                    `;
+                            <tr>
+                                <td>${index + 1}</td>
+                                <td><strong>${c.display}</strong></td>
+                                <td>${c.grade}</td>
+                                <td>${c.stream}</td>
+                                <td>0</td>
+                                <td>Not Assigned</td>
+                                <td><span class="badge badge-info">Offline</span></td>
+                            </tr>
+                        `;
                 });
                 classesTableBody.innerHTML = html;
             }
@@ -1390,12 +1380,12 @@
                 if (!supabaseClient || !isConnected) {
                     const dropdown = newClassTeacher;
                     dropdown.innerHTML = `
-                        <option value="">Select Teacher</option>
-                        <option value="1">Mr. John Banda</option>
-                        <option value="2">Mrs. Mary Phiri</option>
-                        <option value="3">Mr. Peter Zulu</option>
-                        <option value="4">Ms. Grace Mwansa</option>
-                    `;
+                            <option value="">Select Teacher</option>
+                            <option value="1">Mr. John Banda</option>
+                            <option value="2">Mrs. Mary Phiri</option>
+                            <option value="3">Mr. Peter Zulu</option>
+                            <option value="4">Ms. Grace Mwansa</option>
+                        `;
                     return;
                 }
 
@@ -1623,55 +1613,55 @@
             function displayStudentResults(student, results, term, year, testType) {
                 const classDisplay = getClassDisplay(student.class);
                 studentInfo.innerHTML = `
-                    <div class="grid-3">
-                        <div><strong>Name:</strong> ${student.name}</div>
-                        <div><strong>Student Number:</strong> ${student.student_number}</div>
-                        <div><strong>Class:</strong> ${classDisplay}</div>
-                        <div><strong>Term:</strong> ${term}</div>
-                        <div><strong>Year:</strong> ${year}</div>
-                        <div><strong>Test Type:</strong> ${testType === 'mid_term' ? 'Mid Term' : 'End of Term'}</div>
-                    </div>
-                `;
+                        <div class="grid-3">
+                            <div><strong>Name:</strong> ${student.name}</div>
+                            <div><strong>Student Number:</strong> ${student.student_number}</div>
+                            <div><strong>Class:</strong> ${classDisplay}</div>
+                            <div><strong>Term:</strong> ${term}</div>
+                            <div><strong>Year:</strong> ${year}</div>
+                            <div><strong>Test Type:</strong> ${testType === 'mid_term' ? 'Mid Term' : 'End of Term'}</div>
+                        </div>
+                    `;
 
                 if (!results || results.length === 0) {
                     resultsContent.innerHTML = `
-                        <div style="text-align:center;padding:30px;color:var(--ink-faint);">
-                            <i class="fas fa-folder-open" style="font-size:30px;display:block;margin-bottom:12px;"></i>
-                            <p>No results available for this term.</p>
-                        </div>
-                    `;
+                            <div style="text-align:center;padding:30px;color:var(--ink-faint);">
+                                <i class="fas fa-folder-open" style="font-size:30px;display:block;margin-bottom:12px;"></i>
+                                <p>No results available for this term.</p>
+                            </div>
+                        `;
                     return;
                 }
 
                 let html = `
-                    <div class="result-card">
-                        <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
-                            <div class="total-score">Total: ${results.reduce((s,r) => s + (parseInt(r.score) || 0), 0)}%</div>
-                            <div class="average-score">Average: ${(results.reduce((s,r) => s + (parseInt(r.score) || 0), 0) / results.length).toFixed(1)}%</div>
-                            <div class="position">Position: ${student.position || 'N/A'}</div>
-                        </div>
-                `;
+                        <div class="result-card">
+                            <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
+                                <div class="total-score">Total: ${results.reduce((s,r) => s + (parseInt(r.score) || 0), 0)}%</div>
+                                <div class="average-score">Average: ${(results.reduce((s,r) => s + (parseInt(r.score) || 0), 0) / results.length).toFixed(1)}%</div>
+                                <div class="position">Position: ${student.position || 'N/A'}</div>
+                            </div>
+                    `;
 
                 results.forEach(r => {
                     const score = parseInt(r.score) || 0;
                     const grade = getGrade(score);
                     const gradeClass = getGradeClass(score);
                     html += `
-                        <div class="subject-result">
-                            <span class="subject-name">${r.subject}</span>
-                            <span class="subject-score">${score}%</span>
-                            <span class="subject-grade ${gradeClass}">${grade}</span>
-                        </div>
-                    `;
+                            <div class="subject-result">
+                                <span class="subject-name">${r.subject}</span>
+                                <span class="subject-score">${score}%</span>
+                                <span class="subject-grade ${gradeClass}">${grade}</span>
+                            </div>
+                        `;
                 });
 
                 if (student.comment) {
                     html += `
-                        <div class="comment">
-                            <i class="fas fa-quote-left" style="color:var(--gold-dark);margin-right:6px;"></i>
-                            ${student.comment}
-                        </div>
-                    `;
+                            <div class="comment">
+                                <i class="fas fa-quote-left" style="color:var(--gold-dark);margin-right:6px;"></i>
+                                ${student.comment}
+                            </div>
+                        `;
                 }
 
                 html += `</div>`;
@@ -1784,21 +1774,21 @@
                     const score = existing ? existing.score : '';
                     const comment = existing ? existing.comment || '' : '';
                     html += `
-                        <tr data-student-id="${student.id}">
-                            <td>${index + 1}</td>
-                            <td><strong>${student.name}</strong></td>
-                            <td>${student.student_number}</td>
-                            <td>
-                                <input type="number" min="0" max="100" class="score-input" value="${score}" 
-                                    style="width:70px;padding:6px 8px;border-radius:8px;border:1.5px solid var(--border);text-align:center;">
-                            </td>
-                            <td class="grade-display">${score ? getGrade(parseInt(score)) : '-'}</td>
-                            <td>
-                                <input type="text" class="comment-input" value="${comment}" 
-                                    placeholder="Comment..." style="width:100%;padding:6px 8px;border-radius:8px;border:1.5px solid var(--border);font-size:12px;">
-                            </td>
-                        </tr>
-                    `;
+                            <tr data-student-id="${student.id}">
+                                <td>${index + 1}</td>
+                                <td><strong>${student.name}</strong></td>
+                                <td>${student.student_number}</td>
+                                <td>
+                                    <input type="number" min="0" max="100" class="score-input" value="${score}" 
+                                        style="width:70px;padding:6px 8px;border-radius:8px;border:1.5px solid var(--border);text-align:center;">
+                                </td>
+                                <td class="grade-display">${score ? getGrade(parseInt(score)) : '-'}</td>
+                                <td>
+                                    <input type="text" class="comment-input" value="${comment}" 
+                                        placeholder="Comment..." style="width:100%;padding:6px 8px;border-radius:8px;border:1.5px solid var(--border);font-size:12px;">
+                                </td>
+                            </tr>
+                        `;
                 });
 
                 resultsTableBody.innerHTML = html;
@@ -1943,13 +1933,13 @@
                             const avg = total / studentResults.length;
                             studentScores[s.id] = avg;
                             if (avg >= 80) studentComments[s.id] =
-                            'Excellent performance! Keep up the great work.';
+                                'Excellent performance! Keep up the great work.';
                             else if (avg >= 70) studentComments[s.id] =
-                            'Good performance. Continue working hard.';
+                                'Good performance. Continue working hard.';
                             else if (avg >= 60) studentComments[s.id] =
-                            'Satisfactory performance. Room for improvement.';
+                                'Satisfactory performance. Room for improvement.';
                             else if (avg >= 50) studentComments[s.id] =
-                            'Below average. Need to work harder.';
+                                'Below average. Need to work harder.';
                             else studentComments[s.id] = 'Unsatisfactory performance. Seek help from teachers.';
                         } else {
                             studentScores[s.id] = 0;
@@ -2158,23 +2148,23 @@
 
                     const displayName = c.display_name || c.grade + ' ' + c.stream;
                     html += `
-                        <tr data-class-id="${c.id}">
-                            <td>${index + 1}</td>
-                            <td><strong>${displayName}</strong></td>
-                            <td>${c.grade}</td>
-                            <td>${c.stream}</td>
-                            <td class="student-count">...</td>
-                            <td>${c.teacher_name || 'Not Assigned'}</td>
-                            <td>
-                                <button class="btn btn-sm btn-outline" onclick="window.editClass('${c.id}')">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="btn btn-sm btn-danger" onclick="window.deleteClass('${c.id}')">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    `;
+                            <tr data-class-id="${c.id}">
+                                <td>${index + 1}</td>
+                                <td><strong>${displayName}</strong></td>
+                                <td>${c.grade}</td>
+                                <td>${c.stream}</td>
+                                <td class="student-count">...</td>
+                                <td>${c.teacher_name || 'Not Assigned'}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline" onclick="window.editClass('${c.id}')">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" onclick="window.deleteClass('${c.id}')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
                 });
                 classesTableBody.innerHTML = html;
             }
