@@ -115,6 +115,19 @@
             border-radius: 50%;
         }
 
+        .topbar .coat-of-arms {
+            width: 45px;
+            height: 45px;
+            flex-shrink: 0;
+        }
+
+        .topbar .coat-of-arms img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.2));
+        }
+
         .topbar .brand {
             flex: 1;
             min-width: 0;
@@ -148,9 +161,36 @@
             letter-spacing: 0.5px;
         }
 
-        /* ============================================================
-           CONNECTION STATUS - MOVED TO BOTTOM
-           ============================================================ */
+        .topbar-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .topbar-actions .btn-sm {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            color: #EAF1EC;
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.15s ease;
+        }
+
+        .topbar-actions .btn-sm:hover {
+            background: rgba(255, 255, 255, 0.16);
+        }
+
+        .topbar-actions .btn-sm i {
+            font-size: 12px;
+        }
+
         .connection-status {
             position: fixed;
             bottom: 20px;
@@ -201,55 +241,6 @@
             }
         }
 
-        /* ============================================================
-           TOP BAR ACTIONS - CLEANER
-           ============================================================ */
-        .topbar-actions {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-shrink: 0;
-        }
-
-        .topbar-actions .btn-sm {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            color: #EAF1EC;
-            padding: 6px 14px;
-            border-radius: 40px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: background 0.15s ease;
-        }
-
-        .topbar-actions .btn-sm:hover {
-            background: rgba(255, 255, 255, 0.16);
-        }
-
-        .topbar-actions .btn-sm i {
-            font-size: 12px;
-        }
-
-        .topbar-actions .user-badge {
-            background: rgba(255, 255, 255, 0.12);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            color: #EAF1EC;
-            padding: 6px 14px;
-            border-radius: 40px;
-            font-size: 12px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        /* ============================================================
-           SHELL & SECTIONS
-           ============================================================ */
         .shell {
             max-width: 1100px;
             margin: 0 auto;
@@ -636,12 +627,230 @@
             color: #E8898F;
         }
 
+        /* Login Modal */
+        .login-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-modal.active {
+            display: flex;
+        }
+
+        .login-modal .modal-content {
+            background: #fff;
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            max-width: 420px;
+            width: 100%;
+            box-shadow: var(--shadow-lg);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .login-modal .modal-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .login-modal .modal-header h2 {
+            font-family: var(--font-display);
+            color: var(--marian-blue);
+            font-size: 20px;
+        }
+
+        .login-modal .modal-header p {
+            color: var(--ink-faint);
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .login-modal .close-btn {
+            float: right;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--ink-faint);
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .login-modal .close-btn:hover {
+            color: var(--oxblood);
+        }
+
+        .login-modal .login-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .login-modal .login-options .btn {
+            justify-content: center;
+            padding: 12px;
+            font-size: 14px;
+        }
+
+        .login-modal .login-options .btn i {
+            font-size: 16px;
+        }
+
+        .login-modal .btn-student {
+            background: linear-gradient(135deg, #1a237e, #283593);
+        }
+        .login-modal .btn-teacher {
+            background: linear-gradient(135deg, #0f7b3a, #0a5e2b);
+        }
+        .login-modal .btn-admin {
+            background: linear-gradient(135deg, #8C2F2F, #6E2222);
+        }
+
+        .login-modal .login-form {
+            display: none;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .login-modal .login-form.active {
+            display: block;
+        }
+
+        .login-modal .login-form .field {
+            margin-bottom: 12px;
+        }
+
+        .login-modal .login-form .field label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--ink-soft);
+        }
+
+        .login-modal .login-form .field input {
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1.5px solid var(--border);
+            width: 100%;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .login-modal .login-form .field input:focus {
+            border-color: var(--marian-blue);
+        }
+
+        .login-modal .login-form .btn-submit {
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        /* Excel Import */
+        .import-area {
+            border: 2px dashed var(--border-strong);
+            border-radius: 12px;
+            padding: 30px 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: var(--paper);
+            margin-top: 12px;
+        }
+
+        .import-area:hover {
+            border-color: var(--marian-blue);
+            background: var(--marian-blue-tint);
+        }
+
+        .import-area.dragover {
+            border-color: var(--gold);
+            background: var(--gold-tint);
+        }
+
+        .import-area i {
+            font-size: 40px;
+            color: var(--marian-blue);
+            margin-bottom: 10px;
+        }
+
+        .import-area h3 {
+            font-family: var(--font-display);
+            color: var(--ink);
+            font-size: 16px;
+        }
+
+        .import-area p {
+            color: var(--ink-faint);
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .import-area .file-input {
+            display: none;
+        }
+
+        .import-preview {
+            margin-top: 16px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .import-preview table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .import-preview table th {
+            background: var(--marian-blue);
+            color: #fff;
+            padding: 8px 10px;
+            text-align: left;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        .import-preview table td {
+            padding: 6px 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .import-preview table tr:nth-child(even) {
+            background: var(--paper);
+        }
+
+        .import-preview .badge {
+            font-size: 10px;
+        }
+
         @media print {
             .topbar,
             .tab-nav,
             .no-print,
             .mary-bg,
-            .connection-status {
+            .connection-status,
+            .login-modal {
                 display: none !important;
             }
 
@@ -801,6 +1010,11 @@
                 padding: 4px 10px;
             }
 
+            .topbar .coat-of-arms {
+                width: 35px;
+                height: 35px;
+            }
+
             .card {
                 padding: 14px;
             }
@@ -837,6 +1051,10 @@
                 font-size: 12px;
                 padding: 10px 16px;
             }
+
+            .login-modal .modal-content {
+                padding: 20px;
+            }
         }
     </style>
 </head>
@@ -845,7 +1063,7 @@
     <div class="mary-bg"></div>
 
     <!-- ============================================================
-         CONNECTION STATUS - MOVED TO BOTTOM RIGHT
+         CONNECTION STATUS - BOTTOM RIGHT
          ============================================================ -->
     <div class="connection-status" id="connectionStatus">
         <span class="dot connecting" id="statusDot"></span>
@@ -853,9 +1071,12 @@
     </div>
 
     <!-- ============================================================
-         TOP BAR - CLEAN WITH ONLY LOGIN/LOGOUT
+         TOP BAR - WITH COAT OF ARMS
          ============================================================ -->
     <div class="topbar">
+        <span class="coat-of-arms">
+            <img src="image/coat_arms.png" alt="Coat of Arms" onerror="this.style.display='none'">
+        </span>
         <span class="seal" id="topbarSeal">
             <img src="image/logo-removebg-preview.png" alt="School Logo" onerror="this.style.display='none'">
         </span>
@@ -865,8 +1086,75 @@
             <div class="motto">Education is the matter of the heart</div>
         </div>
         <div class="topbar-actions">
-            <button class="btn-sm" id="loginBtn"><i class="fas fa-sign-in-alt"></i> Login</button>
+            <button class="btn-sm" id="loginBtn"><i class="fas fa-user-circle"></i> Login</button>
             <button class="btn-sm" id="logoutBtn" style="display:none;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         LOGIN MODAL
+         ============================================================ -->
+    <div class="login-modal" id="loginModal">
+        <div class="modal-content">
+            <button class="close-btn" id="closeLoginModal">&times;</button>
+            <div class="modal-header">
+                <h2><i class="fas fa-user-circle" style="color:var(--gold);"></i> Sign In</h2>
+                <p>Select your role to continue</p>
+            </div>
+            <div class="login-options">
+                <button class="btn btn-student" onclick="showLoginForm('student')">
+                    <i class="fas fa-user-graduate"></i> Student
+                </button>
+                <button class="btn btn-teacher" onclick="showLoginForm('teacher')">
+                    <i class="fas fa-chalkboard-teacher"></i> Teacher
+                </button>
+                <button class="btn btn-admin" onclick="showLoginForm('admin')">
+                    <i class="fas fa-user-shield"></i> Admin
+                </button>
+            </div>
+
+            <!-- Student Login Form -->
+            <div class="login-form" id="studentLoginForm">
+                <div class="field">
+                    <label><i class="fas fa-id-card"></i> Student Number</label>
+                    <input type="text" id="studentLoginNumber" placeholder="e.g. 2024-001">
+                </div>
+                <button class="btn btn-primary btn-submit" onclick="studentLogin()">
+                    <i class="fas fa-sign-in-alt"></i> View Results
+                </button>
+            </div>
+
+            <!-- Teacher Login Form -->
+            <div class="login-form" id="teacherLoginForm">
+                <div class="field">
+                    <label><i class="fas fa-user"></i> Username</label>
+                    <input type="text" id="teacherLoginUsername" placeholder="e.g. jbanda">
+                </div>
+                <div class="field">
+                    <label><i class="fas fa-lock"></i> Password</label>
+                    <input type="password" id="teacherLoginPassword" placeholder="Enter password">
+                </div>
+                <button class="btn btn-success btn-submit" onclick="teacherLogin()">
+                    <i class="fas fa-sign-in-alt"></i> Sign In as Teacher
+                </button>
+                <p style="text-align:center;font-size:11px;color:var(--ink-faint);margin-top:8px;">
+                    Default: jbanda / teacher123
+                </p>
+            </div>
+
+            <!-- Admin Login Form -->
+            <div class="login-form" id="adminLoginForm">
+                <div class="field">
+                    <label><i class="fas fa-lock"></i> Admin Password</label>
+                    <input type="password" id="adminLoginPassword" placeholder="Enter admin password">
+                </div>
+                <button class="btn btn-danger btn-submit" onclick="adminLogin()">
+                    <i class="fas fa-sign-in-alt"></i> Sign In as Admin
+                </button>
+                <p style="text-align:center;font-size:11px;color:var(--ink-faint);margin-top:8px;">
+                    Default: admin123
+                </p>
+            </div>
         </div>
     </div>
 
@@ -950,7 +1238,7 @@
                 <div style="text-align:center;padding:40px 20px;">
                     <i class="fas fa-chalkboard-teacher" style="font-size:48px;color:var(--gold);margin-bottom:16px;display:block;"></i>
                     <p style="color:var(--ink-soft);margin-bottom:16px;">This section is restricted to registered teachers only.</p>
-                    <button class="btn btn-primary" onclick="document.getElementById('loginBtn').click();">
+                    <button class="btn btn-primary" onclick="openLoginModal('teacher')">
                         <i class="fas fa-sign-in-alt"></i> Login as Teacher
                     </button>
                 </div>
@@ -1022,6 +1310,24 @@
                     </div>
                 </div>
 
+                <!-- Excel Import Section -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-file-excel"></i> Import Results from Excel</h2>
+                        <span class="subtitle">Upload an Excel file to bulk import results</span>
+                    </div>
+                    <div class="import-area" id="teacherImportArea">
+                        <i class="fas fa-file-excel"></i>
+                        <h3>Click or Drag & Drop Excel File</h3>
+                        <p>Supported formats: .xlsx, .xls</p>
+                        <input type="file" class="file-input" id="teacherFileInput" accept=".xlsx,.xls">
+                    </div>
+                    <div id="teacherImportPreview" class="import-preview" style="display:none;"></div>
+                    <button class="btn btn-success btn-block" id="teacherImportBtn" style="display:none;margin-top:12px;">
+                        <i class="fas fa-upload"></i> Import Results
+                    </button>
+                </div>
+
                 <div id="resultsEntry" style="display:none;">
                     <div class="card">
                         <div class="card-header">
@@ -1060,7 +1366,7 @@
                 <div style="text-align:center;padding:40px 20px;">
                     <i class="fas fa-user-shield" style="font-size:48px;color:var(--gold);margin-bottom:16px;display:block;"></i>
                     <p style="color:var(--ink-soft);margin-bottom:16px;">This section is restricted to administrators only.</p>
-                    <button class="btn btn-primary" onclick="document.getElementById('loginBtn').click();">
+                    <button class="btn btn-primary" onclick="openLoginModal('admin')">
                         <i class="fas fa-sign-in-alt"></i> Login as Admin
                     </button>
                 </div>
@@ -1093,6 +1399,84 @@
                             <div class="label">Total Results</div>
                         </div>
                     </div>
+                </div>
+
+                <!-- Admin Excel Import -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-file-excel"></i> Bulk Import Results (Admin)</h2>
+                        <span class="subtitle">Upload an Excel file to bulk import results for any class</span>
+                    </div>
+                    <div class="grid-3">
+                        <div class="field">
+                            <label><i class="fas fa-users"></i> Class</label>
+                            <select id="adminImportClass">
+                                <option value="">Select Class</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label><i class="fas fa-book"></i> Subject</label>
+                            <select id="adminImportSubject">
+                                <option value="">Select Subject</option>
+                                <option value="English">English</option>
+                                <option value="Mathematics">Mathematics</option>
+                                <option value="Biology">Biology</option>
+                                <option value="Chemistry">Chemistry</option>
+                                <option value="Physics">Physics</option>
+                                <option value="History">History</option>
+                                <option value="Geography">Geography</option>
+                                <option value="Civic Education">Civic Education</option>
+                                <option value="Zambian Languages">Zambian Languages</option>
+                                <option value="Religious Education">Religious Education</option>
+                                <option value="Commerce">Commerce</option>
+                                <option value="Principles of Accounts">Principles of Accounts</option>
+                                <option value="Agricultural Science">Agricultural Science</option>
+                                <option value="Computer Studies">Computer Studies</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label><i class="fas fa-calendar-alt"></i> Term</label>
+                            <select id="adminImportTerm">
+                                <option value="">Select Term</option>
+                                <option value="1">Term 1</option>
+                                <option value="2">Term 2</option>
+                                <option value="3">Term 3</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="grid-3">
+                        <div class="field">
+                            <label><i class="fas fa-calendar-year"></i> Year</label>
+                            <select id="adminImportYear">
+                                <option value="">Select Year</option>
+                                <option value="2024">2024</option>
+                                <option value="2025">2025</option>
+                                <option value="2026">2026</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label><i class="fas fa-tag"></i> Test Type</label>
+                            <select id="adminImportTestType">
+                                <option value="">Select Test Type</option>
+                                <option value="mid_term">Mid Term</option>
+                                <option value="end_term">End of Term</option>
+                            </select>
+                        </div>
+                        <div class="field" style="justify-content:flex-end;">
+                            <button class="btn btn-primary" id="adminLoadStudentsBtn"><i class="fas fa-users"></i> Load Students</button>
+                        </div>
+                    </div>
+
+                    <div class="import-area" id="adminImportArea">
+                        <i class="fas fa-file-excel"></i>
+                        <h3>Click or Drag & Drop Excel File</h3>
+                        <p>Supported formats: .xlsx, .xls</p>
+                        <input type="file" class="file-input" id="adminFileInput" accept=".xlsx,.xls">
+                    </div>
+                    <div id="adminImportPreview" class="import-preview" style="display:none;"></div>
+                    <button class="btn btn-success btn-block" id="adminImportBtn" style="display:none;margin-top:12px;">
+                        <i class="fas fa-upload"></i> Import Results
+                    </button>
                 </div>
 
                 <div class="grid-2">
@@ -1210,7 +1594,7 @@
             "use strict";
 
             // ============================================================
-            // CONFIG - CORRECT SUPABASE CREDENTIALS
+            // CONFIG
             // ============================================================
             const SUPABASE_URL = 'https://yhmjidkrwtxckecvjixo.supabase.co';
             const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlobWppZGtyd3R4Y2tlY3ZqaXhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc0MzYzMDksImV4cCI6MjEwMzAxMjMwOX0.db6y1ac6HIMt4v_AW9M-IvypHXSz1aoMA-X3bAvpKnI';
@@ -1263,6 +1647,8 @@
             const toastMsg = document.getElementById('toastMsg');
             const statusDot = document.getElementById('statusDot');
             const statusText = document.getElementById('statusText');
+            const loginModal = document.getElementById('loginModal');
+            const closeLoginModal = document.getElementById('closeLoginModal');
 
             // Student
             const studentNumber = document.getElementById('studentNumber');
@@ -1288,6 +1674,12 @@
             const teacherLocked = document.getElementById('teacherLocked');
             const teacherContent = document.getElementById('teacherContent');
 
+            // Teacher Import
+            const teacherImportArea = document.getElementById('teacherImportArea');
+            const teacherFileInput = document.getElementById('teacherFileInput');
+            const teacherImportPreview = document.getElementById('teacherImportPreview');
+            const teacherImportBtn = document.getElementById('teacherImportBtn');
+
             // Admin
             const adminStudentNumber = document.getElementById('adminStudentNumber');
             const adminStudentName = document.getElementById('adminStudentName');
@@ -1304,12 +1696,27 @@
             const adminLocked = document.getElementById('adminLocked');
             const adminContent = document.getElementById('adminContent');
 
+            // Admin Import
+            const adminImportArea = document.getElementById('adminImportArea');
+            const adminFileInput = document.getElementById('adminFileInput');
+            const adminImportPreview = document.getElementById('adminImportPreview');
+            const adminImportBtn = document.getElementById('adminImportBtn');
+            const adminImportClass = document.getElementById('adminImportClass');
+            const adminImportSubject = document.getElementById('adminImportSubject');
+            const adminImportTerm = document.getElementById('adminImportTerm');
+            const adminImportYear = document.getElementById('adminImportYear');
+            const adminImportTestType = document.getElementById('adminImportTestType');
+            const adminLoadStudentsBtn = document.getElementById('adminLoadStudentsBtn');
+
             // Classes
             const classesTableBody = document.getElementById('classesTableBody');
             const newClassGrade = document.getElementById('newClassGrade');
             const newClassStream = document.getElementById('newClassStream');
             const newClassTeacher = document.getElementById('newClassTeacher');
             const addClassBtn = document.getElementById('addClassBtn');
+
+            // Login Modal
+            let loginRole = '';
 
             // ============================================================
             // CONNECTION STATUS
@@ -1318,6 +1725,177 @@
                 statusDot.className = 'dot ' + status;
                 statusText.textContent = message;
             }
+
+            // ============================================================
+            // LOGIN MODAL
+            // ============================================================
+            function openLoginModal(role) {
+                loginModal.classList.add('active');
+                if (role) {
+                    showLoginForm(role);
+                }
+            }
+
+            window.openLoginModal = openLoginModal;
+
+            function showLoginForm(role) {
+                loginRole = role;
+                document.querySelectorAll('.login-form').forEach(f => f.classList.remove('active'));
+                document.getElementById(role + 'LoginForm').classList.add('active');
+                // Clear fields
+                document.getElementById('studentLoginNumber').value = '';
+                document.getElementById('teacherLoginUsername').value = '';
+                document.getElementById('teacherLoginPassword').value = '';
+                document.getElementById('adminLoginPassword').value = '';
+            }
+
+            window.showLoginForm = showLoginForm;
+
+            closeLoginModal.addEventListener('click', function() {
+                loginModal.classList.remove('active');
+            });
+
+            loginModal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    loginModal.classList.remove('active');
+                }
+            });
+
+            // ============================================================
+            // LOGIN FUNCTIONS
+            // ============================================================
+            function studentLogin() {
+                const studentId = document.getElementById('studentLoginNumber').value.trim();
+                if (!studentId) {
+                    showToast('⚠️ Please enter your student number', true);
+                    return;
+                }
+                currentUser = { role: 'student', id: studentId };
+                showToast('✅ Logged in as student: ' + studentId);
+                loginBtn.style.display = 'none';
+                logoutBtn.style.display = 'inline-flex';
+                loginModal.classList.remove('active');
+                document.querySelector('.tab-btn[data-tab="student"]').click();
+            }
+            window.studentLogin = studentLogin;
+
+            function teacherLogin() {
+                const username = document.getElementById('teacherLoginUsername').value.trim();
+                const password = document.getElementById('teacherLoginPassword').value.trim();
+                if (!username) { showToast('⚠️ Please enter your username', true); return; }
+                if (!password) { showToast('⚠️ Please enter your password', true); return; }
+                authenticateTeacher(username, password);
+            }
+            window.teacherLogin = teacherLogin;
+
+            function adminLogin() {
+                const password = document.getElementById('adminLoginPassword').value.trim();
+                if (!password) { showToast('⚠️ Please enter admin password', true); return; }
+                if (password === 'admin123') {
+                    currentUser = { role: 'admin' };
+                    showToast('✅ Logged in as Admin');
+                    loginBtn.style.display = 'none';
+                    logoutBtn.style.display = 'inline-flex';
+                    loginModal.classList.remove('active');
+                    document.querySelector('.tab-btn[data-tab="admin"]').click();
+                    adminLocked.style.display = 'none';
+                    adminContent.style.display = 'block';
+                    loadAdminStats();
+                    loadClasses();
+                } else {
+                    showToast('❌ Invalid admin password. Default: admin123', true);
+                }
+            }
+            window.adminLogin = adminLogin;
+
+            // ============================================================
+            // AUTHENTICATE TEACHER
+            // ============================================================
+            async function authenticateTeacher(username, password) {
+                try {
+                    const validTeachers = {
+                        'jbanda': { id: 1, name: 'Mr. John Banda', password: 'teacher123' },
+                        'mphiri': { id: 2, name: 'Mrs. Mary Phiri', password: 'teacher123' },
+                        'pzulu': { id: 3, name: 'Mr. Peter Zulu', password: 'teacher123' },
+                        'gmwansa': { id: 4, name: 'Ms. Grace Mwansa', password: 'teacher123' }
+                    };
+
+                    if (validTeachers[username] && validTeachers[username].password === password) {
+                        currentUser = {
+                            role: 'teacher',
+                            id: validTeachers[username].id,
+                            name: validTeachers[username].name
+                        };
+                        showToast('✅ Logged in as teacher: ' + validTeachers[username].name);
+                        loginBtn.style.display = 'none';
+                        logoutBtn.style.display = 'inline-flex';
+                        loginModal.classList.remove('active');
+                        teacherLocked.style.display = 'none';
+                        teacherContent.style.display = 'block';
+                        document.querySelector('.tab-btn[data-tab="teacher"]').click();
+                        return;
+                    }
+
+                    if (!supabaseClient || !isConnected) {
+                        showToast('❌ Invalid credentials. Default: jbanda / teacher123', true);
+                        return;
+                    }
+
+                    const { data, error } = await supabaseClient
+                        .from('teachers')
+                        .select('*')
+                        .eq('username', username)
+                        .maybeSingle();
+
+                    if (error) throw error;
+
+                    if (!data) {
+                        showToast('❌ Teacher not found. Default: jbanda, mphiri, pzulu, gmwansa (password: teacher123)',
+                        true);
+                        return;
+                    }
+
+                    if (data.password !== password) {
+                        showToast('❌ Invalid password for ' + username, true);
+                        return;
+                    }
+
+                    currentUser = { role: 'teacher', id: data.id, name: data.name };
+                    showToast('✅ Logged in as teacher: ' + data.name);
+                    loginBtn.style.display = 'none';
+                    logoutBtn.style.display = 'inline-flex';
+                    loginModal.classList.remove('active');
+                    teacherLocked.style.display = 'none';
+                    teacherContent.style.display = 'block';
+                    document.querySelector('.tab-btn[data-tab="teacher"]').click();
+                    loadAdminStats();
+
+                } catch (err) {
+                    showToast('❌ Error: ' + err.message, true);
+                    console.error(err);
+                }
+            }
+
+            // ============================================================
+            // LOGIN BUTTON - OPENS MODAL
+            // ============================================================
+            loginBtn.addEventListener('click', function() {
+                openLoginModal();
+            });
+
+            logoutBtn.addEventListener('click', function() {
+                currentUser = null;
+                loginBtn.style.display = 'inline-flex';
+                logoutBtn.style.display = 'none';
+                showToast('🔒 Logged out');
+                studentResults.style.display = 'none';
+                resultsEntry.style.display = 'none';
+                teacherLocked.style.display = 'block';
+                teacherContent.style.display = 'none';
+                adminLocked.style.display = 'block';
+                adminContent.style.display = 'none';
+                document.querySelector('.tab-btn[data-tab="student"]').click();
+            });
 
             // ============================================================
             // INIT SUPABASE
@@ -1367,10 +1945,12 @@
                 populateTeachersDropdown();
                 loadClasses();
                 populateClassDropdowns();
+                populateImportClassDropdowns();
             }
 
             function loadFallbackData() {
                 populateClassDropdowns();
+                populateImportClassDropdowns();
                 loadFallbackClasses();
                 loadFallbackStats();
             }
@@ -1401,7 +1981,7 @@
             }
 
             // ============================================================
-            // POPULATE CLASS DROPDOWNS
+            // POPULATE DROPDOWNS
             // ============================================================
             function populateClassDropdowns() {
                 const dropdowns = [teacherClass, adminStudentClass];
@@ -1416,9 +1996,17 @@
                 });
             }
 
-            // ============================================================
-            // POPULATE TEACHERS DROPDOWN
-            // ============================================================
+            function populateImportClassDropdowns() {
+                const dropdown = adminImportClass;
+                dropdown.innerHTML = '<option value="">Select Class</option>';
+                CLASS_DEFINITIONS.forEach(c => {
+                    const option = document.createElement('option');
+                    option.value = c.id;
+                    option.textContent = c.display;
+                    dropdown.appendChild(option);
+                });
+            }
+
             async function populateTeachersDropdown() {
                 if (!supabaseClient || !isConnected) {
                     const dropdown = newClassTeacher;
@@ -1469,7 +2057,7 @@
             }
 
             // ============================================================
-            // TAB SWITCHING WITH SECURITY
+            // TAB SWITCHING
             // ============================================================
             tabBtns.forEach(btn => {
                 btn.addEventListener('click', function() {
@@ -1521,133 +2109,6 @@
                         loadClasses();
                     }
                 });
-            });
-
-            // ============================================================
-            // LOGIN / LOGOUT - CLEAN TEACHER LOGIN
-            // ============================================================
-            loginBtn.addEventListener('click', function() {
-                const choice = prompt(
-                    'Select login type:\n\n' +
-                    '1. Student - Enter your student number\n' +
-                    '2. Teacher - Enter username and password\n' +
-                    '3. Admin - Enter admin password\n\n' +
-                    'Enter the number (1, 2, or 3):'
-                );
-
-                if (!choice) return;
-
-                if (choice === '1' || choice.toLowerCase() === 'student') {
-                    const studentId = prompt('Enter your student number:');
-                    if (!studentId) return;
-                    currentUser = { role: 'student', id: studentId };
-                    showToast('✅ Logged in as student: ' + studentId);
-                    loginBtn.style.display = 'none';
-                    logoutBtn.style.display = 'inline-flex';
-                    document.querySelector('.tab-btn[data-tab="student"]').click();
-                } else if (choice === '2' || choice.toLowerCase() === 'teacher') {
-                    const username = prompt('Enter your teacher username:');
-                    if (!username) return;
-                    const password = prompt('Enter your teacher password:');
-                    if (!password) return;
-                    authenticateTeacher(username, password);
-                } else if (choice === '3' || choice.toLowerCase() === 'admin') {
-                    const password = prompt('Enter admin password:');
-                    if (password === 'admin123') {
-                        currentUser = { role: 'admin' };
-                        showToast('✅ Logged in as Admin');
-                        loginBtn.style.display = 'none';
-                        logoutBtn.style.display = 'inline-flex';
-                        document.querySelector('.tab-btn[data-tab="admin"]').click();
-                        adminLocked.style.display = 'none';
-                        adminContent.style.display = 'block';
-                        loadAdminStats();
-                        loadClasses();
-                    } else {
-                        showToast('❌ Invalid admin password. Default: admin123', true);
-                    }
-                } else {
-                    showToast('❌ Invalid choice. Please enter 1, 2, or 3.', true);
-                }
-            });
-
-            async function authenticateTeacher(username, password) {
-                try {
-                    // Default teacher accounts
-                    const validTeachers = {
-                        'jbanda': { id: 1, name: 'Mr. John Banda', password: 'teacher123' },
-                        'mphiri': { id: 2, name: 'Mrs. Mary Phiri', password: 'teacher123' },
-                        'pzulu': { id: 3, name: 'Mr. Peter Zulu', password: 'teacher123' },
-                        'gmwansa': { id: 4, name: 'Ms. Grace Mwansa', password: 'teacher123' }
-                    };
-
-                    // Check offline first
-                    if (validTeachers[username] && validTeachers[username].password === password) {
-                        currentUser = {
-                            role: 'teacher',
-                            id: validTeachers[username].id,
-                            name: validTeachers[username].name
-                        };
-                        showToast('✅ Logged in as teacher: ' + validTeachers[username].name);
-                        loginBtn.style.display = 'none';
-                        logoutBtn.style.display = 'inline-flex';
-                        teacherLocked.style.display = 'none';
-                        teacherContent.style.display = 'block';
-                        document.querySelector('.tab-btn[data-tab="teacher"]').click();
-                        return;
-                    }
-
-                    // If not connected, show error
-                    if (!supabaseClient || !isConnected) {
-                        showToast('❌ Invalid credentials. Default: jbanda / teacher123', true);
-                        return;
-                    }
-
-                    // Check database
-                    const { data, error } = await supabaseClient
-                        .from('teachers')
-                        .select('*')
-                        .eq('username', username)
-                        .maybeSingle();
-
-                    if (error) throw error;
-
-                    if (!data) {
-                        showToast('❌ Teacher not found. Default: jbanda, mphiri, pzulu, gmwansa (password: teacher123)', true);
-                        return;
-                    }
-
-                    if (data.password !== password) {
-                        showToast('❌ Invalid password for ' + username, true);
-                        return;
-                    }
-
-                    currentUser = { role: 'teacher', id: data.id, name: data.name };
-                    showToast('✅ Logged in as teacher: ' + data.name);
-                    loginBtn.style.display = 'none';
-                    logoutBtn.style.display = 'inline-flex';
-                    teacherLocked.style.display = 'none';
-                    teacherContent.style.display = 'block';
-                    document.querySelector('.tab-btn[data-tab="teacher"]').click();
-                    loadAdminStats();
-
-                } catch (err) {
-                    showToast('❌ Error: ' + err.message, true);
-                    console.error(err);
-                }
-            }
-
-            logoutBtn.addEventListener('click', function() {
-                currentUser = null;
-                loginBtn.style.display = 'inline-flex';
-                logoutBtn.style.display = 'none';
-                showToast('🔒 Logged out');
-                studentResults.style.display = 'none';
-                resultsEntry.style.display = 'none';
-                teacherLocked.style.display = 'block';
-                teacherContent.style.display = 'none';
-                adminLocked.style.display = 'block';
-                adminContent.style.display = 'none';
             });
 
             // ============================================================
@@ -2159,6 +2620,429 @@
             }
 
             // ============================================================
+            // TEACHER EXCEL IMPORT
+            // ============================================================
+            let teacherImportData = null;
+
+            teacherImportArea.addEventListener('click', function() {
+                teacherFileInput.click();
+            });
+
+            teacherImportArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('dragover');
+            });
+
+            teacherImportArea.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+            });
+
+            teacherImportArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+                if (e.dataTransfer.files.length > 0) {
+                    teacherFileInput.files = e.dataTransfer.files;
+                    handleTeacherFile(teacherFileInput.files[0]);
+                }
+            });
+
+            teacherFileInput.addEventListener('change', function() {
+                if (this.files.length > 0) {
+                    handleTeacherFile(this.files[0]);
+                }
+            });
+
+            function handleTeacherFile(file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                        const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+                        teacherImportData = jsonData;
+                        displayTeacherImportPreview(jsonData);
+                        teacherImportBtn.style.display = 'block';
+                        showToast('✅ File loaded: ' + file.name);
+                    } catch (err) {
+                        showToast('❌ Error reading file: ' + err.message, true);
+                        console.error(err);
+                    }
+                };
+                reader.readAsArrayBuffer(file);
+            }
+
+            function displayTeacherImportPreview(data) {
+                if (!data || data.length === 0) {
+                    teacherImportPreview.innerHTML = '<p style="color:var(--ink-faint);text-align:center;">No data found in file.</p>';
+                    teacherImportPreview.style.display = 'block';
+                    return;
+                }
+
+                let html = `
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        ${Object.keys(data[0]).map(key => `<th>${key}</th>`).join('')}
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                            `;
+
+                data.slice(0, 10).forEach((row, index) => {
+                    const hasScore = row.Score || row.score || row['Score (%)'] || row['Score'];
+                    html += `<tr>
+                                ${Object.keys(data[0]).map(key => `<td>${row[key] || ''}</td>`).join('')}
+                                <td><span class="badge ${hasScore ? 'badge-success' : 'badge-warning'}">${hasScore ? '✅ Valid' : '⚠️ No Score'}</span></td>
+                            </tr>`;
+                });
+
+                if (data.length > 10) {
+                    html += `<tr><td colspan="${Object.keys(data[0]).length + 1}" style="text-align:center;color:var(--ink-faint);">... and ${data.length - 10} more rows</td></tr>`;
+                }
+
+                html += `
+                                </tbody>
+                            </table>
+                        </div>
+                        <p style="font-size:12px;color:var(--ink-faint);margin-top:8px;">Found ${data.length} records. Click "Import Results" to save.</p>
+                    `;
+
+                teacherImportPreview.innerHTML = html;
+                teacherImportPreview.style.display = 'block';
+            }
+
+            teacherImportBtn.addEventListener('click', async function() {
+                if (!currentUser || currentUser.role !== 'teacher') {
+                    showToast('🔒 Please login as a teacher first', true);
+                    return;
+                }
+                if (!teacherImportData || teacherImportData.length === 0) {
+                    showToast('⚠️ No data to import', true);
+                    return;
+                }
+
+                const className = teacherClass.value;
+                const subject = teacherSubject.value;
+                const term = teacherTerm.value;
+                const year = teacherYear.value;
+                const testType = teacherTestType.value;
+
+                if (!className) { showToast('⚠️ Please select a class', true); return; }
+                if (!subject) { showToast('⚠️ Please select a subject', true); return; }
+                if (!term) { showToast('⚠️ Please select a term', true); return; }
+                if (!year) { showToast('⚠️ Please select a year', true); return; }
+                if (!testType) { showToast('⚠️ Please select a test type', true); return; }
+
+                if (!supabaseClient || !isConnected) {
+                    showToast('⚠️ Offline mode - Import not available', true);
+                    return;
+                }
+
+                try {
+                    showToast('🔄 Importing results...');
+                    this.disabled = true;
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Importing...';
+
+                    let imported = 0;
+                    let errors = 0;
+
+                    for (const row of teacherImportData) {
+                        const studentNumber = row['Student Number'] || row['Student_Number'] || row['Student'] || row['student'];
+                        const score = parseInt(row['Score'] || row['score'] || row['Score (%)'] || row['score_percentage']);
+
+                        if (!studentNumber || isNaN(score)) {
+                            errors++;
+                            continue;
+                        }
+
+                        // Find student
+                        const { data: student, error: studentError } = await supabaseClient
+                            .from('students')
+                            .select('id')
+                            .eq('student_number', String(studentNumber).trim())
+                            .maybeSingle();
+
+                        if (studentError || !student) {
+                            errors++;
+                            continue;
+                        }
+
+                        // Check if result exists
+                        const { data: existing, error: existingError } = await supabaseClient
+                            .from('results')
+                            .select('id')
+                            .eq('student_id', student.id)
+                            .eq('subject', subject)
+                            .eq('term', term)
+                            .eq('year', year)
+                            .eq('test_type', testType)
+                            .maybeSingle();
+
+                        if (existing) {
+                            // Update existing
+                            await supabaseClient
+                                .from('results')
+                                .update({ score: Math.min(Math.max(score, 0), 100) })
+                                .eq('id', existing.id);
+                        } else {
+                            // Insert new
+                            await supabaseClient
+                                .from('results')
+                                .insert({
+                                    student_id: student.id,
+                                    subject: subject,
+                                    term: term,
+                                    year: year,
+                                    test_type: testType,
+                                    score: Math.min(Math.max(score, 0), 100),
+                                    teacher_id: currentUser.id
+                                });
+                        }
+                        imported++;
+                    }
+
+                    await updateClassPositions(className, term, year, testType);
+
+                    showToast(`✅ Imported ${imported} results. ${errors} errors.`);
+                    this.innerHTML = '<i class="fas fa-upload"></i> Import Results';
+                    this.disabled = false;
+
+                    // Refresh students
+                    loadStudentsBtn.click();
+
+                } catch (err) {
+                    showToast('❌ Error: ' + err.message, true);
+                    console.error(err);
+                    this.innerHTML = '<i class="fas fa-upload"></i> Import Results';
+                    this.disabled = false;
+                }
+            });
+
+            // ============================================================
+            // ADMIN - LOAD STUDENTS FOR IMPORT
+            // ============================================================
+            adminLoadStudentsBtn.addEventListener('click', async function() {
+                if (!currentUser || currentUser.role !== 'admin') {
+                    showToast('🔒 Please login as admin first', true);
+                    return;
+                }
+
+                const className = adminImportClass.value;
+                const subject = adminImportSubject.value;
+                const term = adminImportTerm.value;
+                const year = adminImportYear.value;
+                const testType = adminImportTestType.value;
+
+                if (!className) { showToast('⚠️ Please select a class', true); return; }
+                if (!subject) { showToast('⚠️ Please select a subject', true); return; }
+                if (!term) { showToast('⚠️ Please select a term', true); return; }
+                if (!year) { showToast('⚠️ Please select a year', true); return; }
+                if (!testType) { showToast('⚠️ Please select a test type', true); return; }
+
+                showToast('✅ Ready to import for ' + getClassDisplay(className) + ' - ' + subject);
+            });
+
+            // ============================================================
+            // ADMIN EXCEL IMPORT
+            // ============================================================
+            let adminImportData = null;
+
+            adminImportArea.addEventListener('click', function() {
+                adminFileInput.click();
+            });
+
+            adminImportArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('dragover');
+            });
+
+            adminImportArea.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+            });
+
+            adminImportArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+                if (e.dataTransfer.files.length > 0) {
+                    adminFileInput.files = e.dataTransfer.files;
+                    handleAdminFile(adminFileInput.files[0]);
+                }
+            });
+
+            adminFileInput.addEventListener('change', function() {
+                if (this.files.length > 0) {
+                    handleAdminFile(this.files[0]);
+                }
+            });
+
+            function handleAdminFile(file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                        const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+                        adminImportData = jsonData;
+                        displayAdminImportPreview(jsonData);
+                        adminImportBtn.style.display = 'block';
+                        showToast('✅ File loaded: ' + file.name);
+                    } catch (err) {
+                        showToast('❌ Error reading file: ' + err.message, true);
+                        console.error(err);
+                    }
+                };
+                reader.readAsArrayBuffer(file);
+            }
+
+            function displayAdminImportPreview(data) {
+                if (!data || data.length === 0) {
+                    adminImportPreview.innerHTML = '<p style="color:var(--ink-faint);text-align:center;">No data found in file.</p>';
+                    adminImportPreview.style.display = 'block';
+                    return;
+                }
+
+                let html = `
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        ${Object.keys(data[0]).map(key => `<th>${key}</th>`).join('')}
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                            `;
+
+                data.slice(0, 10).forEach((row) => {
+                    const hasScore = row.Score || row.score || row['Score (%)'] || row['Score'];
+                    html += `<tr>
+                                ${Object.keys(data[0]).map(key => `<td>${row[key] || ''}</td>`).join('')}
+                                <td><span class="badge ${hasScore ? 'badge-success' : 'badge-warning'}">${hasScore ? '✅ Valid' : '⚠️ No Score'}</span></td>
+                            </tr>`;
+                });
+
+                if (data.length > 10) {
+                    html += `<tr><td colspan="${Object.keys(data[0]).length + 1}" style="text-align:center;color:var(--ink-faint);">... and ${data.length - 10} more rows</td></tr>`;
+                }
+
+                html += `
+                                </tbody>
+                            </table>
+                        </div>
+                        <p style="font-size:12px;color:var(--ink-faint);margin-top:8px;">Found ${data.length} records. Click "Import Results" to save.</p>
+                    `;
+
+                adminImportPreview.innerHTML = html;
+                adminImportPreview.style.display = 'block';
+            }
+
+            adminImportBtn.addEventListener('click', async function() {
+                if (!currentUser || currentUser.role !== 'admin') {
+                    showToast('🔒 Please login as admin first', true);
+                    return;
+                }
+                if (!adminImportData || adminImportData.length === 0) {
+                    showToast('⚠️ No data to import', true);
+                    return;
+                }
+
+                const className = adminImportClass.value;
+                const subject = adminImportSubject.value;
+                const term = adminImportTerm.value;
+                const year = adminImportYear.value;
+                const testType = adminImportTestType.value;
+
+                if (!className) { showToast('⚠️ Please select a class', true); return; }
+                if (!subject) { showToast('⚠️ Please select a subject', true); return; }
+                if (!term) { showToast('⚠️ Please select a term', true); return; }
+                if (!year) { showToast('⚠️ Please select a year', true); return; }
+                if (!testType) { showToast('⚠️ Please select a test type', true); return; }
+
+                if (!supabaseClient || !isConnected) {
+                    showToast('⚠️ Offline mode - Import not available', true);
+                    return;
+                }
+
+                try {
+                    showToast('🔄 Importing results...');
+                    this.disabled = true;
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Importing...';
+
+                    let imported = 0;
+                    let errors = 0;
+
+                    for (const row of adminImportData) {
+                        const studentNumber = row['Student Number'] || row['Student_Number'] || row['Student'] || row['student'];
+                        const score = parseInt(row['Score'] || row['score'] || row['Score (%)'] || row['score_percentage']);
+
+                        if (!studentNumber || isNaN(score)) {
+                            errors++;
+                            continue;
+                        }
+
+                        const { data: student, error: studentError } = await supabaseClient
+                            .from('students')
+                            .select('id')
+                            .eq('student_number', String(studentNumber).trim())
+                            .maybeSingle();
+
+                        if (studentError || !student) {
+                            errors++;
+                            continue;
+                        }
+
+                        const { data: existing, error: existingError } = await supabaseClient
+                            .from('results')
+                            .select('id')
+                            .eq('student_id', student.id)
+                            .eq('subject', subject)
+                            .eq('term', term)
+                            .eq('year', year)
+                            .eq('test_type', testType)
+                            .maybeSingle();
+
+                        if (existing) {
+                            await supabaseClient
+                                .from('results')
+                                .update({ score: Math.min(Math.max(score, 0), 100) })
+                                .eq('id', existing.id);
+                        } else {
+                            await supabaseClient
+                                .from('results')
+                                .insert({
+                                    student_id: student.id,
+                                    subject: subject,
+                                    term: term,
+                                    year: year,
+                                    test_type: testType,
+                                    score: Math.min(Math.max(score, 0), 100),
+                                    teacher_id: currentUser.id
+                                });
+                        }
+                        imported++;
+                    }
+
+                    await updateClassPositions(className, term, year, testType);
+
+                    showToast(`✅ Imported ${imported} results. ${errors} errors.`);
+                    this.innerHTML = '<i class="fas fa-upload"></i> Import Results';
+                    this.disabled = false;
+
+                } catch (err) {
+                    showToast('❌ Error: ' + err.message, true);
+                    console.error(err);
+                    this.innerHTML = '<i class="fas fa-upload"></i> Import Results';
+                    this.disabled = false;
+                }
+            });
+
+            // ============================================================
             // ADMIN - ADD STUDENT
             // ============================================================
             addStudentBtn.addEventListener('click', async function() {
@@ -2484,13 +3368,16 @@
 
             console.log('✅ Laura Girls Secondary School ready');
 
-            // Show login info in console
             console.log('📝 Default Login Credentials:');
             console.log('   Teacher: jbanda / teacher123  - Mr. John Banda');
             console.log('   Teacher: mphiri / teacher123  - Mrs. Mary Phiri');
             console.log('   Teacher: pzulu / teacher123   - Mr. Peter Zulu');
             console.log('   Teacher: gmwansa / teacher123 - Ms. Grace Mwansa');
             console.log('   Admin: admin / admin123');
+
+            console.log('📊 Excel Import:');
+            console.log('   Supported format: .xlsx, .xls');
+            console.log('   Expected columns: Student Number, Score');
 
         })();
     </script>
