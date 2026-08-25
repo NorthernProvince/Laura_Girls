@@ -144,6 +144,9 @@
         .import-preview table td { padding:6px 10px; border-bottom:1px solid var(--border); }
         .footer-note { font-size:11px; color:var(--ink-faint); text-align:center; margin-top:30px; padding-top:16px; border-top:1px solid var(--border); letter-spacing:0.3px; }
         .result-card { background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); border:1px solid var(--border); border-radius:var(--radius-md); padding:20px; margin-bottom:16px; box-shadow:var(--shadow-sm); border-left:4px solid var(--gold); }
+        .score-input { width:70px; padding:6px 8px; border-radius:8px; border:1.5px solid var(--border); text-align:center; font-family:var(--font-body); font-size:13px; }
+        .score-input:focus { border-color:var(--marian-blue); outline:none; box-shadow:0 0 0 3px var(--marian-blue-tint); }
+        .grade-display { font-weight:600; padding:2px 8px; border-radius:20px; font-size:12px; text-align:center; min-width:30px; display:inline-block; }
         @media (max-width:480px) {
             .topbar .brand h1 { font-size:14px; }
             .topbar .brand .coat-of-arms { width:35px; height:35px; }
@@ -156,6 +159,7 @@
             .connection-status { bottom:10px; right:10px; font-size:10px; padding:6px 12px; }
             .toast { bottom:70px; font-size:12px; padding:10px 16px; }
             .login-floating-btn { width:48px; height:48px; font-size:17px; bottom:70px; right:12px; }
+            .score-input { width:55px; font-size:11px; padding:4px 6px; }
         }
         @media print {
             .topbar, .tab-nav, .no-print, .mary-bg, .connection-status, .login-modal, .login-floating-btn { display:none !important; }
@@ -793,7 +797,7 @@
         });
 
         // ============================================================
-        // TEACHER LOAD STUDENTS
+        // TEACHER LOAD STUDENTS - with existing results
         // ============================================================
         loadStudentsBtn.addEventListener('click', async function() {
             if (!currentUser || currentUser.role !== 'teacher') {
@@ -812,6 +816,10 @@
                 return;
             }
 
+            await loadStudentsWithResults(className, subject, term, year, testType);
+        });
+
+        async function loadStudentsWithResults(className, subject, term, year, testType) {
             if (!supabaseClient || !isConnected) {
                 const demo = [
                     { id:1, name:'Ireen Mwansa', student_number:'2024-001' },
@@ -846,9 +854,34 @@
                     return;
                 }
 
-                displayResultsEntry(students, subject, term, year, testType);
+                // Fetch existing results for these students
+                const studentIds = students.map(s => s.id);
+                const { data: results, error: rError } = await supabaseClient
+                    .from('results')
+                    .select('student_id, score, comment')
+                    .in('student_id', studentIds)
+                    .eq('subject', subject)
+                    .eq('term', term)
+                    .eq('year', year)
+                    .eq('test_type', testType);
+
+                if (rError) {
+                    console.warn('Could not fetch existing results:', rError);
+                }
+
+                // Create a map of existing results
+                const resultsMap = {};
+                if (results) {
+                    results.forEach(r => {
+                        resultsMap[r.student_id] = r;
+                    });
+                }
+
+                // Display students with their existing scores
+                displayResultsEntryWithScores(students, subject, term, year, testType, resultsMap);
                 resultsEntry.style.display = 'block';
-                showToast(`✅ ${students.length} students loaded from database`);
+                const resultCount = results ? results.length : 0;
+                showToast(`✅ ${students.length} students loaded, ${resultCount} existing scores found`);
 
             } catch (err) {
                 showToast('❌ Error loading students: ' + err.message, true);
@@ -861,7 +894,49 @@
                 displayResultsEntry(demo, subject, term, year, testType);
                 resultsEntry.style.display = 'block';
             }
-        });
+        }
+
+        function displayResultsEntryWithScores(students, subject, term, year, testType, resultsMap) {
+            let html = '';
+            if (!students || students.length === 0) {
+                html = `<tr><td colspan="6" style="text-align:center;color:var(--ink-faint);">No students available.</td></tr>`;
+            } else {
+                students.forEach((s, i) => {
+                    const existing = resultsMap ? resultsMap[s.id] : null;
+                    const score = existing ? existing.score : '';
+                    const comment = existing ? existing.comment || '' : '';
+                    const grade = score ? getGrade(parseInt(score)) : '-';
+                    const gradeClass = score ? getGradeClass(parseInt(score)) : '';
+                    
+                    html += `<tr data-student-id="${s.id}">
+                                <td>${i+1}</td>
+                                <td><strong>${s.name}</strong></td>
+                                <td>${s.student_number}</td>
+                                <td><input type="number" min="0" max="100" class="score-input" value="${score}" style="width:70px;padding:6px 8px;border-radius:8px;border:1.5px solid var(--border);text-align:center;"></td>
+                                <td class="grade-display ${gradeClass}" style="text-align:center;">${grade}</td>
+                                <td><input type="text" class="comment-input" value="${comment}" placeholder="Comment..." style="width:100%;padding:6px 8px;border-radius:8px;border:1.5px solid var(--border);font-size:12px;"></td>
+                            </tr>`;
+                });
+            }
+            resultsTableBody.innerHTML = html;
+
+            document.querySelectorAll('.score-input').forEach(inp => {
+                inp.addEventListener('input', function() {
+                    const row = this.closest('tr');
+                    const gd = row.querySelector('.grade-display');
+                    const score = parseInt(this.value);
+                    if (!isNaN(score) && score >= 0 && score <= 100) {
+                        const grade = getGrade(score);
+                        const cls = getGradeClass(score);
+                        gd.textContent = grade;
+                        gd.className = 'grade-display ' + cls;
+                    } else {
+                        gd.textContent = '-';
+                        gd.className = 'grade-display';
+                    }
+                });
+            });
+        }
 
         function displayResultsEntry(students, subject, term, year, testType) {
             let html = '';
@@ -874,7 +949,7 @@
                                 <td><strong>${s.name}</strong></td>
                                 <td>${s.student_number}</td>
                                 <td><input type="number" min="0" max="100" class="score-input" value="" style="width:70px;padding:6px 8px;border-radius:8px;border:1.5px solid var(--border);text-align:center;"></td>
-                                <td class="grade-display">-</td>
+                                <td class="grade-display" style="text-align:center;">-</td>
                                 <td><input type="text" class="comment-input" placeholder="Comment..." style="width:100%;padding:6px 8px;border-radius:8px;border:1.5px solid var(--border);font-size:12px;"></td>
                             </tr>`;
                 });
@@ -887,8 +962,8 @@
                     const gd = row.querySelector('.grade-display');
                     const score = parseInt(this.value);
                     if (!isNaN(score) && score >= 0 && score <= 100) {
-                        const grade = score >= 80 ? 'A' : score >= 70 ? 'B' : score >= 60 ? 'C' : score >= 50 ? 'D' : 'F';
-                        const cls = score >= 80 ? 'badge-success' : score >= 60 ? 'badge-info' : score >= 50 ? 'badge-warning' : 'badge-danger';
+                        const grade = getGrade(score);
+                        const cls = getGradeClass(score);
                         gd.textContent = grade;
                         gd.className = 'grade-display ' + cls;
                     } else {
@@ -897,6 +972,21 @@
                     }
                 });
             });
+        }
+
+        function getGrade(score) {
+            if (score >= 80) return 'A';
+            if (score >= 70) return 'B';
+            if (score >= 60) return 'C';
+            if (score >= 50) return 'D';
+            return 'F';
+        }
+
+        function getGradeClass(score) {
+            if (score >= 80) return 'badge-success';
+            if (score >= 60) return 'badge-info';
+            if (score >= 50) return 'badge-warning';
+            return 'badge-danger';
         }
 
         // ============================================================
@@ -981,6 +1071,9 @@
                 this.innerHTML = '<i class="fas fa-save"></i> Save All';
                 this.disabled = false;
 
+                // Reload the students to show updated grades
+                await loadStudentsWithResults(className, subject, term, year, testType);
+
             } catch (err) {
                 showToast('❌ Error: ' + err.message, true);
                 console.error(err);
@@ -990,7 +1083,7 @@
         });
 
         // ============================================================
-        // TEACHER EXCEL IMPORT - FIXED
+        // TEACHER EXCEL IMPORT - FIXED with auto-refresh
         // ============================================================
         teacherImportLoadBtn.addEventListener('click', function() {
             const className = teacherImportClass.value;
@@ -1051,7 +1144,6 @@
 
                     const mapped = json.map(row => {
                         let score = parseFloat(row[scoreKey]);
-                        // Handle percentage strings like "85%"
                         if (typeof row[scoreKey] === 'string' && row[scoreKey].includes('%')) {
                             score = parseFloat(row[scoreKey].replace('%', ''));
                         }
@@ -1164,7 +1256,6 @@
 
                     if (existing) {
                         duplicates++;
-                        // Update existing
                         await supabaseClient
                             .from('results')
                             .update({ 
@@ -1174,7 +1265,6 @@
                             .eq('id', existing.id);
                         imported++;
                     } else {
-                        // Insert new
                         const { error: insertError } = await supabaseClient
                             .from('results')
                             .insert({
@@ -1214,21 +1304,10 @@
             teacherImportClearBtn.style.display = 'none';
             teacherFileInput.value = '';
 
-            // Reload students for the teacher
-            try {
-                const { data: students } = await supabaseClient
-                    .from('students')
-                    .select('id, name, student_number')
-                    .eq('class', className)
-                    .order('name');
-                if (students && students.length > 0) {
-                    displayResultsEntry(students, subject, term, year, testType);
-                    resultsEntry.style.display = 'block';
-                    showToast(`📋 Loaded ${students.length} students with imported results`);
-                }
-            } catch(e) {
-                console.warn('Could not reload students:', e);
-            }
+            // IMPORTANT: Auto-refresh the results table with the imported data
+            showToast('🔄 Refreshing results table...');
+            await loadStudentsWithResults(className, subject, term, year, testType);
+            showToast(`📋 Results table updated with imported data`);
         });
 
         // ============================================================
@@ -1320,9 +1399,8 @@
         // ============================================================
         initSupabase();
         updateLoginUI();
-        console.log('✅ Laura Girls · Excel import fully fixed');
-        console.log('📝 Instructions: 1) Select class/subject/term/year/test type');
-        console.log('📝 2) Click "Load & Preview" 3) Upload Excel file 4) Click "Import Results"');
+        console.log('✅ Laura Girls · Excel import with auto-refresh');
+        console.log('📝 After import, the results table will auto-update with scores!');
     })();
 </script>
 </body>
