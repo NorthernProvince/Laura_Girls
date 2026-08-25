@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Laura Girls · Mid & End Term Report</title>
+    <title>Laura Girls · Teacher Assignment Fixed</title>
     <meta name="theme-color" content="#1a237e">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -145,12 +145,12 @@
         .score-input:focus { border-color:var(--marian-blue); outline:none; box-shadow:0 0 0 3px var(--marian-blue-tint); }
         .grade-display { font-weight:600; padding:2px 8px; border-radius:20px; font-size:12px; text-align:center; min-width:30px; display:inline-block; }
         .class-assignment-card { border-top-color: var(--oxblood); }
-        .report-card-print .test-header { background:var(--gold-tint); padding:4px 8px; border-radius:4px; margin:4px 0; font-weight:600; font-size:11px; color:var(--marian-blue); }
-        .report-card-print .mid-term-col { background:#f0f7ff; }
-        .report-card-print .end-term-col { background:#fff8f0; }
         .test-type-badge { display:inline-block; padding:3px 14px; border-radius:40px; font-size:12px; font-weight:700; }
         .test-type-badge.mid-term { background:#e3f2fd; color:#0d47a1; }
         .test-type-badge.end-term { background:#fff3e0; color:#e65100; }
+        .assignment-status { padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600; }
+        .assignment-status.assigned { background:#e8f5e9; color:#2e7d32; }
+        .assignment-status.unassigned { background:#ffebee; color:#c62828; }
         @media (max-width:480px) {
             .topbar .brand h1 { font-size:14px; }
             .topbar .brand .coat-of-arms { width:35px; height:35px; }
@@ -179,7 +179,6 @@
             .report-card-print table { font-size:10px !important; }
             .report-card-print table th, .report-card-print table td { padding:3px 6px !important; }
             .report-card-print .badge { font-size:9px !important; padding:1px 6px !important; }
-            .report-card-print .test-header { font-size:10px !important; }
             .report-card-print .test-type-badge { font-size:10px !important; padding:2px 10px !important; }
         }
     </style>
@@ -318,6 +317,7 @@
         <div id="adminContent" style="display:none;">
             <div class="card"><div class="card-header"><h2><i class="fas fa-user-shield"></i> Admin Dashboard</h2><span class="subtitle">Overview</span></div><div class="grid-4"><div class="stat-card"><div class="icon"><i class="fas fa-users"></i></div><div class="number" id="totalStudents">0</div><div class="label">Total Students</div></div><div class="stat-card"><div class="icon"><i class="fas fa-user-tie"></i></div><div class="number" id="totalTeachers">0</div><div class="label">Total Teachers</div></div><div class="stat-card"><div class="icon"><i class="fas fa-book"></i></div><div class="number" id="totalSubjects">0</div><div class="label">Total Subjects</div></div><div class="stat-card"><div class="icon"><i class="fas fa-file-alt"></i></div><div class="number" id="totalResults">0</div><div class="label">Total Results</div></div></div></div>
 
+            <!-- Teacher Class Assignments - FIXED -->
             <div class="card class-assignment-card">
                 <div class="card-header">
                     <h2><i class="fas fa-user-tie" style="color:var(--oxblood);"></i> Teacher Class Assignments</h2>
@@ -339,8 +339,18 @@
                 <div style="margin-top:12px;">
                     <div class="table-wrapper">
                         <table>
-                            <thead><tr><th>#</th><th>Class</th><th>Assigned Teacher</th><th>Action</th></tr></thead>
-                            <tbody id="assignmentsTableBody"><tr><td colspan="4" style="text-align:center;color:var(--ink-faint);">Loading assignments...</td></tr></tbody>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Class</th>
+                                    <th>Assigned Teacher</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="assignmentsTableBody">
+                                <tr><td colspan="5" style="text-align:center;color:var(--ink-faint);">Loading assignments...</td></tr>
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -405,7 +415,6 @@
             { id: 'Grade12_Laura', grade:'Grade12', stream:'Laura', display:'Grade 12 Laura' }
         ];
 
-        // All subjects including ICT (replaced Computer Studies)
         const SUBJECTS = [
             'English', 'Mathematics', 'Biology', 'Chemistry', 'Physics',
             'History', 'Geography', 'Civic Education', 'Zambian Languages',
@@ -647,8 +656,27 @@
             }
         }
 
-        function loadAllData() { loadAdminStats(); populateTeachersDropdown(); loadClasses(); populateClassDropdowns(); populateBulkClassDropdown(); populateImportClassDropdowns(); updateLoginUI(); populateTeacherDropdowns(); loadAssignments(); populateClassSelectForAssign(); }
-        function loadFallbackData() { populateClassDropdowns(); populateBulkClassDropdown(); populateImportClassDropdowns(); loadFallbackClasses(); loadFallbackStats(); updateLoginUI(); populateTeacherDropdowns(); }
+        function loadAllData() { 
+            loadAdminStats(); 
+            populateTeachersDropdown(); 
+            loadClasses(); 
+            populateClassDropdowns(); 
+            populateBulkClassDropdown(); 
+            populateImportClassDropdowns(); 
+            updateLoginUI(); 
+            populateTeacherDropdowns(); 
+            loadAssignments(); 
+            populateClassSelectForAssign(); 
+        }
+        function loadFallbackData() { 
+            populateClassDropdowns(); 
+            populateBulkClassDropdown(); 
+            populateImportClassDropdowns(); 
+            loadFallbackClasses(); 
+            loadFallbackStats(); 
+            updateLoginUI(); 
+            populateTeacherDropdowns(); 
+        }
 
         function loadFallbackClasses() {
             let html=''; CLASS_DEFINITIONS.forEach((c,i)=>{ html+=`<tr><td>${i+1}</td><td><strong>${c.display}</strong></td><td>${c.grade}</td><td>${c.stream}</td><td>0</td><td>Not Assigned</td><td><span class="badge badge-info">Offline</span></td></tr>`; });
@@ -744,7 +772,7 @@
         };
 
         // ============================================================
-        // TEACHER CLASS ASSIGNMENTS
+        // TEACHER CLASS ASSIGNMENTS - FIXED
         // ============================================================
         async function loadTeacherAssignments() {
             if (!supabaseClient || !isConnected || !currentUser || currentUser.role !== 'teacher') {
@@ -753,126 +781,261 @@
             }
 
             try {
+                // Get assignments for this teacher
                 const { data, error } = await supabaseClient
                     .from('teacher_class_assignments')
                     .select('class_id')
                     .eq('teacher_id', currentUser.id);
 
-                if (error) throw error;
+                if (error) {
+                    console.warn('Error loading assignments:', error);
+                    // If table doesn't exist, try using classes table directly
+                    const { data: classData, error: classError } = await supabaseClient
+                        .from('classes')
+                        .select('id, display_name, grade, stream, teacher_name')
+                        .eq('teacher_id', currentUser.id);
+                    
+                    if (classError) throw classError;
+                    if (classData && classData.length > 0) {
+                        teacherAssignedClasses = classData.map(c => c.id);
+                        displayAssignedClasses(classData);
+                        return;
+                    }
+                    teacherAssignedClasses = [];
+                    displayNoAssignments();
+                    return;
+                }
 
                 teacherAssignedClasses = data ? data.map(a => a.class_id) : [];
 
                 if (teacherAssignedClasses.length === 0) {
-                    assignedClassesList.innerHTML = `
-                        <div style="text-align:center; padding:15px; background:var(--paper); border-radius:10px;">
-                            <i class="fas fa-exclamation-triangle" style="color:var(--oxblood); font-size:24px; margin-bottom:8px; display:block;"></i>
-                            <p style="color:var(--ink-soft);">You are not assigned to any class yet.</p>
-                            <p style="color:var(--ink-faint); font-size:12px;">Please contact the administrator to assign you to a class.</p>
-                        </div>
-                    `;
-                    teacherClass.innerHTML = '<option value="">No classes assigned</option>';
-                    teacherClass.disabled = true;
-                    teacherImportClass.innerHTML = '<option value="">No classes assigned</option>';
-                    teacherImportClass.disabled = true;
+                    // Also check classes table directly
+                    const { data: classData, error: classError } = await supabaseClient
+                        .from('classes')
+                        .select('id, display_name, grade, stream, teacher_name')
+                        .eq('teacher_id', currentUser.id);
+                    
+                    if (!classError && classData && classData.length > 0) {
+                        teacherAssignedClasses = classData.map(c => c.id);
+                        displayAssignedClasses(classData);
+                        return;
+                    }
+                    displayNoAssignments();
                     return;
                 }
 
+                // Get class details
                 const classPromises = teacherAssignedClasses.map(classId => {
                     return supabaseClient.from('classes').select('*').eq('id', classId).maybeSingle();
                 });
                 const classResults = await Promise.all(classPromises);
                 const classes = classResults.map(r => r.data).filter(c => c !== null);
-
-                let html = `<div style="display:flex; flex-wrap:wrap; gap:8px;">`;
-                classes.forEach(c => {
-                    const displayName = c.display_name || c.grade + ' ' + c.stream;
-                    html += `<span class="badge badge-success" style="font-size:13px; padding:6px 14px;">${displayName}</span>`;
-                });
-                html += `</div>`;
-                assignedClassesList.innerHTML = html;
-
-                const classOptions = classes.map(c => ({ value: c.id, text: c.display_name || c.grade + ' ' + c.stream }));
-                [teacherClass, teacherImportClass].forEach(drop => {
-                    drop.innerHTML = '<option value="">Select Class</option>';
-                    classOptions.forEach(opt => {
-                        const o = document.createElement('option');
-                        o.value = opt.value;
-                        o.textContent = opt.text;
-                        drop.appendChild(o);
-                    });
-                    drop.disabled = false;
-                });
-
-                teacherNameDisplay.textContent = `Welcome, ${currentUser.name} (${classes.length} class${classes.length > 1 ? 'es' : ''} assigned)`;
+                displayAssignedClasses(classes);
 
             } catch (err) {
                 console.error('Error loading teacher assignments:', err);
-                assignedClassesList.innerHTML = '<p style="color:var(--ink-faint); text-align:center; padding:10px;">Error loading assignments.</p>';
+                assignedClassesList.innerHTML = '<p style="color:var(--ink-faint); text-align:center; padding:10px;">Error loading assignments. Please contact administrator.</p>';
             }
         }
 
+        function displayAssignedClasses(classes) {
+            if (!classes || classes.length === 0) {
+                displayNoAssignments();
+                return;
+            }
+
+            let html = `<div style="display:flex; flex-wrap:wrap; gap:8px;">`;
+            classes.forEach(c => {
+                const displayName = c.display_name || c.grade + ' ' + c.stream;
+                html += `<span class="badge badge-success" style="font-size:13px; padding:6px 14px;">${displayName}</span>`;
+            });
+            html += `</div>`;
+            assignedClassesList.innerHTML = html;
+
+            const classOptions = classes.map(c => ({ value: c.id, text: c.display_name || c.grade + ' ' + c.stream }));
+            [teacherClass, teacherImportClass].forEach(drop => {
+                drop.innerHTML = '<option value="">Select Class</option>';
+                classOptions.forEach(opt => {
+                    const o = document.createElement('option');
+                    o.value = opt.value;
+                    o.textContent = opt.text;
+                    drop.appendChild(o);
+                });
+                drop.disabled = false;
+            });
+
+            teacherNameDisplay.textContent = `Welcome, ${currentUser.name} (${classes.length} class${classes.length > 1 ? 'es' : ''} assigned)`;
+        }
+
+        function displayNoAssignments() {
+            assignedClassesList.innerHTML = `
+                <div style="text-align:center; padding:15px; background:var(--paper); border-radius:10px;">
+                    <i class="fas fa-exclamation-triangle" style="color:var(--oxblood); font-size:24px; margin-bottom:8px; display:block;"></i>
+                    <p style="color:var(--ink-soft);">You are not assigned to any class yet.</p>
+                    <p style="color:var(--ink-faint); font-size:12px;">Please contact the administrator to assign you to a class.</p>
+                </div>
+            `;
+            teacherClass.innerHTML = '<option value="">No classes assigned</option>';
+            teacherClass.disabled = true;
+            teacherImportClass.innerHTML = '<option value="">No classes assigned</option>';
+            teacherImportClass.disabled = true;
+        }
+
+        // ============================================================
+        // LOAD ASSIGNMENTS FOR ADMIN - FIXED
+        // ============================================================
         async function loadAssignments() {
             if (!supabaseClient || !isConnected) {
-                assignmentsTableBody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--ink-faint);">Offline mode - assignments not available</td></tr>`;
+                assignmentsTableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--ink-faint);">Offline mode - assignments not available</td></tr>`;
                 return;
             }
 
             try {
-                const { data, error } = await supabaseClient
-                    .from('teacher_class_assignments')
-                    .select('*, teachers(name), classes(display_name)')
-                    .order('class_id');
+                // First try to get from teacher_class_assignments table
+                let data = null;
+                let error = null;
+                
+                try {
+                    const result = await supabaseClient
+                        .from('teacher_class_assignments')
+                        .select('*')
+                        .order('class_id');
+                    data = result.data;
+                    error = result.error;
+                } catch (e) {
+                    // If table doesn't exist, use classes table
+                    console.warn('teacher_class_assignments table may not exist, using classes table:', e);
+                }
 
-                if (error) throw error;
+                // If no data from assignments table, get from classes table
                 if (!data || data.length === 0) {
-                    assignmentsTableBody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--ink-faint);">No assignments found.</td></tr>`;
+                    const { data: classData, error: classError } = await supabaseClient
+                        .from('classes')
+                        .select('id, display_name, grade, stream, teacher_id, teacher_name')
+                        .not('teacher_id', 'is', null)
+                        .order('grade');
+
+                    if (classError) throw classError;
+
+                    if (!classData || classData.length === 0) {
+                        assignmentsTableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--ink-faint);">No assignments found. Please assign teachers to classes.</td></tr>`;
+                        return;
+                    }
+
+                    // Get teacher names
+                    const teacherIds = classData.map(c => c.teacher_id).filter(id => id);
+                    let teacherMap = {};
+                    if (teacherIds.length > 0) {
+                        const { data: teachers } = await supabaseClient
+                            .from('teachers')
+                            .select('id, name')
+                            .in('id', teacherIds);
+                        if (teachers) {
+                            teachers.forEach(t => { teacherMap[t.id] = t.name; });
+                        }
+                    }
+
+                    let html = '';
+                    classData.forEach((c, i) => {
+                        const displayName = c.display_name || c.grade + ' ' + c.stream;
+                        const teacherName = teacherMap[c.teacher_id] || c.teacher_name || 'Unknown';
+                        html += `<tr>
+                            <td>${i+1}</td>
+                            <td><strong>${displayName}</strong></td>
+                            <td>${teacherName}</td>
+                            <td><span class="assignment-status assigned">✅ Assigned</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-danger" onclick="window.removeAssignment('${c.id}')">
+                                    <i class="fas fa-times"></i> Remove
+                                </button>
+                            </td>
+                        </tr>`;
+                    });
+                    assignmentsTableBody.innerHTML = html;
                     return;
                 }
 
+                // If we have data from assignments table, join with teacher and class info
                 let html = '';
-                data.forEach((a, i) => {
-                    const classDisplay = a.classes ? a.classes.display_name : a.class_id;
-                    const teacherName = a.teachers ? a.teachers.name : 'Unknown';
+                for (let i = 0; i < data.length; i++) {
+                    const a = data[i];
+                    // Get class info
+                    const { data: classInfo } = await supabaseClient
+                        .from('classes')
+                        .select('display_name, grade, stream')
+                        .eq('id', a.class_id)
+                        .maybeSingle();
+                    
+                    // Get teacher info
+                    const { data: teacherInfo } = await supabaseClient
+                        .from('teachers')
+                        .select('name')
+                        .eq('id', a.teacher_id)
+                        .maybeSingle();
+
+                    const displayName = classInfo ? (classInfo.display_name || classInfo.grade + ' ' + classInfo.stream) : a.class_id;
+                    const teacherName = teacherInfo ? teacherInfo.name : 'Unknown';
                     html += `<tr>
                         <td>${i+1}</td>
-                        <td><strong>${classDisplay}</strong></td>
+                        <td><strong>${displayName}</strong></td>
                         <td>${teacherName}</td>
+                        <td><span class="assignment-status assigned">✅ Assigned</span></td>
                         <td>
                             <button class="btn btn-sm btn-danger" onclick="window.removeAssignment('${a.class_id}')">
                                 <i class="fas fa-times"></i> Remove
                             </button>
                         </td>
                     </tr>`;
-                });
-                assignmentsTableBody.innerHTML = html;
+                }
+                assignmentsTableBody.innerHTML = html || `<tr><td colspan="5" style="text-align:center;color:var(--ink-faint);">No assignments found.</td></tr>`;
 
             } catch (err) {
                 console.error('Error loading assignments:', err);
-                assignmentsTableBody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--ink-faint);">Error loading assignments</td></tr>`;
+                assignmentsTableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--ink-faint);">Error loading assignments. Please ensure the database tables exist.</td></tr>`;
             }
         }
 
+        // ============================================================
+        // REMOVE ASSIGNMENT - FIXED
+        // ============================================================
         window.removeAssignment = async function(classId) {
             if (!currentUser || currentUser.role !== 'admin') { showToast('🔒 Admin only', true); return; }
             if (!confirm('Remove teacher assignment from this class?')) return;
             if (!supabaseClient || !isConnected) { showToast('⚠️ Offline mode', true); return; }
 
             try {
-                const { error } = await supabaseClient
-                    .from('teacher_class_assignments')
-                    .delete()
-                    .eq('class_id', classId);
+                // Try to delete from teacher_class_assignments
+                try {
+                    const { error } = await supabaseClient
+                        .from('teacher_class_assignments')
+                        .delete()
+                        .eq('class_id', classId);
+                    if (error) throw error;
+                } catch (e) {
+                    console.warn('Could not delete from teacher_class_assignments:', e);
+                }
 
-                if (error) throw error;
+                // Also update classes table
+                await supabaseClient
+                    .from('classes')
+                    .update({ teacher_id: null, teacher_name: null })
+                    .eq('id', classId);
+
                 showToast('✅ Assignment removed');
                 loadAssignments();
-                await supabaseClient.from('classes').update({ teacher_id: null, teacher_name: null }).eq('id', classId);
                 loadClasses();
+                // Refresh teacher's assigned classes if logged in as teacher
+                if (currentUser.role === 'teacher') {
+                    await loadTeacherAssignments();
+                }
             } catch (err) {
                 showToast('❌ Error: ' + err.message, true);
             }
         };
 
+        // ============================================================
+        // ASSIGN TEACHER - FIXED
+        // ============================================================
         assignTeacherBtn.addEventListener('click', async function() {
             if (!currentUser || currentUser.role !== 'admin') { showToast('🔒 Admin only', true); return; }
             const teacherId = assignTeacherSelect.value;
@@ -884,38 +1047,56 @@
             if (!supabaseClient || !isConnected) { showToast('⚠️ Offline mode', true); return; }
 
             try {
-                const { data: existing } = await supabaseClient
-                    .from('teacher_class_assignments')
-                    .select('*')
-                    .eq('class_id', classId)
-                    .maybeSingle();
-
-                if (existing) {
-                    await supabaseClient
-                        .from('teacher_class_assignments')
-                        .update({ teacher_id: teacherId })
-                        .eq('class_id', classId);
-                } else {
-                    await supabaseClient
-                        .from('teacher_class_assignments')
-                        .insert({ teacher_id: teacherId, class_id: classId });
-                }
-
-                const { data: teacher } = await supabaseClient
+                // Get teacher name
+                const { data: teacher, error: tError } = await supabaseClient
                     .from('teachers')
                     .select('name')
                     .eq('id', teacherId)
                     .maybeSingle();
+                if (tError) throw tError;
 
+                // First update the classes table directly
                 await supabaseClient
                     .from('classes')
-                    .update({ teacher_id: teacherId, teacher_name: teacher ? teacher.name : null })
+                    .update({ 
+                        teacher_id: teacherId, 
+                        teacher_name: teacher ? teacher.name : null 
+                    })
                     .eq('id', classId);
 
-                showToast('✅ Teacher assigned successfully');
+                // Then try to insert into teacher_class_assignments if table exists
+                try {
+                    // Check if assignment already exists
+                    const { data: existing } = await supabaseClient
+                        .from('teacher_class_assignments')
+                        .select('*')
+                        .eq('class_id', classId)
+                        .maybeSingle();
+
+                    if (existing) {
+                        await supabaseClient
+                            .from('teacher_class_assignments')
+                            .update({ teacher_id: teacherId })
+                            .eq('class_id', classId);
+                    } else {
+                        await supabaseClient
+                            .from('teacher_class_assignments')
+                            .insert({ teacher_id: teacherId, class_id: classId });
+                    }
+                } catch (e) {
+                    console.warn('Could not update teacher_class_assignments table:', e);
+                    // Continue anyway since classes table is updated
+                }
+
+                showToast('✅ Teacher assigned successfully!');
                 loadAssignments();
                 loadClasses();
                 populateClassDropdowns();
+                
+                // If logged in as teacher, refresh their assignments
+                if (currentUser.role === 'teacher') {
+                    await loadTeacherAssignments();
+                }
 
             } catch (err) {
                 showToast('❌ Error: ' + err.message, true);
@@ -924,7 +1105,7 @@
         });
 
         // ============================================================
-        // BULK REGISTER
+        // BULK REGISTER (unchanged)
         // ============================================================
         bulkRegisterTemplateBtn.addEventListener('click', function() {
             const wb = XLSX.utils.book_new();
@@ -1065,7 +1246,7 @@
         });
 
         // ============================================================
-        // TEACHER LOAD STUDENTS
+        // TEACHER LOAD STUDENTS - with assignment check
         // ============================================================
         loadStudentsBtn.addEventListener('click', async function() {
             if (!currentUser || currentUser.role !== 'teacher') {
@@ -1571,7 +1752,7 @@
         });
 
         // ============================================================
-        // STUDENT VIEW RESULTS - With Mid Term & End Term on Report Card
+        // STUDENT VIEW RESULTS
         // ============================================================
         viewResultsBtn.addEventListener('click', async function() {
             const number = studentNumber.value.trim();
@@ -1585,7 +1766,6 @@
             if (!testType) { showToast('⚠️ Please select a test type', true); return; }
 
             if (!supabaseClient || !isConnected) {
-                // Demo data with ICT
                 const demoStudent = { name:'Ireen Mwansa', student_number:number, class:'Form1_Mary', position:1, comment:'Excellent performance!' };
                 const demoResults = [
                     { subject:'English', score:66 }, { subject:'Mathematics', score:72 }, 
@@ -1650,130 +1830,7 @@
                     return;
                 }
 
-                const classDisplay = getClassDisplay(student.class);
-                const testTypeDisplay = testType === 'mid_term' ? 'Mid Term' : 'End of Term';
-                const testTypeBadgeClass = testType === 'mid_term' ? 'mid-term' : 'end-term';
-                
-                studentInfo.innerHTML = `
-                    <div class="grid-3">
-                        <div><strong>Name:</strong> ${student.name}</div>
-                        <div><strong>Student Number:</strong> ${student.student_number}</div>
-                        <div><strong>Class:</strong> ${classDisplay}</div>
-                        <div><strong>Term:</strong> ${term}</div>
-                        <div><strong>Year:</strong> ${year}</div>
-                        <div><strong>Test Type:</strong> <span class="test-type-badge ${testTypeBadgeClass}">${testTypeDisplay}</span></div>
-                    </div>
-                `;
-
-                // Calculate totals
-                const totalScore = results.reduce((s, r) => s + (parseInt(r.score) || 0), 0);
-                const average = (totalScore / results.length).toFixed(1);
-
-                // Check if ICT is present
-                const hasICT = results.some(r => r.subject === 'ICT');
-
-                let html = `
-                    <div class="result-card report-card-print" style="padding:12px 16px;">
-                        <div class="result-header" style="display:flex;align-items:center;gap:12px;border-bottom:2px solid var(--gold);padding-bottom:8px;margin-bottom:10px;">
-                            <div style="flex-shrink:0;">
-                                <img src="image/logo-removebg-preview.png" alt="School Logo" style="width:50px;height:50px;object-fit:contain;border-radius:50%;border:2px solid var(--gold);">
-                            </div>
-                            <div style="flex:1;text-align:center;">
-                                <h1 style="font-family:var(--font-display);font-size:20px;color:var(--marian-blue);margin:0;">Laura Girls Secondary School</h1>
-                                <p style="color:var(--ink-soft);font-size:12px;margin:0;">Kasama District · Northern Province</p>
-                                <p style="color:var(--ink-faint);font-size:10px;margin:2px 0 0;">Student Academic Report · <span class="test-type-badge ${testTypeBadgeClass}" style="font-size:10px;padding:2px 10px;">${testTypeDisplay}</span> ${term} · ${year}</p>
-                            </div>
-                        </div>
-
-                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;background:var(--paper);padding:6px 10px;border-radius:6px;margin-bottom:8px;font-size:12px;">
-                            <div><strong>Student:</strong> ${student.name}</div>
-                            <div><strong>Number:</strong> ${student.student_number}</div>
-                            <div><strong>Class:</strong> ${classDisplay}</div>
-                            <div><strong>${testTypeDisplay}:</strong> ${term} · ${year}</div>
-                        </div>
-
-                        <div style="margin-bottom:8px;overflow:hidden;border:1px solid var(--border);border-radius:6px;">
-                            <table style="width:100%;border-collapse:collapse;font-size:11px;">
-                                <thead>
-                                    <tr style="background:var(--marian-blue);color:#fff;">
-                                        <th style="padding:5px 8px;text-align:left;font-size:10px;">Subject</th>
-                                        <th style="padding:5px 8px;text-align:center;font-size:10px;">Score (%)</th>
-                                        <th style="padding:5px 8px;text-align:center;font-size:10px;">Grade</th>
-                                        <th style="padding:5px 8px;text-align:left;font-size:10px;">Comment</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                `;
-
-                // Sort subjects to show ICT prominently
-                const sortedResults = [...results].sort((a, b) => {
-                    if (a.subject === 'ICT') return -1;
-                    if (b.subject === 'ICT') return 1;
-                    return a.subject.localeCompare(b.subject);
-                });
-
-                sortedResults.forEach(r => {
-                    const score = parseInt(r.score) || 0;
-                    const grade = getGrade(score);
-                    const gradeClass = getGradeClass(score);
-                    const isICT = r.subject === 'ICT';
-                    html += `
-                        <tr style="border-bottom:1px solid var(--border);${isICT ? 'background:var(--gold-tint);' : ''}">
-                            <td style="padding:4px 8px;font-weight:${isICT ? '700' : '600'};font-size:11px;">${r.subject} ${isICT ? '💻' : ''}</td>
-                            <td style="padding:4px 8px;text-align:center;font-family:var(--font-mono);font-size:11px;font-weight:${isICT ? '700' : '400'};">${score}%</td>
-                            <td style="padding:4px 8px;text-align:center;"><span class="badge ${gradeClass}" style="font-size:10px;padding:1px 8px;">${grade}</span></td>
-                            <td style="padding:4px 8px;font-style:italic;color:var(--ink-soft);font-size:10px;">${r.comment || '-'}</td>
-                        </tr>
-                    `;
-                });
-
-                // Show a note if ICT is missing
-                if (!hasICT) {
-                    html += `
-                        <tr style="background:var(--oxblood-tint);">
-                            <td colspan="4" style="padding:4px 8px;text-align:center;font-style:italic;color:var(--oxblood);font-size:10px;">
-                                ⚠️ ICT results not available for this term
-                            </td>
-                        </tr>
-                    `;
-                }
-
-                html += `
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;background:var(--gold-tint);padding:6px 10px;border-radius:6px;margin-bottom:6px;">
-                            <div style="text-align:center;">
-                                <div style="font-size:9px;color:var(--ink-faint);text-transform:uppercase;font-weight:600;">Total Score</div>
-                                <div style="font-family:var(--font-mono);font-size:16px;font-weight:700;color:var(--marian-blue);">${totalScore}%</div>
-                            </div>
-                            <div style="text-align:center;">
-                                <div style="font-size:9px;color:var(--ink-faint);text-transform:uppercase;font-weight:600;">Average</div>
-                                <div style="font-family:var(--font-mono);font-size:16px;font-weight:700;color:var(--gold);">${average}%</div>
-                            </div>
-                            <div style="text-align:center;">
-                                <div style="font-size:9px;color:var(--ink-faint);text-transform:uppercase;font-weight:600;">Position</div>
-                                <div style="font-family:var(--font-mono);font-size:16px;font-weight:700;color:var(--oxblood);">${student.position || 'N/A'}</div>
-                            </div>
-                        </div>
-
-                        ${student.comment ? `
-                        <div style="padding:4px 10px;background:var(--paper);border-radius:4px;border-left:3px solid var(--gold);margin-bottom:4px;">
-                            <div style="font-size:9px;font-weight:600;color:var(--ink-faint);text-transform:uppercase;letter-spacing:0.3px;">Teacher's Comment</div>
-                            <div style="font-style:italic;color:var(--ink-soft);font-size:11px;margin-top:2px;">${student.comment}</div>
-                        </div>` : ''}
-
-                        <div style="display:flex;justify-content:space-between;font-size:8px;color:var(--ink-faint);border-top:1px solid var(--border);padding-top:4px;margin-top:4px;">
-                            <div>Generated: ${new Date().toLocaleDateString()}</div>
-                            <div>Laura Girls Secondary School · Kasama District</div>
-                        </div>
-                    </div>
-                `;
-
-                resultsContent.innerHTML = html;
-                studentResults.style.display = 'block';
-                showToast(`✅ ${results.length} subjects loaded${hasICT ? ' (including ICT)' : ''}`);
+                displayStudentResults(student, results, term, year, testType);
 
             } catch (err) {
                 showToast('❌ Error: ' + err.message, true);
@@ -1781,6 +1838,128 @@
                 studentResults.style.display = 'none';
             }
         });
+
+        function displayStudentResults(student, results, term, year, testType) {
+            const classDisplay = getClassDisplay(student.class);
+            const testTypeDisplay = testType === 'mid_term' ? 'Mid Term' : 'End of Term';
+            const testTypeBadgeClass = testType === 'mid_term' ? 'mid-term' : 'end-term';
+            
+            studentInfo.innerHTML = `
+                <div class="grid-3">
+                    <div><strong>Name:</strong> ${student.name}</div>
+                    <div><strong>Student Number:</strong> ${student.student_number}</div>
+                    <div><strong>Class:</strong> ${classDisplay}</div>
+                    <div><strong>Term:</strong> ${term}</div>
+                    <div><strong>Year:</strong> ${year}</div>
+                    <div><strong>Test Type:</strong> <span class="test-type-badge ${testTypeBadgeClass}">${testTypeDisplay}</span></div>
+                </div>
+            `;
+
+            const totalScore = results.reduce((s, r) => s + (parseInt(r.score) || 0), 0);
+            const average = (totalScore / results.length).toFixed(1);
+            const hasICT = results.some(r => r.subject === 'ICT');
+
+            let html = `
+                <div class="result-card report-card-print" style="padding:12px 16px;">
+                    <div class="result-header" style="display:flex;align-items:center;gap:12px;border-bottom:2px solid var(--gold);padding-bottom:8px;margin-bottom:10px;">
+                        <div style="flex-shrink:0;">
+                            <img src="image/logo-removebg-preview.png" alt="School Logo" style="width:50px;height:50px;object-fit:contain;border-radius:50%;border:2px solid var(--gold);">
+                        </div>
+                        <div style="flex:1;text-align:center;">
+                            <h1 style="font-family:var(--font-display);font-size:20px;color:var(--marian-blue);margin:0;">Laura Girls Secondary School</h1>
+                            <p style="color:var(--ink-soft);font-size:12px;margin:0;">Kasama District · Northern Province</p>
+                            <p style="color:var(--ink-faint);font-size:10px;margin:2px 0 0;">Student Academic Report · <span class="test-type-badge ${testTypeBadgeClass}" style="font-size:10px;padding:2px 10px;">${testTypeDisplay}</span> ${term} · ${year}</p>
+                        </div>
+                    </div>
+
+                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;background:var(--paper);padding:6px 10px;border-radius:6px;margin-bottom:8px;font-size:12px;">
+                        <div><strong>Student:</strong> ${student.name}</div>
+                        <div><strong>Number:</strong> ${student.student_number}</div>
+                        <div><strong>Class:</strong> ${classDisplay}</div>
+                        <div><strong>${testTypeDisplay}:</strong> ${term} · ${year}</div>
+                    </div>
+
+                    <div style="margin-bottom:8px;overflow:hidden;border:1px solid var(--border);border-radius:6px;">
+                        <table style="width:100%;border-collapse:collapse;font-size:11px;">
+                            <thead>
+                                <tr style="background:var(--marian-blue);color:#fff;">
+                                    <th style="padding:5px 8px;text-align:left;font-size:10px;">Subject</th>
+                                    <th style="padding:5px 8px;text-align:center;font-size:10px;">Score (%)</th>
+                                    <th style="padding:5px 8px;text-align:center;font-size:10px;">Grade</th>
+                                    <th style="padding:5px 8px;text-align:left;font-size:10px;">Comment</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+            `;
+
+            const sortedResults = [...results].sort((a, b) => {
+                if (a.subject === 'ICT') return -1;
+                if (b.subject === 'ICT') return 1;
+                return a.subject.localeCompare(b.subject);
+            });
+
+            sortedResults.forEach(r => {
+                const score = parseInt(r.score) || 0;
+                const grade = getGrade(score);
+                const gradeClass = getGradeClass(score);
+                const isICT = r.subject === 'ICT';
+                html += `
+                    <tr style="border-bottom:1px solid var(--border);${isICT ? 'background:var(--gold-tint);' : ''}">
+                        <td style="padding:4px 8px;font-weight:${isICT ? '700' : '600'};font-size:11px;">${r.subject} ${isICT ? '💻' : ''}</td>
+                        <td style="padding:4px 8px;text-align:center;font-family:var(--font-mono);font-size:11px;font-weight:${isICT ? '700' : '400'};">${score}%</td>
+                        <td style="padding:4px 8px;text-align:center;"><span class="badge ${gradeClass}" style="font-size:10px;padding:1px 8px;">${grade}</span></td>
+                        <td style="padding:4px 8px;font-style:italic;color:var(--ink-soft);font-size:10px;">${r.comment || '-'}</td>
+                    </tr>
+                `;
+            });
+
+            if (!hasICT) {
+                html += `
+                    <tr style="background:var(--oxblood-tint);">
+                        <td colspan="4" style="padding:4px 8px;text-align:center;font-style:italic;color:var(--oxblood);font-size:10px;">
+                            ⚠️ ICT results not available for this term
+                        </td>
+                    </tr>
+                `;
+            }
+
+            html += `
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;background:var(--gold-tint);padding:6px 10px;border-radius:6px;margin-bottom:6px;">
+                        <div style="text-align:center;">
+                            <div style="font-size:9px;color:var(--ink-faint);text-transform:uppercase;font-weight:600;">Total Score</div>
+                            <div style="font-family:var(--font-mono);font-size:16px;font-weight:700;color:var(--marian-blue);">${totalScore}%</div>
+                        </div>
+                        <div style="text-align:center;">
+                            <div style="font-size:9px;color:var(--ink-faint);text-transform:uppercase;font-weight:600;">Average</div>
+                            <div style="font-family:var(--font-mono);font-size:16px;font-weight:700;color:var(--gold);">${average}%</div>
+                        </div>
+                        <div style="text-align:center;">
+                            <div style="font-size:9px;color:var(--ink-faint);text-transform:uppercase;font-weight:600;">Position</div>
+                            <div style="font-family:var(--font-mono);font-size:16px;font-weight:700;color:var(--oxblood);">${student.position || 'N/A'}</div>
+                        </div>
+                    </div>
+
+                    ${student.comment ? `
+                    <div style="padding:4px 10px;background:var(--paper);border-radius:4px;border-left:3px solid var(--gold);margin-bottom:4px;">
+                        <div style="font-size:9px;font-weight:600;color:var(--ink-faint);text-transform:uppercase;letter-spacing:0.3px;">Teacher's Comment</div>
+                        <div style="font-style:italic;color:var(--ink-soft);font-size:11px;margin-top:2px;">${student.comment}</div>
+                    </div>` : ''}
+
+                    <div style="display:flex;justify-content:space-between;font-size:8px;color:var(--ink-faint);border-top:1px solid var(--border);padding-top:4px;margin-top:4px;">
+                        <div>Generated: ${new Date().toLocaleDateString()}</div>
+                        <div>Laura Girls Secondary School · Kasama District</div>
+                    </div>
+                </div>
+            `;
+
+            resultsContent.innerHTML = html;
+            studentResults.style.display = 'block';
+            showToast(`✅ ${results.length} subjects loaded${hasICT ? ' (including ICT)' : ''}`);
+        }
 
         function getClassDisplay(classId) {
             const found = CLASS_DEFINITIONS.find(c => c.id === classId);
@@ -1948,9 +2127,8 @@
         populateClassSelectForAssign();
         initSupabase();
         updateLoginUI();
-        console.log('✅ Laura Girls · Mid Term & End Term tests on report card');
-        console.log('📝 ICT subject included (replaced Computer Studies)');
-        console.log('📊 Teachers must be assigned to classes by admin');
+        console.log('✅ Laura Girls · Teacher assignment fixed');
+        console.log('📝 Teachers can now be assigned to classes');
     })();
 </script>
 </body>
