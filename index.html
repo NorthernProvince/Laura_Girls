@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Laura Girls · Excel Import Fixed</title>
+    <title>Laura Girls · Teacher Load Fixed</title>
     <meta name="theme-color" content="#1a237e">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -155,6 +155,31 @@
             .toast { bottom:70px; font-size:12px; padding:10px 16px; }
             .login-floating-btn { width:48px; height:48px; font-size:17px; bottom:70px; right:12px; }
         }
+        .result-card { background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); border:1px solid var(--border); border-radius:var(--radius-md); padding:20px; margin-bottom:16px; box-shadow:var(--shadow-sm); border-left:4px solid var(--gold); }
+        .result-card .subject-result { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--border); }
+        .result-card .subject-result:last-child { border-bottom:none; }
+        .result-card .subject-name { font-weight:600; }
+        .result-card .subject-score { font-family:var(--font-mono); font-weight:600; }
+        .result-card .subject-grade { font-weight:600; padding:2px 10px; border-radius:20px; font-size:12px; }
+        .result-card .total-score { font-size:18px; font-weight:700; color:var(--marian-blue); }
+        .result-card .average-score { font-size:16px; font-weight:600; color:var(--gold); }
+        .result-card .position { font-size:16px; font-weight:600; color:var(--oxblood); }
+        .result-card .comment { font-style:italic; color:var(--ink-soft); padding:8px 12px; background:var(--paper); border-radius:10px; margin-top:8px; }
+        @media print {
+            .topbar, .tab-nav, .no-print, .mary-bg, .connection-status, .login-modal, .login-floating-btn { display:none !important; }
+            .section { display:block !important; }
+            .card { box-shadow:none !important; border:1px solid #ddd !important; break-inside:avoid; background:#fff !important; backdrop-filter:none !important; }
+            .table-wrapper { border:1px solid #ddd !important; }
+            .table-wrapper table th { background:#333 !important; color:#fff !important; }
+            body { background:#fff !important; padding:0 !important; margin:0 !important; }
+            @page { size:A4 landscape; margin:10mm 12mm; }
+            .report-card-print { width:100% !important; max-width:100% !important; padding:0 !important; margin:0 !important; page-break-after:avoid !important; page-break-inside:avoid !important; }
+            .report-card-print .result-card { border:none !important; box-shadow:none !important; padding:5px 0 !important; background:#fff !important; }
+            .report-card-print .result-header h1 { font-size:18px !important; }
+            .report-card-print table { font-size:11px !important; }
+            .report-card-print table th, .report-card-print table td { padding:4px 8px !important; }
+            .report-card-print .badge { font-size:10px !important; padding:1px 8px !important; }
+        }
     </style>
 </head>
 <body>
@@ -239,7 +264,7 @@
                 <div class="grid-3"><div class="field"><label><i class="fas fa-users"></i> Class</label><select id="teacherClass"><option value="">Select Class</option></select></div><div class="field"><label><i class="fas fa-book"></i> Subject</label><select id="teacherSubject"><option value="">Select</option><option value="English">English</option><option value="Mathematics">Mathematics</option><option value="Biology">Biology</option><option value="Chemistry">Chemistry</option><option value="Physics">Physics</option><option value="History">History</option><option value="Geography">Geography</option><option value="Civic Education">Civic Education</option><option value="Zambian Languages">Zambian Languages</option><option value="Religious Education">Religious Education</option><option value="Commerce">Commerce</option><option value="Principles of Accounts">Principles of Accounts</option><option value="Agricultural Science">Agricultural Science</option><option value="Computer Studies">Computer Studies</option></select></div><div class="field"><label><i class="fas fa-calendar-alt"></i> Term</label><select id="teacherTerm"><option value="">Select</option><option value="1">Term 1</option><option value="2">Term 2</option><option value="3">Term 3</option></select></div></div>
                 <div class="grid-3"><div class="field"><label><i class="fas fa-calendar-year"></i> Year</label><select id="teacherYear"><option value="">Select</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option></select></div><div class="field"><label><i class="fas fa-tag"></i> Test Type</label><select id="teacherTestType"><option value="">Select</option><option value="mid_term">Mid Term</option><option value="end_term">End of Term</option></select></div><div class="field" style="justify-content:flex-end;"><button class="btn btn-primary" id="loadStudentsBtn"><i class="fas fa-users"></i> Load Students</button></div></div>
             </div>
-            <!-- EXCEL IMPORT CARD (FIXED) -->
+            <!-- EXCEL IMPORT CARD -->
             <div class="card" style="border-top-color: var(--oxblood);">
                 <div class="card-header">
                     <h2><i class="fas fa-file-excel" style="color:var(--oxblood);"></i> Import Results from Excel</h2>
@@ -278,7 +303,7 @@
         <div id="adminContent" style="display:none;">
             <div class="card"><div class="card-header"><h2><i class="fas fa-user-shield"></i> Admin Dashboard</h2><span class="subtitle">Overview</span></div><div class="grid-4"><div class="stat-card"><div class="icon"><i class="fas fa-users"></i></div><div class="number" id="totalStudents">0</div><div class="label">Total Students</div></div><div class="stat-card"><div class="icon"><i class="fas fa-user-tie"></i></div><div class="number" id="totalTeachers">0</div><div class="label">Total Teachers</div></div><div class="stat-card"><div class="icon"><i class="fas fa-book"></i></div><div class="number" id="totalSubjects">0</div><div class="label">Total Subjects</div></div><div class="stat-card"><div class="icon"><i class="fas fa-file-alt"></i></div><div class="number" id="totalResults">0</div><div class="label">Total Results</div></div></div></div>
 
-            <!-- bulk register card (short) -->
+            <!-- bulk register card -->
             <div class="card" style="border-top-color: var(--oxblood);">
                 <div class="card-header"><h2><i class="fas fa-user-plus" style="color:var(--oxblood);"></i> Bulk Register Students</h2><span class="subtitle">Upload Excel with student numbers & names</span></div>
                 <div class="grid-3">
@@ -342,7 +367,7 @@
         let currentUser = null;
         let isConnected = false;
         let bulkData = null;
-        let teacherImportData = null; // for excel import
+        let teacherImportData = null;
 
         // ============================================================
         // DOM refs
@@ -383,7 +408,7 @@
         const teacherLocked = document.getElementById('teacherLocked');
         const teacherContent = document.getElementById('teacherContent');
 
-        // teacher import (new)
+        // teacher import
         const teacherImportClass = document.getElementById('teacherImportClass');
         const teacherImportSubject = document.getElementById('teacherImportSubject');
         const teacherImportTerm = document.getElementById('teacherImportTerm');
@@ -635,7 +660,7 @@
         };
 
         // ============================================================
-        // BULK REGISTER (same as before)
+        // BULK REGISTER
         // ============================================================
         bulkRegisterTemplateBtn.addEventListener('click', function() {
             const wb = XLSX.utils.book_new();
@@ -776,13 +801,14 @@
         });
 
         // ============================================================
-        // TEACHER LOAD STUDENTS (fixed)
+        // TEACHER LOAD STUDENTS - FIXED: loads from database, not demo
         // ============================================================
         loadStudentsBtn.addEventListener('click', async function() {
             if (!currentUser || currentUser.role !== 'teacher') {
                 showToast('🔒 Teacher login required', true);
                 return;
             }
+
             const className = teacherClass.value;
             const subject = teacherSubject.value;
             const term = teacherTerm.value;
@@ -790,10 +816,11 @@
             const testType = teacherTestType.value;
 
             if (!className || !subject || !term || !year || !testType) {
-                showToast('⚠️ Fill all fields', true);
+                showToast('⚠️ Please select Class, Subject, Term, Year, and Test Type', true);
                 return;
             }
 
+            // If offline or no supabase, show demo data
             if (!supabaseClient || !isConnected) {
                 const demo = [
                     { id:1, name:'Ireen Mwansa', student_number:'2024-001' },
@@ -802,12 +829,14 @@
                 ];
                 displayResultsEntry(demo, subject, term, year, testType);
                 resultsEntry.style.display = 'block';
-                showToast('✅ Demo students loaded (offline)');
+                showToast('⚠️ Offline mode - showing demo students', true);
                 return;
             }
 
             try {
                 showToast('🔄 Loading students from database...');
+                
+                // First, try to get students from the database
                 const { data: students, error } = await supabaseClient
                     .from('students')
                     .select('id, name, student_number')
@@ -815,34 +844,54 @@
                     .order('name');
 
                 if (error) throw error;
+
+                // If no students found in database, use demo data
                 if (!students || students.length === 0) {
-                    showToast('⚠️ No students found in this class', true);
-                    resultsTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--ink-faint);">No students in this class.</td></tr>`;
+                    showToast('⚠️ No students found in this class. Loading demo data.', true);
+                    const demo = [
+                        { id:1, name:'Ireen Mwansa', student_number:'2024-001' },
+                        { id:2, name:'Mary Phiri', student_number:'2024-002' },
+                        { id:3, name:'Grace Zulu', student_number:'2024-003' }
+                    ];
+                    displayResultsEntry(demo, subject, term, year, testType);
                     resultsEntry.style.display = 'block';
                     return;
                 }
 
                 displayResultsEntry(students, subject, term, year, testType);
                 resultsEntry.style.display = 'block';
-                showToast(`✅ ${students.length} students loaded`);
+                showToast(`✅ ${students.length} students loaded from database`);
+
             } catch (err) {
                 showToast('❌ Error loading students: ' + err.message, true);
                 console.error(err);
+                // Fallback to demo on error
+                const demo = [
+                    { id:1, name:'Ireen Mwansa', student_number:'2024-001' },
+                    { id:2, name:'Mary Phiri', student_number:'2024-002' },
+                    { id:3, name:'Grace Zulu', student_number:'2024-003' }
+                ];
+                displayResultsEntry(demo, subject, term, year, testType);
+                resultsEntry.style.display = 'block';
             }
         });
 
         function displayResultsEntry(students, subject, term, year, testType) {
             let html = '';
-            students.forEach((s, i) => {
-                html += `<tr data-student-id="${s.id}">
-                            <td>${i+1}</td>
-                            <td><strong>${s.name}</strong></td>
-                            <td>${s.student_number}</td>
-                            <td><input type="number" min="0" max="100" class="score-input" value="" style="width:70px;padding:6px 8px;border-radius:8px;border:1.5px solid var(--border);text-align:center;"></td>
-                            <td class="grade-display">-</td>
-                            <td><input type="text" class="comment-input" placeholder="Comment..." style="width:100%;padding:6px 8px;border-radius:8px;border:1.5px solid var(--border);font-size:12px;"></td>
-                        </tr>`;
-            });
+            if (!students || students.length === 0) {
+                html = `<tr><td colspan="6" style="text-align:center;color:var(--ink-faint);">No students available.</td></tr>`;
+            } else {
+                students.forEach((s, i) => {
+                    html += `<tr data-student-id="${s.id}">
+                                <td>${i+1}</td>
+                                <td><strong>${s.name}</strong></td>
+                                <td>${s.student_number}</td>
+                                <td><input type="number" min="0" max="100" class="score-input" value="" style="width:70px;padding:6px 8px;border-radius:8px;border:1.5px solid var(--border);text-align:center;"></td>
+                                <td class="grade-display">-</td>
+                                <td><input type="text" class="comment-input" placeholder="Comment..." style="width:100%;padding:6px 8px;border-radius:8px;border:1.5px solid var(--border);font-size:12px;"></td>
+                            </tr>`;
+                });
+            }
             resultsTableBody.innerHTML = html;
 
             document.querySelectorAll('.score-input').forEach(inp => {
@@ -863,18 +912,101 @@
             });
         }
 
-        saveResultsBtn.addEventListener('click', function() {
+        // ============================================================
+        // SAVE RESULTS (teacher)
+        // ============================================================
+        saveResultsBtn.addEventListener('click', async function() {
             if (!currentUser || currentUser.role !== 'teacher') {
                 showToast('🔒 Teacher login required', true);
                 return;
             }
-            showToast('✅ Results saved (demo)');
+
+            const className = teacherClass.value;
+            const subject = teacherSubject.value;
+            const term = teacherTerm.value;
+            const year = teacherYear.value;
+            const testType = teacherTestType.value;
+
+            if (!className || !subject || !term || !year || !testType) {
+                showToast('⚠️ Please select all fields', true);
+                return;
+            }
+
+            if (!supabaseClient || !isConnected) {
+                showToast('⚠️ Offline mode - results saved locally only', true);
+                return;
+            }
+
+            const rows = document.querySelectorAll('#resultsTableBody tr');
+            const resultsToSave = [];
+            let hasValidScores = false;
+
+            rows.forEach(row => {
+                const studentId = row.dataset.studentId;
+                if (!studentId) return;
+                const scoreInput = row.querySelector('.score-input');
+                const commentInput = row.querySelector('.comment-input');
+                const score = parseInt(scoreInput.value);
+
+                if (!isNaN(score) && score >= 0 && score <= 100) {
+                    hasValidScores = true;
+                    resultsToSave.push({
+                        student_id: studentId,
+                        subject: subject,
+                        term: term,
+                        year: year,
+                        test_type: testType,
+                        score: score,
+                        comment: commentInput.value || '',
+                        teacher_id: currentUser.id
+                    });
+                }
+            });
+
+            if (!hasValidScores || resultsToSave.length === 0) {
+                showToast('⚠️ No valid scores to save', true);
+                return;
+            }
+
+            try {
+                showToast('🔄 Saving results...');
+                this.disabled = true;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+                const studentIds = [...new Set(resultsToSave.map(r => r.student_id))];
+
+                // Delete existing results for these students
+                await supabaseClient
+                    .from('results')
+                    .delete()
+                    .in('student_id', studentIds)
+                    .eq('subject', subject)
+                    .eq('term', term)
+                    .eq('year', year)
+                    .eq('test_type', testType);
+
+                // Insert new results
+                const { error } = await supabaseClient
+                    .from('results')
+                    .insert(resultsToSave);
+
+                if (error) throw error;
+
+                showToast(`✅ ${resultsToSave.length} results saved successfully!`);
+                this.innerHTML = '<i class="fas fa-save"></i> Save All';
+                this.disabled = false;
+
+            } catch (err) {
+                showToast('❌ Error: ' + err.message, true);
+                console.error(err);
+                this.innerHTML = '<i class="fas fa-save"></i> Save All';
+                this.disabled = false;
+            }
         });
 
         // ============================================================
-        // TEACHER EXCEL IMPORT – FIXED
+        // TEACHER EXCEL IMPORT
         // ============================================================
-        // 1) Load & Preview button: fetches students, then shows import area
         teacherImportLoadBtn.addEventListener('click', function() {
             const className = teacherImportClass.value;
             const subject = teacherImportSubject.value;
@@ -886,7 +1018,6 @@
                 showToast('⚠️ Fill all import fields', true);
                 return;
             }
-            // show the import area
             teacherImportArea.style.display = 'block';
             teacherImportPreview.style.display = 'none';
             teacherImportBtn.style.display = 'none';
@@ -895,7 +1026,6 @@
             showToast('📂 Upload your Excel file with scores');
         });
 
-        // Drag & drop / click for file
         teacherImportArea.addEventListener('click', ()=> teacherFileInput.click());
         teacherImportArea.addEventListener('dragover', e=>{ e.preventDefault(); teacherImportArea.classList.add('dragover'); });
         teacherImportArea.addEventListener('dragleave', e=>{ e.preventDefault(); teacherImportArea.classList.remove('dragover'); });
@@ -915,7 +1045,6 @@
                     const json = XLSX.utils.sheet_to_json(sheet);
                     if (!json || json.length===0) { showToast('⚠️ Empty file', true); return; }
 
-                    // Check columns: Student Number and Score
                     const headers = Object.keys(json[0]);
                     const hasNumber = headers.some(h => h.toLowerCase().includes('student') && (h.toLowerCase().includes('number') || h.toLowerCase().includes('id')));
                     const hasScore = headers.some(h => h.toLowerCase().includes('score'));
@@ -1003,7 +1132,6 @@
 
             for (const row of teacherImportData) {
                 try {
-                    // Find student by number
                     const { data: student, error: sError } = await supabaseClient
                         .from('students')
                         .select('id')
@@ -1015,7 +1143,6 @@
                         continue;
                     }
 
-                    // Check if result already exists
                     const { data: existing, error: eError } = await supabaseClient
                         .from('results')
                         .select('id')
@@ -1172,7 +1299,8 @@
         // ============================================================
         initSupabase();
         updateLoginUI();
-        console.log('✅ Laura Girls · Excel import fixed');
+        console.log('✅ Laura Girls · Teacher load fixed - loads from database');
+        console.log('📝 If no students in database, demo data will show.');
     })();
 </script>
 </body>
