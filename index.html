@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Laura Girls · Teacher Assignment Fixed</title>
+    <title>Laura Girls · Combined Mid & End Term Report</title>
     <meta name="theme-color" content="#1a237e">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -148,9 +148,16 @@
         .test-type-badge { display:inline-block; padding:3px 14px; border-radius:40px; font-size:12px; font-weight:700; }
         .test-type-badge.mid-term { background:#e3f2fd; color:#0d47a1; }
         .test-type-badge.end-term { background:#fff3e0; color:#e65100; }
+        .test-type-badge.combined { background:#e8f5e9; color:#2e7d32; }
         .assignment-status { padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600; }
         .assignment-status.assigned { background:#e8f5e9; color:#2e7d32; }
         .assignment-status.unassigned { background:#ffebee; color:#c62828; }
+        .report-card-print .mid-col { background:#f0f7ff; }
+        .report-card-print .end-col { background:#fff8f0; }
+        .report-card-print .test-header { background:var(--gold-tint); padding:4px 8px; border-radius:4px; margin:4px 0; font-weight:600; font-size:11px; color:var(--marian-blue); text-align:center; }
+        .report-card-print .test-header.mid { background:#e3f2fd; }
+        .report-card-print .test-header.end { background:#fff3e0; }
+        .report-card-print .combined-average { background:var(--gold-tint); font-weight:700; }
         @media (max-width:480px) {
             .topbar .brand h1 { font-size:14px; }
             .topbar .brand .coat-of-arms { width:35px; height:35px; }
@@ -180,6 +187,7 @@
             .report-card-print table th, .report-card-print table td { padding:3px 6px !important; }
             .report-card-print .badge { font-size:9px !important; padding:1px 6px !important; }
             .report-card-print .test-type-badge { font-size:10px !important; padding:2px 10px !important; }
+            .report-card-print .test-header { font-size:10px !important; }
         }
     </style>
 </head>
@@ -254,12 +262,11 @@
 
     <!-- student section -->
     <div class="section active" id="studentSection">
-        <div class="card"><div class="card-header"><h2><i class="fas fa-search"></i> Check Your Results</h2><span class="subtitle">Enter your student number to view results</span></div>
+        <div class="card"><div class="card-header"><h2><i class="fas fa-search"></i> Check Your Results</h2><span class="subtitle">Enter your student number to view combined Mid Term & End Term results</span></div>
             <div class="grid-2"><div class="field"><label><i class="fas fa-id-card"></i> Student Number</label><input type="text" id="studentNumber" placeholder="e.g. 2024-001" value="2024-001"></div><div class="field"><label><i class="fas fa-calendar-alt"></i> Term</label><select id="studentTerm"><option value="">Select</option><option value="1">Term 1</option><option value="2">Term 2</option><option value="3">Term 3</option></select></div></div>
-            <div class="grid-2"><div class="field"><label><i class="fas fa-calendar-year"></i> Year</label><select id="studentYear"><option value="">Select</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option></select></div><div class="field"><label><i class="fas fa-tag"></i> Test Type</label><select id="studentTestType"><option value="">Select</option><option value="mid_term">Mid Term</option><option value="end_term">End of Term</option></select></div></div>
-            <button class="btn btn-primary btn-block" id="viewResultsBtn"><i class="fas fa-eye"></i> View Results</button>
+            <div class="grid-2"><div class="field"><label><i class="fas fa-calendar-year"></i> Year</label><select id="studentYear"><option value="">Select</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option></select></div><div class="field" style="justify-content:flex-end;"><button class="btn btn-primary btn-block" id="viewResultsBtn"><i class="fas fa-eye"></i> View Combined Report</button></div></div>
         </div>
-        <div id="studentResults" style="display:none;"><div class="card"><div class="card-header"><h2><i class="fas fa-user-graduate"></i> Student Information</h2></div><div id="studentInfo"></div></div><div class="card"><div class="card-header"><h2><i class="fas fa-list"></i> Results</h2><button class="btn btn-sm btn-success no-print" id="downloadResultsBtn"><i class="fas fa-file-pdf"></i> Download PDF</button></div><div id="resultsContent"></div></div></div>
+        <div id="studentResults" style="display:none;"><div class="card"><div class="card-header"><h2><i class="fas fa-user-graduate"></i> Student Information</h2></div><div id="studentInfo"></div></div><div class="card"><div class="card-header"><h2><i class="fas fa-list"></i> Combined Report (Mid Term & End Term)</h2><button class="btn btn-sm btn-success no-print" id="downloadResultsBtn"><i class="fas fa-file-pdf"></i> Download PDF</button></div><div id="resultsContent"></div></div></div>
     </div>
 
     <!-- teacher section -->
@@ -317,7 +324,6 @@
         <div id="adminContent" style="display:none;">
             <div class="card"><div class="card-header"><h2><i class="fas fa-user-shield"></i> Admin Dashboard</h2><span class="subtitle">Overview</span></div><div class="grid-4"><div class="stat-card"><div class="icon"><i class="fas fa-users"></i></div><div class="number" id="totalStudents">0</div><div class="label">Total Students</div></div><div class="stat-card"><div class="icon"><i class="fas fa-user-tie"></i></div><div class="number" id="totalTeachers">0</div><div class="label">Total Teachers</div></div><div class="stat-card"><div class="icon"><i class="fas fa-book"></i></div><div class="number" id="totalSubjects">0</div><div class="label">Total Subjects</div></div><div class="stat-card"><div class="icon"><i class="fas fa-file-alt"></i></div><div class="number" id="totalResults">0</div><div class="label">Total Results</div></div></div></div>
 
-            <!-- Teacher Class Assignments - FIXED -->
             <div class="card class-assignment-card">
                 <div class="card-header">
                     <h2><i class="fas fa-user-tie" style="color:var(--oxblood);"></i> Teacher Class Assignments</h2>
@@ -340,17 +346,9 @@
                     <div class="table-wrapper">
                         <table>
                             <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Class</th>
-                                    <th>Assigned Teacher</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
+                                <tr><th>#</th><th>Class</th><th>Assigned Teacher</th><th>Status</th><th>Action</th></tr>
                             </thead>
-                            <tbody id="assignmentsTableBody">
-                                <tr><td colspan="5" style="text-align:center;color:var(--ink-faint);">Loading assignments...</td></tr>
-                            </tbody>
+                            <tbody id="assignmentsTableBody"><tr><td colspan="5" style="text-align:center;color:var(--ink-faint);">Loading assignments...</td></tr></tbody>
                         </table>
                     </div>
                 </div>
@@ -447,7 +445,6 @@
         const studentNumber = document.getElementById('studentNumber');
         const studentTerm = document.getElementById('studentTerm');
         const studentYear = document.getElementById('studentYear');
-        const studentTestType = document.getElementById('studentTestType');
         const viewResultsBtn = document.getElementById('viewResultsBtn');
         const studentResults = document.getElementById('studentResults');
         const studentInfo = document.getElementById('studentInfo');
@@ -772,7 +769,7 @@
         };
 
         // ============================================================
-        // TEACHER CLASS ASSIGNMENTS - FIXED
+        // TEACHER CLASS ASSIGNMENTS
         // ============================================================
         async function loadTeacherAssignments() {
             if (!supabaseClient || !isConnected || !currentUser || currentUser.role !== 'teacher') {
@@ -788,7 +785,6 @@
                     .eq('teacher_id', currentUser.id);
 
                 if (error) {
-                    console.warn('Error loading assignments:', error);
                     // If table doesn't exist, try using classes table directly
                     const { data: classData, error: classError } = await supabaseClient
                         .from('classes')
@@ -882,7 +878,7 @@
         }
 
         // ============================================================
-        // LOAD ASSIGNMENTS FOR ADMIN - FIXED
+        // LOAD ASSIGNMENTS FOR ADMIN
         // ============================================================
         async function loadAssignments() {
             if (!supabaseClient || !isConnected) {
@@ -996,7 +992,7 @@
         }
 
         // ============================================================
-        // REMOVE ASSIGNMENT - FIXED
+        // REMOVE ASSIGNMENT
         // ============================================================
         window.removeAssignment = async function(classId) {
             if (!currentUser || currentUser.role !== 'admin') { showToast('🔒 Admin only', true); return; }
@@ -1004,7 +1000,6 @@
             if (!supabaseClient || !isConnected) { showToast('⚠️ Offline mode', true); return; }
 
             try {
-                // Try to delete from teacher_class_assignments
                 try {
                     const { error } = await supabaseClient
                         .from('teacher_class_assignments')
@@ -1015,7 +1010,6 @@
                     console.warn('Could not delete from teacher_class_assignments:', e);
                 }
 
-                // Also update classes table
                 await supabaseClient
                     .from('classes')
                     .update({ teacher_id: null, teacher_name: null })
@@ -1024,7 +1018,6 @@
                 showToast('✅ Assignment removed');
                 loadAssignments();
                 loadClasses();
-                // Refresh teacher's assigned classes if logged in as teacher
                 if (currentUser.role === 'teacher') {
                     await loadTeacherAssignments();
                 }
@@ -1034,7 +1027,7 @@
         };
 
         // ============================================================
-        // ASSIGN TEACHER - FIXED
+        // ASSIGN TEACHER
         // ============================================================
         assignTeacherBtn.addEventListener('click', async function() {
             if (!currentUser || currentUser.role !== 'admin') { showToast('🔒 Admin only', true); return; }
@@ -1047,7 +1040,6 @@
             if (!supabaseClient || !isConnected) { showToast('⚠️ Offline mode', true); return; }
 
             try {
-                // Get teacher name
                 const { data: teacher, error: tError } = await supabaseClient
                     .from('teachers')
                     .select('name')
@@ -1055,7 +1047,6 @@
                     .maybeSingle();
                 if (tError) throw tError;
 
-                // First update the classes table directly
                 await supabaseClient
                     .from('classes')
                     .update({ 
@@ -1064,9 +1055,7 @@
                     })
                     .eq('id', classId);
 
-                // Then try to insert into teacher_class_assignments if table exists
                 try {
-                    // Check if assignment already exists
                     const { data: existing } = await supabaseClient
                         .from('teacher_class_assignments')
                         .select('*')
@@ -1085,7 +1074,6 @@
                     }
                 } catch (e) {
                     console.warn('Could not update teacher_class_assignments table:', e);
-                    // Continue anyway since classes table is updated
                 }
 
                 showToast('✅ Teacher assigned successfully!');
@@ -1093,7 +1081,6 @@
                 loadClasses();
                 populateClassDropdowns();
                 
-                // If logged in as teacher, refresh their assignments
                 if (currentUser.role === 'teacher') {
                     await loadTeacherAssignments();
                 }
@@ -1105,7 +1092,7 @@
         });
 
         // ============================================================
-        // BULK REGISTER (unchanged)
+        // BULK REGISTER
         // ============================================================
         bulkRegisterTemplateBtn.addEventListener('click', function() {
             const wb = XLSX.utils.book_new();
@@ -1246,7 +1233,7 @@
         });
 
         // ============================================================
-        // TEACHER LOAD STUDENTS - with assignment check
+        // TEACHER LOAD STUDENTS
         // ============================================================
         loadStudentsBtn.addEventListener('click', async function() {
             if (!currentUser || currentUser.role !== 'teacher') {
@@ -1752,31 +1739,27 @@
         });
 
         // ============================================================
-        // STUDENT VIEW RESULTS
+        // STUDENT VIEW RESULTS - Combined Mid Term & End Term Report
         // ============================================================
         viewResultsBtn.addEventListener('click', async function() {
             const number = studentNumber.value.trim();
             const term = studentTerm.value;
             const year = studentYear.value;
-            const testType = studentTestType.value;
 
             if (!number) { showToast('⚠️ Please enter your student number', true); return; }
             if (!term) { showToast('⚠️ Please select a term', true); return; }
             if (!year) { showToast('⚠️ Please select a year', true); return; }
-            if (!testType) { showToast('⚠️ Please select a test type', true); return; }
 
             if (!supabaseClient || !isConnected) {
-                const demoStudent = { name:'Ireen Mwansa', student_number:number, class:'Form1_Mary', position:1, comment:'Excellent performance!' };
-                const demoResults = [
-                    { subject:'English', score:66 }, { subject:'Mathematics', score:72 }, 
-                    { subject:'Biology', score:58 }, { subject:'Chemistry', score:63 },
-                    { subject:'Physics', score:55 }, { subject:'History', score:81 },
-                    { subject:'Geography', score:69 }, { subject:'Civic Education', score:74 },
-                    { subject:'Zambian Languages', score:62 }, { subject:'Religious Education', score:70 },
-                    { subject:'Commerce', score:68 }, { subject:'Principles of Accounts', score:65 },
-                    { subject:'Agricultural Science', score:71 }, { subject:'ICT', score:76 }
+                // Demo data with both Mid Term and End Term
+                const demoStudent = { name:'Chela Tasheni', student_number:number, class:'Form1_Mazz', position:1, comment:'Good performance! Keep it up.' };
+                const demoMidResults = [
+                    { subject:'ICT', score:65 }, { subject:'Mathematics', score:68 }
                 ];
-                displayStudentResults(demoStudent, demoResults, term, year, testType);
+                const demoEndResults = [
+                    { subject:'ICT', score:70 }, { subject:'Mathematics', score:70 }
+                ];
+                displayCombinedResults(demoStudent, demoMidResults, demoEndResults, term, year);
                 studentResults.style.display = 'block';
                 showToast('⚠️ Offline mode - showing demo data', true);
                 return;
@@ -1798,39 +1781,30 @@
                     return;
                 }
 
-                const { data: results, error: resultsError } = await supabaseClient
+                // Fetch both Mid Term and End Term results for this student
+                const { data: midResults, error: midError } = await supabaseClient
                     .from('results')
                     .select('*')
                     .eq('student_id', student.id)
                     .eq('term', term)
                     .eq('year', year)
-                    .eq('test_type', testType);
+                    .eq('test_type', 'mid_term');
 
-                if (resultsError) throw resultsError;
+                if (midError) throw midError;
 
-                if (!results || results.length === 0) {
-                    studentInfo.innerHTML = `
-                        <div class="grid-3">
-                            <div><strong>Name:</strong> ${student.name}</div>
-                            <div><strong>Student Number:</strong> ${student.student_number}</div>
-                            <div><strong>Class:</strong> ${getClassDisplay(student.class)}</div>
-                            <div><strong>Term:</strong> ${term}</div>
-                            <div><strong>Year:</strong> ${year}</div>
-                            <div><strong>Test Type:</strong> ${testType === 'mid_term' ? 'Mid Term' : 'End of Term'}</div>
-                        </div>
-                    `;
-                    resultsContent.innerHTML = `
-                        <div style="text-align:center;padding:30px;color:var(--ink-faint);">
-                            <i class="fas fa-folder-open" style="font-size:30px;display:block;margin-bottom:12px;"></i>
-                            <p>No results found for this term. Please check your selection or contact your teacher.</p>
-                        </div>
-                    `;
-                    studentResults.style.display = 'block';
-                    showToast('📭 No results found for this term');
-                    return;
-                }
+                const { data: endResults, error: endError } = await supabaseClient
+                    .from('results')
+                    .select('*')
+                    .eq('student_id', student.id)
+                    .eq('term', term)
+                    .eq('year', year)
+                    .eq('test_type', 'end_term');
 
-                displayStudentResults(student, results, term, year, testType);
+                if (endError) throw endError;
+
+                displayCombinedResults(student, midResults || [], endResults || [], term, year);
+                studentResults.style.display = 'block';
+                showToast(`✅ Combined report loaded`);
 
             } catch (err) {
                 showToast('❌ Error: ' + err.message, true);
@@ -1839,10 +1813,8 @@
             }
         });
 
-        function displayStudentResults(student, results, term, year, testType) {
+        function displayCombinedResults(student, midResults, endResults, term, year) {
             const classDisplay = getClassDisplay(student.class);
-            const testTypeDisplay = testType === 'mid_term' ? 'Mid Term' : 'End of Term';
-            const testTypeBadgeClass = testType === 'mid_term' ? 'mid-term' : 'end-term';
             
             studentInfo.innerHTML = `
                 <div class="grid-3">
@@ -1851,14 +1823,17 @@
                     <div><strong>Class:</strong> ${classDisplay}</div>
                     <div><strong>Term:</strong> ${term}</div>
                     <div><strong>Year:</strong> ${year}</div>
-                    <div><strong>Test Type:</strong> <span class="test-type-badge ${testTypeBadgeClass}">${testTypeDisplay}</span></div>
+                    <div><strong>Report Type:</strong> <span class="test-type-badge combined">📊 Combined (Mid & End Term)</span></div>
                 </div>
             `;
 
-            const totalScore = results.reduce((s, r) => s + (parseInt(r.score) || 0), 0);
-            const average = (totalScore / results.length).toFixed(1);
-            const hasICT = results.some(r => r.subject === 'ICT');
+            // Get all unique subjects from both results
+            const subjectSet = new Set();
+            midResults.forEach(r => subjectSet.add(r.subject));
+            endResults.forEach(r => subjectSet.add(r.subject));
+            const subjects = Array.from(subjectSet).sort();
 
+            // Build the table
             let html = `
                 <div class="result-card report-card-print" style="padding:12px 16px;">
                     <div class="result-header" style="display:flex;align-items:center;gap:12px;border-bottom:2px solid var(--gold);padding-bottom:8px;margin-bottom:10px;">
@@ -1868,7 +1843,7 @@
                         <div style="flex:1;text-align:center;">
                             <h1 style="font-family:var(--font-display);font-size:20px;color:var(--marian-blue);margin:0;">Laura Girls Secondary School</h1>
                             <p style="color:var(--ink-soft);font-size:12px;margin:0;">Kasama District · Northern Province</p>
-                            <p style="color:var(--ink-faint);font-size:10px;margin:2px 0 0;">Student Academic Report · <span class="test-type-badge ${testTypeBadgeClass}" style="font-size:10px;padding:2px 10px;">${testTypeDisplay}</span> ${term} · ${year}</p>
+                            <p style="color:var(--ink-faint);font-size:10px;margin:2px 0 0;">Student Academic Report · <span class="test-type-badge combined" style="font-size:10px;padding:2px 10px;">Combined (Mid & End Term)</span> ${term} · ${year}</p>
                         </div>
                     </div>
 
@@ -1876,70 +1851,90 @@
                         <div><strong>Student:</strong> ${student.name}</div>
                         <div><strong>Number:</strong> ${student.student_number}</div>
                         <div><strong>Class:</strong> ${classDisplay}</div>
-                        <div><strong>${testTypeDisplay}:</strong> ${term} · ${year}</div>
+                        <div><strong>Term:</strong> ${term} · ${year}</div>
                     </div>
 
                     <div style="margin-bottom:8px;overflow:hidden;border:1px solid var(--border);border-radius:6px;">
                         <table style="width:100%;border-collapse:collapse;font-size:11px;">
                             <thead>
                                 <tr style="background:var(--marian-blue);color:#fff;">
-                                    <th style="padding:5px 8px;text-align:left;font-size:10px;">Subject</th>
-                                    <th style="padding:5px 8px;text-align:center;font-size:10px;">Score (%)</th>
-                                    <th style="padding:5px 8px;text-align:center;font-size:10px;">Grade</th>
-                                    <th style="padding:5px 8px;text-align:left;font-size:10px;">Comment</th>
+                                    <th style="padding:5px 8px;text-align:left;font-size:10px;width:25%;">Subject</th>
+                                    <th style="padding:5px 8px;text-align:center;font-size:10px;width:20%;" class="mid-col">Mid Term Score</th>
+                                    <th style="padding:5px 8px;text-align:center;font-size:10px;width:15%;" class="mid-col">Grade</th>
+                                    <th style="padding:5px 8px;text-align:center;font-size:10px;width:20%;" class="end-col">End Term Score</th>
+                                    <th style="padding:5px 8px;text-align:center;font-size:10px;width:15%;" class="end-col">Grade</th>
+                                    <th style="padding:5px 8px;text-align:center;font-size:10px;width:5%;">Avg</th>
                                 </tr>
                             </thead>
                             <tbody>
             `;
 
-            const sortedResults = [...results].sort((a, b) => {
-                if (a.subject === 'ICT') return -1;
-                if (b.subject === 'ICT') return 1;
-                return a.subject.localeCompare(b.subject);
-            });
+            let midTotal = 0, endTotal = 0;
+            let midCount = 0, endCount = 0;
+            let hasMid = false, hasEnd = false;
 
-            sortedResults.forEach(r => {
-                const score = parseInt(r.score) || 0;
-                const grade = getGrade(score);
-                const gradeClass = getGradeClass(score);
-                const isICT = r.subject === 'ICT';
+            subjects.forEach(subject => {
+                const mid = midResults.find(r => r.subject === subject);
+                const end = endResults.find(r => r.subject === subject);
+                
+                const midScore = mid ? parseInt(mid.score) : null;
+                const endScore = end ? parseInt(end.score) : null;
+                
+                if (midScore !== null) { midTotal += midScore; midCount++; hasMid = true; }
+                if (endScore !== null) { endTotal += endScore; endCount++; hasEnd = true; }
+                
+                const midGrade = midScore !== null ? getGrade(midScore) : '-';
+                const midClass = midScore !== null ? getGradeClass(midScore) : '';
+                const endGrade = endScore !== null ? getGrade(endScore) : '-';
+                const endClass = endScore !== null ? getGradeClass(endScore) : '';
+                
+                const avg = (midScore !== null && endScore !== null) ? Math.round((midScore + endScore) / 2) : 
+                           (midScore !== null ? midScore : (endScore !== null ? endScore : null));
+                const avgGrade = avg !== null ? getGrade(avg) : '-';
+                const avgClass = avg !== null ? getGradeClass(avg) : '';
+
+                const isICT = subject === 'ICT';
+                const rowStyle = isICT ? 'background:var(--gold-tint);' : '';
+
                 html += `
-                    <tr style="border-bottom:1px solid var(--border);${isICT ? 'background:var(--gold-tint);' : ''}">
-                        <td style="padding:4px 8px;font-weight:${isICT ? '700' : '600'};font-size:11px;">${r.subject} ${isICT ? '💻' : ''}</td>
-                        <td style="padding:4px 8px;text-align:center;font-family:var(--font-mono);font-size:11px;font-weight:${isICT ? '700' : '400'};">${score}%</td>
-                        <td style="padding:4px 8px;text-align:center;"><span class="badge ${gradeClass}" style="font-size:10px;padding:1px 8px;">${grade}</span></td>
-                        <td style="padding:4px 8px;font-style:italic;color:var(--ink-soft);font-size:10px;">${r.comment || '-'}</td>
+                    <tr style="border-bottom:1px solid var(--border);${rowStyle}">
+                        <td style="padding:4px 8px;font-weight:${isICT ? '700' : '600'};font-size:11px;">${subject} ${isICT ? '💻' : ''}</td>
+                        <td style="padding:4px 8px;text-align:center;font-family:var(--font-mono);font-size:11px;background:#f0f7ff;">${midScore !== null ? midScore + '%' : '—'}</td>
+                        <td style="padding:4px 8px;text-align:center;background:#f0f7ff;"><span class="badge ${midClass}" style="font-size:10px;padding:1px 8px;">${midGrade}</span></td>
+                        <td style="padding:4px 8px;text-align:center;font-family:var(--font-mono);font-size:11px;background:#fff8f0;">${endScore !== null ? endScore + '%' : '—'}</td>
+                        <td style="padding:4px 8px;text-align:center;background:#fff8f0;"><span class="badge ${endClass}" style="font-size:10px;padding:1px 8px;">${endGrade}</span></td>
+                        <td style="padding:4px 8px;text-align:center;font-family:var(--font-mono);font-size:11px;font-weight:700;background:var(--gold-tint);">${avg !== null ? avg + '%' : '—'}</td>
                     </tr>
                 `;
             });
 
-            if (!hasICT) {
-                html += `
-                    <tr style="background:var(--oxblood-tint);">
-                        <td colspan="4" style="padding:4px 8px;text-align:center;font-style:italic;color:var(--oxblood);font-size:10px;">
-                            ⚠️ ICT results not available for this term
-                        </td>
-                    </tr>
-                `;
-            }
+            // Calculate overall averages
+            const midAvg = midCount > 0 ? (midTotal / midCount) : 0;
+            const endAvg = endCount > 0 ? (endTotal / endCount) : 0;
+            const overallAvg = (midCount > 0 && endCount > 0) ? ((midTotal + endTotal) / (midCount + endCount)) : 
+                              (midCount > 0 ? midAvg : (endCount > 0 ? endAvg : 0));
 
             html += `
                             </tbody>
                         </table>
                     </div>
 
-                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;background:var(--gold-tint);padding:6px 10px;border-radius:6px;margin-bottom:6px;">
+                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;background:var(--gold-tint);padding:6px 10px;border-radius:6px;margin-bottom:6px;">
                         <div style="text-align:center;">
-                            <div style="font-size:9px;color:var(--ink-faint);text-transform:uppercase;font-weight:600;">Total Score</div>
-                            <div style="font-family:var(--font-mono);font-size:16px;font-weight:700;color:var(--marian-blue);">${totalScore}%</div>
+                            <div style="font-size:9px;color:var(--ink-faint);text-transform:uppercase;font-weight:600;">Mid Term Avg</div>
+                            <div style="font-family:var(--font-mono);font-size:15px;font-weight:700;color:var(--marian-blue);">${midCount > 0 ? midAvg.toFixed(1) + '%' : '—'}</div>
                         </div>
                         <div style="text-align:center;">
-                            <div style="font-size:9px;color:var(--ink-faint);text-transform:uppercase;font-weight:600;">Average</div>
-                            <div style="font-family:var(--font-mono);font-size:16px;font-weight:700;color:var(--gold);">${average}%</div>
+                            <div style="font-size:9px;color:var(--ink-faint);text-transform:uppercase;font-weight:600;">End Term Avg</div>
+                            <div style="font-family:var(--font-mono);font-size:15px;font-weight:700;color:var(--oxblood);">${endCount > 0 ? endAvg.toFixed(1) + '%' : '—'}</div>
+                        </div>
+                        <div style="text-align:center;">
+                            <div style="font-size:9px;color:var(--ink-faint);text-transform:uppercase;font-weight:600;">Overall Avg</div>
+                            <div style="font-family:var(--font-mono);font-size:15px;font-weight:700;color:var(--gold);">${overallAvg.toFixed(1) + '%'}</div>
                         </div>
                         <div style="text-align:center;">
                             <div style="font-size:9px;color:var(--ink-faint);text-transform:uppercase;font-weight:600;">Position</div>
-                            <div style="font-family:var(--font-mono);font-size:16px;font-weight:700;color:var(--oxblood);">${student.position || 'N/A'}</div>
+                            <div style="font-family:var(--font-mono);font-size:15px;font-weight:700;color:var(--oxblood);">${student.position || 'N/A'}</div>
                         </div>
                     </div>
 
@@ -1956,9 +1951,17 @@
                 </div>
             `;
 
+            // Show message if no results found
+            if (subjects.length === 0) {
+                html = `
+                    <div style="text-align:center;padding:30px;color:var(--ink-faint);">
+                        <i class="fas fa-folder-open" style="font-size:30px;display:block;margin-bottom:12px;"></i>
+                        <p>No results found for this term. Please check your selection or contact your teacher.</p>
+                    </div>
+                `;
+            }
+
             resultsContent.innerHTML = html;
-            studentResults.style.display = 'block';
-            showToast(`✅ ${results.length} subjects loaded${hasICT ? ' (including ICT)' : ''}`);
         }
 
         function getClassDisplay(classId) {
@@ -2127,8 +2130,9 @@
         populateClassSelectForAssign();
         initSupabase();
         updateLoginUI();
-        console.log('✅ Laura Girls · Teacher assignment fixed');
-        console.log('📝 Teachers can now be assigned to classes');
+        console.log('✅ Laura Girls · Combined Mid Term & End Term Report');
+        console.log('📝 Students can view both tests on one report card');
+        console.log('📊 ICT subject included with averages');
     })();
 </script>
 </body>
