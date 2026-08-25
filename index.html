@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Laura Girls · Excel Import Fixed</title>
+    <title>Laura Girls · Student Results Fixed</title>
     <meta name="theme-color" content="#1a237e">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -244,7 +244,7 @@
 
     <!-- student section -->
     <div class="section active" id="studentSection">
-        <div class="card"><div class="card-header"><h2><i class="fas fa-search"></i> Check Your Results</h2><span class="subtitle">Enter your details</span></div>
+        <div class="card"><div class="card-header"><h2><i class="fas fa-search"></i> Check Your Results</h2><span class="subtitle">Enter your student number to view results</span></div>
             <div class="grid-2"><div class="field"><label><i class="fas fa-id-card"></i> Student Number</label><input type="text" id="studentNumber" placeholder="e.g. 2024-001" value="2024-001"></div><div class="field"><label><i class="fas fa-calendar-alt"></i> Term</label><select id="studentTerm"><option value="">Select</option><option value="1">Term 1</option><option value="2">Term 2</option><option value="3">Term 3</option></select></div></div>
             <div class="grid-2"><div class="field"><label><i class="fas fa-calendar-year"></i> Year</label><select id="studentYear"><option value="">Select</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option></select></div><div class="field"><label><i class="fas fa-tag"></i> Test Type</label><select id="studentTestType"><option value="">Select</option><option value="mid_term">Mid Term</option><option value="end_term">End of Term</option></select></div></div>
             <button class="btn btn-primary btn-block" id="viewResultsBtn"><i class="fas fa-eye"></i> View Results</button>
@@ -512,6 +512,9 @@
             showToast('✅ Logged in as student: ' + id);
             loginModal.classList.remove('active'); updateLoginUI();
             document.querySelector('.tab-btn[data-tab="student"]').click();
+            // Trigger results view
+            document.getElementById('studentNumber').value = id;
+            viewResultsBtn.click();
         }
         window.studentLogin = studentLogin;
 
@@ -869,7 +872,6 @@
                     console.warn('Could not fetch existing results:', rError);
                 }
 
-                // Create a map of existing results
                 const resultsMap = {};
                 if (results) {
                     results.forEach(r => {
@@ -877,7 +879,6 @@
                     });
                 }
 
-                // Display students with their existing scores
                 displayResultsEntryWithScores(students, subject, term, year, testType, resultsMap);
                 resultsEntry.style.display = 'block';
                 const resultCount = results ? results.length : 0;
@@ -1071,7 +1072,6 @@
                 this.innerHTML = '<i class="fas fa-save"></i> Save All';
                 this.disabled = false;
 
-                // Reload the students to show updated grades
                 await loadStudentsWithResults(className, subject, term, year, testType);
 
             } catch (err) {
@@ -1083,7 +1083,7 @@
         });
 
         // ============================================================
-        // TEACHER EXCEL IMPORT - FIXED with auto-refresh
+        // TEACHER EXCEL IMPORT
         // ============================================================
         teacherImportLoadBtn.addEventListener('click', function() {
             const className = teacherImportClass.value;
@@ -1096,7 +1096,6 @@
                 showToast('⚠️ Fill all import fields', true);
                 return;
             }
-            // Store the import context
             teacherImportArea.dataset.className = className;
             teacherImportArea.dataset.subject = subject;
             teacherImportArea.dataset.term = term;
@@ -1206,7 +1205,6 @@
                 return;
             }
 
-            // Get the import context from the data attributes
             const className = teacherImportArea.dataset.className;
             const subject = teacherImportArea.dataset.subject;
             const term = teacherImportArea.dataset.term;
@@ -1229,7 +1227,6 @@
 
             for (const row of teacherImportData) {
                 try {
-                    // Find student by number
                     const { data: student, error: sError } = await supabaseClient
                         .from('students')
                         .select('id')
@@ -1241,7 +1238,6 @@
                         continue;
                     }
 
-                    // Check if result already exists
                     const { data: existing, error: eError } = await supabaseClient
                         .from('results')
                         .select('id')
@@ -1296,7 +1292,6 @@
             teacherImportStatus.innerHTML = msg;
             showToast(msg);
 
-            // Clear preview
             teacherImportData = null;
             teacherImportPreview.style.display = 'none';
             teacherImportPreview.innerHTML = '';
@@ -1304,55 +1299,215 @@
             teacherImportClearBtn.style.display = 'none';
             teacherFileInput.value = '';
 
-            // IMPORTANT: Auto-refresh the results table with the imported data
             showToast('🔄 Refreshing results table...');
             await loadStudentsWithResults(className, subject, term, year, testType);
             showToast(`📋 Results table updated with imported data`);
         });
 
         // ============================================================
-        // STUDENT VIEW RESULTS (demo)
+        // STUDENT VIEW RESULTS - FIXED: fetches from database
         // ============================================================
-        viewResultsBtn.addEventListener('click', function() {
+        viewResultsBtn.addEventListener('click', async function() {
             const number = studentNumber.value.trim();
             const term = studentTerm.value;
             const year = studentYear.value;
             const testType = studentTestType.value;
-            if (!number || !term || !year || !testType) { showToast('⚠️ Fill all fields', true); return; }
-            const demoStudent = { name:'Ireen Mwansa', student_number:number || '2024-001', class:'Form1_Mary', position:1, comment:'Excellent performance!' };
-            const demoResults = [
-                { subject:'English', score:66 }, { subject:'Mathematics', score:72 }, { subject:'Biology', score:58 },
-                { subject:'Chemistry', score:63 }, { subject:'Physics', score:55 }, { subject:'History', score:81 },
-                { subject:'Geography', score:69 }, { subject:'Civic Education', score:74 }, { subject:'Zambian Languages', score:62 },
-                { subject:'Religious Education', score:70 }
-            ];
-            displayStudentResults(demoStudent, demoResults, term, year, testType);
-            studentResults.style.display = 'block';
+
+            if (!number) { showToast('⚠️ Please enter your student number', true); return; }
+            if (!term) { showToast('⚠️ Please select a term', true); return; }
+            if (!year) { showToast('⚠️ Please select a year', true); return; }
+            if (!testType) { showToast('⚠️ Please select a test type', true); return; }
+
+            // If offline or no supabase, show demo data
+            if (!supabaseClient || !isConnected) {
+                const demoStudent = { name:'Ireen Mwansa', student_number:number, class:'Form1_Mary', position:1, comment:'Excellent performance!' };
+                const demoResults = [
+                    { subject:'English', score:66 }, { subject:'Mathematics', score:72 }, { subject:'Biology', score:58 },
+                    { subject:'Chemistry', score:63 }, { subject:'Physics', score:55 }, { subject:'History', score:81 },
+                    { subject:'Geography', score:69 }, { subject:'Civic Education', score:74 }, { subject:'Zambian Languages', score:62 },
+                    { subject:'Religious Education', score:70 }
+                ];
+                displayStudentResults(demoStudent, demoResults, term, year, testType);
+                studentResults.style.display = 'block';
+                showToast('⚠️ Offline mode - showing demo data', true);
+                return;
+            }
+
+            try {
+                showToast('🔄 Fetching your results...');
+                
+                // 1. Find the student by number
+                const { data: student, error: studentError } = await supabaseClient
+                    .from('students')
+                    .select('*')
+                    .eq('student_number', number)
+                    .maybeSingle();
+
+                if (studentError) throw studentError;
+                if (!student) {
+                    showToast('❌ Student not found. Please check your student number.', true);
+                    studentResults.style.display = 'none';
+                    return;
+                }
+
+                // 2. Fetch all results for this student for the selected term/year/test type
+                const { data: results, error: resultsError } = await supabaseClient
+                    .from('results')
+                    .select('*')
+                    .eq('student_id', student.id)
+                    .eq('term', term)
+                    .eq('year', year)
+                    .eq('test_type', testType);
+
+                if (resultsError) throw resultsError;
+
+                // 3. Display the results
+                if (!results || results.length === 0) {
+                    // Show student info but no results
+                    studentInfo.innerHTML = `
+                        <div class="grid-3">
+                            <div><strong>Name:</strong> ${student.name}</div>
+                            <div><strong>Student Number:</strong> ${student.student_number}</div>
+                            <div><strong>Class:</strong> ${getClassDisplay(student.class)}</div>
+                            <div><strong>Term:</strong> ${term}</div>
+                            <div><strong>Year:</strong> ${year}</div>
+                            <div><strong>Test Type:</strong> ${testType === 'mid_term' ? 'Mid Term' : 'End of Term'}</div>
+                        </div>
+                    `;
+                    resultsContent.innerHTML = `
+                        <div style="text-align:center;padding:30px;color:var(--ink-faint);">
+                            <i class="fas fa-folder-open" style="font-size:30px;display:block;margin-bottom:12px;"></i>
+                            <p>No results found for this term. Please check your selection or contact your teacher.</p>
+                        </div>
+                    `;
+                    studentResults.style.display = 'block';
+                    showToast('📭 No results found for this term');
+                    return;
+                }
+
+                // Display student with results
+                const classDisplay = getClassDisplay(student.class);
+                studentInfo.innerHTML = `
+                    <div class="grid-3">
+                        <div><strong>Name:</strong> ${student.name}</div>
+                        <div><strong>Student Number:</strong> ${student.student_number}</div>
+                        <div><strong>Class:</strong> ${classDisplay}</div>
+                        <div><strong>Term:</strong> ${term}</div>
+                        <div><strong>Year:</strong> ${year}</div>
+                        <div><strong>Test Type:</strong> ${testType === 'mid_term' ? 'Mid Term' : 'End of Term'}</div>
+                    </div>
+                `;
+
+                // Calculate totals
+                const totalScore = results.reduce((s, r) => s + (parseInt(r.score) || 0), 0);
+                const average = (totalScore / results.length).toFixed(1);
+
+                let html = `
+                    <div class="result-card report-card-print" style="padding:12px 16px;">
+                        <div class="result-header" style="display:flex;align-items:center;gap:12px;border-bottom:2px solid var(--gold);padding-bottom:8px;margin-bottom:10px;">
+                            <div style="flex-shrink:0;">
+                                <img src="image/logo-removebg-preview.png" alt="School Logo" style="width:50px;height:50px;object-fit:contain;border-radius:50%;border:2px solid var(--gold);">
+                            </div>
+                            <div style="flex:1;text-align:center;">
+                                <h1 style="font-family:var(--font-display);font-size:20px;color:var(--marian-blue);margin:0;">Laura Girls Secondary School</h1>
+                                <p style="color:var(--ink-soft);font-size:12px;margin:0;">Kasama District · Northern Province</p>
+                                <p style="color:var(--ink-faint);font-size:10px;margin:2px 0 0;">Student Academic Report · ${testType === 'mid_term' ? 'Mid Term' : 'End of Term'} ${term} · ${year}</p>
+                            </div>
+                        </div>
+
+                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;background:var(--paper);padding:6px 10px;border-radius:6px;margin-bottom:8px;font-size:12px;">
+                            <div><strong>Student:</strong> ${student.name}</div>
+                            <div><strong>Number:</strong> ${student.student_number}</div>
+                            <div><strong>Class:</strong> ${classDisplay}</div>
+                            <div><strong>Term:</strong> ${term} · ${year}</div>
+                        </div>
+
+                        <div style="margin-bottom:8px;overflow:hidden;border:1px solid var(--border);border-radius:6px;">
+                            <table style="width:100%;border-collapse:collapse;font-size:11px;">
+                                <thead>
+                                    <tr style="background:var(--marian-blue);color:#fff;">
+                                        <th style="padding:5px 8px;text-align:left;font-size:10px;">Subject</th>
+                                        <th style="padding:5px 8px;text-align:center;font-size:10px;">Score (%)</th>
+                                        <th style="padding:5px 8px;text-align:center;font-size:10px;">Grade</th>
+                                        <th style="padding:5px 8px;text-align:left;font-size:10px;">Comment</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                `;
+
+                results.forEach(r => {
+                    const score = parseInt(r.score) || 0;
+                    const grade = getGrade(score);
+                    const gradeClass = getGradeClass(score);
+                    html += `
+                        <tr style="border-bottom:1px solid var(--border);">
+                            <td style="padding:4px 8px;font-weight:600;font-size:11px;">${r.subject}</td>
+                            <td style="padding:4px 8px;text-align:center;font-family:var(--font-mono);font-size:11px;">${score}%</td>
+                            <td style="padding:4px 8px;text-align:center;"><span class="badge ${gradeClass}" style="font-size:10px;padding:1px 8px;">${grade}</span></td>
+                            <td style="padding:4px 8px;font-style:italic;color:var(--ink-soft);font-size:10px;">${r.comment || '-'}</td>
+                        </tr>
+                    `;
+                });
+
+                html += `
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;background:var(--gold-tint);padding:6px 10px;border-radius:6px;margin-bottom:6px;">
+                            <div style="text-align:center;">
+                                <div style="font-size:9px;color:var(--ink-faint);text-transform:uppercase;font-weight:600;">Total Score</div>
+                                <div style="font-family:var(--font-mono);font-size:16px;font-weight:700;color:var(--marian-blue);">${totalScore}%</div>
+                            </div>
+                            <div style="text-align:center;">
+                                <div style="font-size:9px;color:var(--ink-faint);text-transform:uppercase;font-weight:600;">Average</div>
+                                <div style="font-family:var(--font-mono);font-size:16px;font-weight:700;color:var(--gold);">${average}%</div>
+                            </div>
+                            <div style="text-align:center;">
+                                <div style="font-size:9px;color:var(--ink-faint);text-transform:uppercase;font-weight:600;">Position</div>
+                                <div style="font-family:var(--font-mono);font-size:16px;font-weight:700;color:var(--oxblood);">${student.position || 'N/A'}</div>
+                            </div>
+                        </div>
+
+                        ${student.comment ? `
+                        <div style="padding:4px 10px;background:var(--paper);border-radius:4px;border-left:3px solid var(--gold);margin-bottom:4px;">
+                            <div style="font-size:9px;font-weight:600;color:var(--ink-faint);text-transform:uppercase;letter-spacing:0.3px;">Teacher's Comment</div>
+                            <div style="font-style:italic;color:var(--ink-soft);font-size:11px;margin-top:2px;">${student.comment}</div>
+                        </div>` : ''}
+
+                        <div style="display:flex;justify-content:space-between;font-size:8px;color:var(--ink-faint);border-top:1px solid var(--border);padding-top:4px;margin-top:4px;">
+                            <div>Generated: ${new Date().toLocaleDateString()}</div>
+                            <div>Laura Girls Secondary School · Kasama District</div>
+                        </div>
+                    </div>
+                `;
+
+                resultsContent.innerHTML = html;
+                studentResults.style.display = 'block';
+                showToast(`✅ ${results.length} subjects loaded`);
+
+            } catch (err) {
+                showToast('❌ Error: ' + err.message, true);
+                console.error(err);
+                studentResults.style.display = 'none';
+            }
         });
 
-        function displayStudentResults(student, results, term, year, testType) {
-            const classDisplay = CLASS_DEFINITIONS.find(c=>c.id===student.class)?.display || student.class;
-            studentInfo.innerHTML = `<div class="grid-3"><div><strong>Name:</strong> ${student.name}</div><div><strong>Number:</strong> ${student.student_number}</div><div><strong>Class:</strong> ${classDisplay}</div><div><strong>Term:</strong> ${term}</div><div><strong>Year:</strong> ${year}</div><div><strong>Test:</strong> ${testType==='mid_term'?'Mid Term':'End of Term'}</div></div>`;
-            if (!results || results.length===0) { resultsContent.innerHTML = '<div style="text-align:center;padding:30px;color:var(--ink-faint);"><i class="fas fa-folder-open" style="font-size:30px;display:block;margin-bottom:12px;"></i><p>No results.</p></div>'; return; }
-            const total = results.reduce((s,r)=>s+(parseInt(r.score)||0),0);
-            const avg = (total/results.length).toFixed(1);
-            let html = `<div class="result-card" style="padding:12px 16px;"><div style="display:flex;align-items:center;gap:12px;border-bottom:2px solid var(--gold);padding-bottom:8px;margin-bottom:10px;"><div><img src="image/logo-removebg-preview.png" alt="logo" style="width:50px;height:50px;object-fit:contain;border-radius:50%;border:2px solid var(--gold);"></div><div style="flex:1;text-align:center;"><h1 style="font-family:var(--font-display);font-size:20px;color:var(--marian-blue);margin:0;">Laura Girls Secondary School</h1><p style="color:var(--ink-soft);font-size:12px;margin:0;">Kasama District</p><p style="color:var(--ink-faint);font-size:10px;margin:2px 0 0;">${testType==='mid_term'?'Mid Term':'End of Term'} ${term} · ${year}</p></div></div>
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;background:var(--paper);padding:6px 10px;border-radius:6px;margin-bottom:8px;font-size:12px;"><div><strong>Student:</strong> ${student.name}</div><div><strong>Number:</strong> ${student.student_number}</div><div><strong>Class:</strong> ${classDisplay}</div><div><strong>Term:</strong> ${term} · ${year}</div></div>
-            <div style="margin-bottom:8px;overflow:hidden;border:1px solid var(--border);border-radius:6px;"><table style="width:100%;border-collapse:collapse;font-size:11px;"><thead><tr style="background:var(--marian-blue);color:#fff;"><th style="padding:5px 8px;text-align:left;">Subject</th><th style="padding:5px 8px;text-align:center;">Score</th><th style="padding:5px 8px;text-align:center;">Grade</th><th style="padding:5px 8px;text-align:left;">Comment</th></tr></thead><tbody>`;
-            results.forEach(r=>{
-                const score = parseInt(r.score)||0; const grade = score>=80?'A':score>=70?'B':score>=60?'C':score>=50?'D':'F';
-                const cls = score>=80?'badge-success':score>=60?'badge-info':score>=50?'badge-warning':'badge-danger';
-                html += `<tr><td style="padding:4px 8px;font-weight:600;">${r.subject}</td><td style="padding:4px 8px;text-align:center;">${score}%</td><td style="padding:4px 8px;text-align:center;"><span class="badge ${cls}">${grade}</span></td><td style="padding:4px 8px;font-style:italic;color:var(--ink-soft);">${r.comment||'-'}</td></tr>`;
-            });
-            html += `</tbody></table></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;background:var(--gold-tint);padding:6px 10px;border-radius:6px;margin-bottom:6px;"><div style="text-align:center;"><div style="font-size:9px;color:var(--ink-faint);text-transform:uppercase;font-weight:600;">Total</div><div style="font-family:var(--font-mono);font-size:16px;font-weight:700;color:var(--marian-blue);">${total}%</div></div><div style="text-align:center;"><div style="font-size:9px;color:var(--ink-faint);text-transform:uppercase;font-weight:600;">Average</div><div style="font-family:var(--font-mono);font-size:16px;font-weight:700;color:var(--gold);">${avg}%</div></div><div style="text-align:center;"><div style="font-size:9px;color:var(--ink-faint);text-transform:uppercase;font-weight:600;">Position</div><div style="font-family:var(--font-mono);font-size:16px;font-weight:700;color:var(--oxblood);">${student.position||'N/A'}</div></div></div>${student.comment?`<div style="padding:4px 10px;background:var(--paper);border-radius:4px;border-left:3px solid var(--gold);margin-bottom:4px;"><div style="font-size:9px;font-weight:600;color:var(--ink-faint);text-transform:uppercase;">Teacher's Comment</div><div style="font-style:italic;color:var(--ink-soft);font-size:11px;margin-top:2px;">${student.comment}</div></div>`:''}<div style="display:flex;justify-content:space-between;font-size:8px;color:var(--ink-faint);border-top:1px solid var(--border);padding-top:4px;margin-top:4px;"><div>Generated: ${new Date().toLocaleDateString()}</div><div>Laura Girls Secondary School</div></div></div>`;
-            resultsContent.innerHTML = html;
+        function getClassDisplay(classId) {
+            const found = CLASS_DEFINITIONS.find(c => c.id === classId);
+            return found ? found.display : classId;
         }
 
+        // ============================================================
+        // DOWNLOAD RESULTS (PDF)
+        // ============================================================
         downloadResultsBtn.addEventListener('click', function() {
             const card = document.getElementById('resultsCard');
             card.classList.add('report-card-print');
             window.print();
-            setTimeout(()=>card.classList.remove('report-card-print'), 1000);
+            setTimeout(() => {
+                card.classList.remove('report-card-print');
+            }, 1000);
         });
 
         // ============================================================
@@ -1374,23 +1529,40 @@
         // ============================================================
         // TAB SWITCHING
         // ============================================================
-        document.querySelectorAll('.tab-btn').forEach(btn=>{
-            btn.addEventListener('click', function(){
-                const tab=this.dataset.tab;
-                if(tab==='teacher') {
-                    if(!currentUser || currentUser.role!=='teacher') { teacherLocked.style.display='block'; teacherContent.style.display='none'; }
-                    else { teacherLocked.style.display='none'; teacherContent.style.display='block'; }
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const tab = this.dataset.tab;
+                if (tab === 'teacher') {
+                    if (!currentUser || currentUser.role !== 'teacher') {
+                        teacherLocked.style.display = 'block';
+                        teacherContent.style.display = 'none';
+                    } else {
+                        teacherLocked.style.display = 'none';
+                        teacherContent.style.display = 'block';
+                    }
                 }
-                if(tab==='admin') {
-                    if(!currentUser || currentUser.role!=='admin') { adminLocked.style.display='block'; adminContent.style.display='none'; }
-                    else { adminLocked.style.display='none'; adminContent.style.display='block'; loadAdminStats(); loadClasses(); populateBulkClassDropdown(); }
+                if (tab === 'admin') {
+                    if (!currentUser || currentUser.role !== 'admin') {
+                        adminLocked.style.display = 'block';
+                        adminContent.style.display = 'none';
+                    } else {
+                        adminLocked.style.display = 'none';
+                        adminContent.style.display = 'block';
+                        loadAdminStats();
+                        loadClasses();
+                        populateBulkClassDropdown();
+                    }
                 }
-                document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
-                document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-                const sec = document.getElementById(tab+'Section');
-                if(sec) sec.classList.add('active');
-                if(tab==='admin') { loadAdminStats(); loadClasses(); populateBulkClassDropdown(); }
+                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                const sec = document.getElementById(tab + 'Section');
+                if (sec) sec.classList.add('active');
+                if (tab === 'admin') {
+                    loadAdminStats();
+                    loadClasses();
+                    populateBulkClassDropdown();
+                }
             });
         });
 
@@ -1399,8 +1571,8 @@
         // ============================================================
         initSupabase();
         updateLoginUI();
-        console.log('✅ Laura Girls · Excel import with auto-refresh');
-        console.log('📝 After import, the results table will auto-update with scores!');
+        console.log('✅ Laura Girls · Student results now fetch from database');
+        console.log('📝 Students can view their imported results by entering their student number');
     })();
 </script>
 </body>
