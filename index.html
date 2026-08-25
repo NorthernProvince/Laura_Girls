@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Laura Girls · Mid & End Term Results</title>
+    <title>Laura Girls · Mid & End Term Report</title>
     <meta name="theme-color" content="#1a237e">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -148,6 +148,9 @@
         .report-card-print .test-header { background:var(--gold-tint); padding:4px 8px; border-radius:4px; margin:4px 0; font-weight:600; font-size:11px; color:var(--marian-blue); }
         .report-card-print .mid-term-col { background:#f0f7ff; }
         .report-card-print .end-term-col { background:#fff8f0; }
+        .test-type-badge { display:inline-block; padding:3px 14px; border-radius:40px; font-size:12px; font-weight:700; }
+        .test-type-badge.mid-term { background:#e3f2fd; color:#0d47a1; }
+        .test-type-badge.end-term { background:#fff3e0; color:#e65100; }
         @media (max-width:480px) {
             .topbar .brand h1 { font-size:14px; }
             .topbar .brand .coat-of-arms { width:35px; height:35px; }
@@ -177,6 +180,7 @@
             .report-card-print table th, .report-card-print table td { padding:3px 6px !important; }
             .report-card-print .badge { font-size:9px !important; padding:1px 6px !important; }
             .report-card-print .test-header { font-size:10px !important; }
+            .report-card-print .test-type-badge { font-size:10px !important; padding:2px 10px !important; }
         }
     </style>
 </head>
@@ -273,7 +277,7 @@
                         <p style="color:var(--ink-faint); text-align:center; padding:10px;">Loading your assigned classes...</p>
                     </div>
                 </div>
-                <div class="grid-3"><div class="field"><label><i class="fas fa-users"></i> Class</label><select id="teacherClass"><option value="">Select Class</option></select></div><div class="field"><label><i class="fas fa-book"></i> Subject</label><select id="teacherSubject"><option value="">Select</option><option value="English">English</option><option value="Mathematics">Mathematics</option><option value="Biology">Biology</option><option value="Chemistry">Chemistry</option><option value="Physics">Physics</option><option value="History">History</option><option value="Geography">Geography</option><option value="Civic Education">Civic Education</option><option value="Zambian Languages">Zambian Languages</option><option value="Religious Education">Religious Education</option><option value="Commerce">Commerce</option><option value="Principles of Accounts">Principles of Accounts</option><option value="Agricultural Science">Agricultural Science</option><option value="Computer Studies">Computer Studies</option></select></div><div class="field"><label><i class="fas fa-calendar-alt"></i> Term</label><select id="teacherTerm"><option value="">Select</option><option value="1">Term 1</option><option value="2">Term 2</option><option value="3">Term 3</option></select></div></div>
+                <div class="grid-3"><div class="field"><label><i class="fas fa-users"></i> Class</label><select id="teacherClass"><option value="">Select Class</option></select></div><div class="field"><label><i class="fas fa-book"></i> Subject</label><select id="teacherSubject"><option value="">Select</option><option value="English">English</option><option value="Mathematics">Mathematics</option><option value="Biology">Biology</option><option value="Chemistry">Chemistry</option><option value="Physics">Physics</option><option value="History">History</option><option value="Geography">Geography</option><option value="Civic Education">Civic Education</option><option value="Zambian Languages">Zambian Languages</option><option value="Religious Education">Religious Education</option><option value="Commerce">Commerce</option><option value="Principles of Accounts">Principles of Accounts</option><option value="Agricultural Science">Agricultural Science</option><option value="ICT">ICT</option></select></div><div class="field"><label><i class="fas fa-calendar-alt"></i> Term</label><select id="teacherTerm"><option value="">Select</option><option value="1">Term 1</option><option value="2">Term 2</option><option value="3">Term 3</option></select></div></div>
                 <div class="grid-3"><div class="field"><label><i class="fas fa-calendar-year"></i> Year</label><select id="teacherYear"><option value="">Select</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option></select></div><div class="field"><label><i class="fas fa-tag"></i> Test Type</label><select id="teacherTestType"><option value="">Select</option><option value="mid_term">Mid Term</option><option value="end_term">End of Term</option></select></div><div class="field" style="justify-content:flex-end;"><button class="btn btn-primary" id="loadStudentsBtn"><i class="fas fa-users"></i> Load Students</button></div></div>
             </div>
             <div class="card" style="border-top-color: var(--oxblood);">
@@ -283,7 +287,7 @@
                 </div>
                 <div class="grid-3" style="margin-bottom:12px;">
                     <div class="field"><label><i class="fas fa-users"></i> Class</label><select id="teacherImportClass"><option value="">Select Class</option></select></div>
-                    <div class="field"><label><i class="fas fa-book"></i> Subject</label><select id="teacherImportSubject"><option value="">Select</option><option value="English">English</option><option value="Mathematics">Mathematics</option><option value="Biology">Biology</option><option value="Chemistry">Chemistry</option><option value="Physics">Physics</option><option value="History">History</option><option value="Geography">Geography</option><option value="Civic Education">Civic Education</option><option value="Zambian Languages">Zambian Languages</option><option value="Religious Education">Religious Education</option><option value="Commerce">Commerce</option><option value="Principles of Accounts">Principles of Accounts</option><option value="Agricultural Science">Agricultural Science</option><option value="Computer Studies">Computer Studies</option></select></div>
+                    <div class="field"><label><i class="fas fa-book"></i> Subject</label><select id="teacherImportSubject"><option value="">Select</option><option value="English">English</option><option value="Mathematics">Mathematics</option><option value="Biology">Biology</option><option value="Chemistry">Chemistry</option><option value="Physics">Physics</option><option value="History">History</option><option value="Geography">Geography</option><option value="Civic Education">Civic Education</option><option value="Zambian Languages">Zambian Languages</option><option value="Religious Education">Religious Education</option><option value="Commerce">Commerce</option><option value="Principles of Accounts">Principles of Accounts</option><option value="Agricultural Science">Agricultural Science</option><option value="ICT">ICT</option></select></div>
                     <div class="field"><label><i class="fas fa-calendar-alt"></i> Term</label><select id="teacherImportTerm"><option value="">Select</option><option value="1">Term 1</option><option value="2">Term 2</option><option value="3">Term 3</option></select></div>
                 </div>
                 <div class="grid-3">
@@ -401,12 +405,12 @@
             { id: 'Grade12_Laura', grade:'Grade12', stream:'Laura', display:'Grade 12 Laura' }
         ];
 
-        // All subjects including Computer Studies
+        // All subjects including ICT (replaced Computer Studies)
         const SUBJECTS = [
             'English', 'Mathematics', 'Biology', 'Chemistry', 'Physics',
             'History', 'Geography', 'Civic Education', 'Zambian Languages',
             'Religious Education', 'Commerce', 'Principles of Accounts',
-            'Agricultural Science', 'Computer Studies'
+            'Agricultural Science', 'ICT'
         ];
 
         let supabaseClient = null;
@@ -1581,7 +1585,7 @@
             if (!testType) { showToast('⚠️ Please select a test type', true); return; }
 
             if (!supabaseClient || !isConnected) {
-                // Demo data with Computer Studies included
+                // Demo data with ICT
                 const demoStudent = { name:'Ireen Mwansa', student_number:number, class:'Form1_Mary', position:1, comment:'Excellent performance!' };
                 const demoResults = [
                     { subject:'English', score:66 }, { subject:'Mathematics', score:72 }, 
@@ -1590,7 +1594,7 @@
                     { subject:'Geography', score:69 }, { subject:'Civic Education', score:74 },
                     { subject:'Zambian Languages', score:62 }, { subject:'Religious Education', score:70 },
                     { subject:'Commerce', score:68 }, { subject:'Principles of Accounts', score:65 },
-                    { subject:'Agricultural Science', score:71 }, { subject:'Computer Studies', score:76 }
+                    { subject:'Agricultural Science', score:71 }, { subject:'ICT', score:76 }
                 ];
                 displayStudentResults(demoStudent, demoResults, term, year, testType);
                 studentResults.style.display = 'block';
@@ -1647,6 +1651,9 @@
                 }
 
                 const classDisplay = getClassDisplay(student.class);
+                const testTypeDisplay = testType === 'mid_term' ? 'Mid Term' : 'End of Term';
+                const testTypeBadgeClass = testType === 'mid_term' ? 'mid-term' : 'end-term';
+                
                 studentInfo.innerHTML = `
                     <div class="grid-3">
                         <div><strong>Name:</strong> ${student.name}</div>
@@ -1654,16 +1661,16 @@
                         <div><strong>Class:</strong> ${classDisplay}</div>
                         <div><strong>Term:</strong> ${term}</div>
                         <div><strong>Year:</strong> ${year}</div>
-                        <div><strong>Test Type:</strong> ${testType === 'mid_term' ? 'Mid Term' : 'End of Term'}</div>
+                        <div><strong>Test Type:</strong> <span class="test-type-badge ${testTypeBadgeClass}">${testTypeDisplay}</span></div>
                     </div>
                 `;
 
-                // Calculate totals - include all subjects including Computer Studies
+                // Calculate totals
                 const totalScore = results.reduce((s, r) => s + (parseInt(r.score) || 0), 0);
                 const average = (totalScore / results.length).toFixed(1);
 
-                // Check if Computer Studies is present
-                const hasComputerStudies = results.some(r => r.subject === 'Computer Studies');
+                // Check if ICT is present
+                const hasICT = results.some(r => r.subject === 'ICT');
 
                 let html = `
                     <div class="result-card report-card-print" style="padding:12px 16px;">
@@ -1674,7 +1681,7 @@
                             <div style="flex:1;text-align:center;">
                                 <h1 style="font-family:var(--font-display);font-size:20px;color:var(--marian-blue);margin:0;">Laura Girls Secondary School</h1>
                                 <p style="color:var(--ink-soft);font-size:12px;margin:0;">Kasama District · Northern Province</p>
-                                <p style="color:var(--ink-faint);font-size:10px;margin:2px 0 0;">Student Academic Report · ${testType === 'mid_term' ? 'Mid Term' : 'End of Term'} ${term} · ${year}</p>
+                                <p style="color:var(--ink-faint);font-size:10px;margin:2px 0 0;">Student Academic Report · <span class="test-type-badge ${testTypeBadgeClass}" style="font-size:10px;padding:2px 10px;">${testTypeDisplay}</span> ${term} · ${year}</p>
                             </div>
                         </div>
 
@@ -1682,7 +1689,7 @@
                             <div><strong>Student:</strong> ${student.name}</div>
                             <div><strong>Number:</strong> ${student.student_number}</div>
                             <div><strong>Class:</strong> ${classDisplay}</div>
-                            <div><strong>Term:</strong> ${term} · ${year}</div>
+                            <div><strong>${testTypeDisplay}:</strong> ${term} · ${year}</div>
                         </div>
 
                         <div style="margin-bottom:8px;overflow:hidden;border:1px solid var(--border);border-radius:6px;">
@@ -1698,10 +1705,10 @@
                                 <tbody>
                 `;
 
-                // Sort subjects to show Computer Studies prominently
+                // Sort subjects to show ICT prominently
                 const sortedResults = [...results].sort((a, b) => {
-                    if (a.subject === 'Computer Studies') return -1;
-                    if (b.subject === 'Computer Studies') return 1;
+                    if (a.subject === 'ICT') return -1;
+                    if (b.subject === 'ICT') return 1;
                     return a.subject.localeCompare(b.subject);
                 });
 
@@ -1709,23 +1716,23 @@
                     const score = parseInt(r.score) || 0;
                     const grade = getGrade(score);
                     const gradeClass = getGradeClass(score);
-                    const isComputerStudies = r.subject === 'Computer Studies';
+                    const isICT = r.subject === 'ICT';
                     html += `
-                        <tr style="border-bottom:1px solid var(--border);${isComputerStudies ? 'background:var(--gold-tint);' : ''}">
-                            <td style="padding:4px 8px;font-weight:${isComputerStudies ? '700' : '600'};font-size:11px;">${r.subject} ${isComputerStudies ? '💻' : ''}</td>
-                            <td style="padding:4px 8px;text-align:center;font-family:var(--font-mono);font-size:11px;font-weight:${isComputerStudies ? '700' : '400'};">${score}%</td>
+                        <tr style="border-bottom:1px solid var(--border);${isICT ? 'background:var(--gold-tint);' : ''}">
+                            <td style="padding:4px 8px;font-weight:${isICT ? '700' : '600'};font-size:11px;">${r.subject} ${isICT ? '💻' : ''}</td>
+                            <td style="padding:4px 8px;text-align:center;font-family:var(--font-mono);font-size:11px;font-weight:${isICT ? '700' : '400'};">${score}%</td>
                             <td style="padding:4px 8px;text-align:center;"><span class="badge ${gradeClass}" style="font-size:10px;padding:1px 8px;">${grade}</span></td>
                             <td style="padding:4px 8px;font-style:italic;color:var(--ink-soft);font-size:10px;">${r.comment || '-'}</td>
                         </tr>
                     `;
                 });
 
-                // Show a note if Computer Studies is missing
-                if (!hasComputerStudies) {
+                // Show a note if ICT is missing
+                if (!hasICT) {
                     html += `
                         <tr style="background:var(--oxblood-tint);">
                             <td colspan="4" style="padding:4px 8px;text-align:center;font-style:italic;color:var(--oxblood);font-size:10px;">
-                                ⚠️ Computer Studies results not available for this term
+                                ⚠️ ICT results not available for this term
                             </td>
                         </tr>
                     `;
@@ -1766,7 +1773,7 @@
 
                 resultsContent.innerHTML = html;
                 studentResults.style.display = 'block';
-                showToast(`✅ ${results.length} subjects loaded${hasComputerStudies ? ' (including Computer Studies)' : ''}`);
+                showToast(`✅ ${results.length} subjects loaded${hasICT ? ' (including ICT)' : ''}`);
 
             } catch (err) {
                 showToast('❌ Error: ' + err.message, true);
@@ -1942,7 +1949,7 @@
         initSupabase();
         updateLoginUI();
         console.log('✅ Laura Girls · Mid Term & End Term tests on report card');
-        console.log('📝 Computer Studies included with average calculation');
+        console.log('📝 ICT subject included (replaced Computer Studies)');
         console.log('📊 Teachers must be assigned to classes by admin');
     })();
 </script>
