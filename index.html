@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Laura Girls Secondary School · Bulk Register</title>
-    <meta name="description" content="Official school website for Laura Girls Secondary School - Kasama District, Zambia">
+    <title>Laura Girls · Teacher Load Fixed</title>
     <meta name="theme-color" content="#1a237e">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,12 +15,11 @@
     </script>
     <style>
         /* -------------------------------------------------------------
-           same base as original – only additions for bulk register card
+           base styles (same as original)
            ------------------------------------------------------------- */
         :root {
             --paper: #F4F5F1;
             --surface: #FFFFFF;
-            --surface-sunken: #EDF0EA;
             --ink: #15201A;
             --ink-soft: #4B5A50;
             --ink-faint: #8A968C;
@@ -35,41 +33,17 @@
             --marian-blue-tint: #E8EAF6;
             --oxblood: #8C2F2F;
             --oxblood-dark: #6E2222;
-            --oxblood-tint: #F5E6E6;
             --font-display: 'Fraunces', serif;
             --font-body: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
             --font-mono: 'IBM Plex Mono', monospace;
-            --radius-sm: 10px;
             --radius-md: 16px;
-            --radius-lg: 24px;
             --shadow-sm: 0 1px 2px rgba(21, 32, 26, 0.06);
             --shadow-md: 0 8px 24px rgba(21, 32, 26, 0.09);
-            --shadow-lg: 0 24px 60px rgba(21, 32, 26, 0.18);
         }
-
         * { margin:0; padding:0; box-sizing:border-box; }
-        body {
-            font-family: var(--font-body);
-            background: var(--paper);
-            color: var(--ink);
-            min-height: 100vh;
-            line-height: 1.5;
-            -webkit-font-smoothing: antialiased;
-        }
-        .mary-bg {
-            position: fixed;
-            top:0; left:0; width:100%; height:100%; z-index:-1;
-            background: linear-gradient(135deg, #E8EAF6 0%, #C5CAE9 50%, #E8EAF6 100%);
-            opacity:0.3;
-        }
-        .mary-bg::before {
-            content:'';
-            position:absolute;
-            top:0; left:0; width:100%; height:100%;
-            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 800'%3E%3Ccircle cx='400' cy='400' r='300' fill='none' stroke='%231a237e' stroke-width='2' opacity='0.1'/%3E%3Ccircle cx='400' cy='400' r='200' fill='none' stroke='%231a237e' stroke-width='1.5' opacity='0.08'/%3E%3Ccircle cx='400' cy='400' r='100' fill='none' stroke='%231a237e' stroke-width='1' opacity='0.06'/%3E%3Cpath d='M400 50 L415 120 L485 140 L435 185 L445 260 L400 220 L355 260 L365 185 L315 140 L385 120 Z' fill='%231a237e' opacity='0.05'/%3E%3C/svg%3E") center/cover no-repeat;
-            pointer-events:none;
-        }
-        /* topbar, login modal, toast, tabs etc – imported from original */
+        body { font-family:var(--font-body); background:var(--paper); color:var(--ink); min-height:100vh; line-height:1.5; }
+        .mary-bg { position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1; background:linear-gradient(135deg,#E8EAF6 0%,#C5CAE9 50%,#E8EAF6 100%); opacity:0.3; }
+        .mary-bg::before { content:''; position:absolute; top:0; left:0; width:100%; height:100%; background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 800'%3E%3Ccircle cx='400' cy='400' r='300' fill='none' stroke='%231a237e' stroke-width='2' opacity='0.1'/%3E%3Ccircle cx='400' cy='400' r='200' fill='none' stroke='%231a237e' stroke-width='1.5' opacity='0.08'/%3E%3Ccircle cx='400' cy='400' r='100' fill='none' stroke='%231a237e' stroke-width='1' opacity='0.06'/%3E%3Cpath d='M400 50 L415 120 L485 140 L435 185 L445 260 L400 220 L355 260 L365 185 L315 140 L385 120 Z' fill='%231a237e' opacity='0.05'/%3E%3C/svg%3E") center/cover no-repeat; pointer-events:none; }
         .topbar { position:sticky; top:0; z-index:40; background:linear-gradient(135deg,#1a237e,#283593); border-bottom:3px solid var(--gold); padding:10px 18px; display:flex; align-items:center; justify-content:center; gap:14px; box-shadow:var(--shadow-md); }
         .topbar .brand { flex:1; min-width:0; text-align:center; }
         .topbar .brand .coat-of-arms { width:45px; height:45px; margin:0 auto 4px; }
@@ -112,7 +86,6 @@
         .btn-danger { background:linear-gradient(135deg,#8C2F2F,#6E2222); color:#fff; }
         .btn-danger:hover { background:linear-gradient(135deg,#6E2222,#5a1c1c); }
         .btn-warning { background:linear-gradient(135deg,#d4a017,#b8860b); color:#fff; }
-        .btn-warning:hover { background:linear-gradient(135deg,#b8860b,#9a7209); }
         .btn-outline { background:transparent; border:1.5px solid #1a237e; color:#1a237e; box-shadow:none; }
         .btn-outline:hover { background:var(--marian-blue-tint); }
         .btn-sm { padding:8px 16px; font-size:12.5px; }
@@ -144,7 +117,7 @@
         .toast.error i { color:#E8898F; }
         .login-modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center; padding:20px; }
         .login-modal.active { display:flex; }
-        .login-modal .modal-content { background:#fff; border-radius:var(--radius-lg); padding:30px; max-width:420px; width:100%; box-shadow:var(--shadow-lg); animation:slideUp 0.3s ease; }
+        .login-modal .modal-content { background:#fff; border-radius:var(--radius-md); padding:30px; max-width:420px; width:100%; box-shadow:var(--shadow-lg); animation:slideUp 0.3s ease; }
         @keyframes slideUp { from { transform:translateY(30px); opacity:0; } to { transform:translateY(0); opacity:1; } }
         .login-modal .modal-header { text-align:center; margin-bottom:20px; }
         .login-modal .modal-header .modal-logo { width:60px; height:60px; margin:0 auto 10px; border-radius:50%; border:2px solid var(--gold); overflow:hidden; background:#fff; padding:4px; }
@@ -168,9 +141,7 @@
         .import-preview table { width:100%; border-collapse:collapse; font-size:12px; }
         .import-preview table th { background:var(--marian-blue); color:#fff; padding:8px 10px; text-align:left; position:sticky; top:0; z-index:2; }
         .import-preview table td { padding:6px 10px; border-bottom:1px solid var(--border); }
-        .import-preview table tr:nth-child(even) { background:var(--paper); }
         .footer-note { font-size:11px; color:var(--ink-faint); text-align:center; margin-top:30px; padding-top:16px; border-top:1px solid var(--border); letter-spacing:0.3px; }
-        .footer-note i { color:var(--gold); }
         @media (max-width:480px) {
             .topbar .brand h1 { font-size:14px; }
             .topbar .brand .coat-of-arms { width:35px; height:35px; }
@@ -182,7 +153,6 @@
             .topbar .brand .motto { font-size:10px; }
             .connection-status { bottom:10px; right:10px; font-size:10px; padding:6px 12px; }
             .toast { bottom:70px; font-size:12px; padding:10px 16px; }
-            .login-modal .modal-content { padding:20px; }
             .login-floating-btn { width:48px; height:48px; font-size:17px; bottom:70px; right:12px; }
         }
     </style>
@@ -216,7 +186,7 @@
     </span>
 </div>
 
-<!-- login modal (simplified, same as original) -->
+<!-- login modal (simplified) -->
 <div class="login-modal" id="loginModal">
     <div class="modal-content">
         <button class="close-btn" id="closeLoginModal">&times;</button>
@@ -251,7 +221,7 @@
         <button class="tab-btn hidden-tab" data-tab="classes"><i class="fas fa-users"></i> Classes</button>
     </div>
 
-    <!-- student section (original) -->
+    <!-- student section -->
     <div class="section active" id="studentSection">
         <div class="card"><div class="card-header"><h2><i class="fas fa-search"></i> Check Your Results</h2><span class="subtitle">Enter your details</span></div>
             <div class="grid-2"><div class="field"><label><i class="fas fa-id-card"></i> Student Number</label><input type="text" id="studentNumber" placeholder="e.g. 2024-001" value="2024-001"></div><div class="field"><label><i class="fas fa-calendar-alt"></i> Term</label><select id="studentTerm"><option value="">Select</option><option value="1">Term 1</option><option value="2">Term 2</option><option value="3">Term 3</option></select></div></div>
@@ -261,43 +231,35 @@
         <div id="studentResults" style="display:none;"><div class="card"><div class="card-header"><h2><i class="fas fa-user-graduate"></i> Student Information</h2></div><div id="studentInfo"></div></div><div class="card"><div class="card-header"><h2><i class="fas fa-list"></i> Results</h2><button class="btn btn-sm btn-success no-print" id="downloadResultsBtn"><i class="fas fa-file-pdf"></i> Download PDF</button></div><div id="resultsContent"></div></div></div>
     </div>
 
-    <!-- teacher section (original) -->
+    <!-- teacher section -->
     <div class="section" id="teacherSection">
         <div class="card" id="teacherLocked"><div class="card-header"><h2><i class="fas fa-lock"></i> Teacher Access Required</h2><span class="subtitle">Login as teacher</span></div><div style="text-align:center;padding:40px 20px;"><i class="fas fa-chalkboard-teacher" style="font-size:48px;color:var(--gold);margin-bottom:16px;display:block;"></i><p style="color:var(--ink-soft);margin-bottom:16px;">Restricted to registered teachers.</p><button class="btn btn-primary" onclick="openLoginModal('teacher')"><i class="fas fa-sign-in-alt"></i> Login as Teacher</button></div></div>
         <div id="teacherContent" style="display:none;">
-            <!-- teacher dashboard (same as original) -->
-            <div class="card"><div class="card-header"><h2><i class="fas fa-chalkboard-teacher"></i> Teacher Dashboard</h2><span class="subtitle">Enter results</span></div><div class="grid-3"><div class="field"><label><i class="fas fa-users"></i> Class</label><select id="teacherClass"><option value="">Select Class</option></select></div><div class="field"><label><i class="fas fa-book"></i> Subject</label><select id="teacherSubject"><option value="">Select</option><option value="English">English</option><option value="Mathematics">Mathematics</option><option value="Biology">Biology</option><option value="Chemistry">Chemistry</option><option value="Physics">Physics</option><option value="History">History</option><option value="Geography">Geography</option><option value="Civic Education">Civic Education</option><option value="Zambian Languages">Zambian Languages</option><option value="Religious Education">Religious Education</option><option value="Commerce">Commerce</option><option value="Principles of Accounts">Principles of Accounts</option><option value="Agricultural Science">Agricultural Science</option><option value="Computer Studies">Computer Studies</option></select></div><div class="field"><label><i class="fas fa-calendar-alt"></i> Term</label><select id="teacherTerm"><option value="">Select</option><option value="1">Term 1</option><option value="2">Term 2</option><option value="3">Term 3</option></select></div></div><div class="grid-3"><div class="field"><label><i class="fas fa-calendar-year"></i> Year</label><select id="teacherYear"><option value="">Select</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option></select></div><div class="field"><label><i class="fas fa-tag"></i> Test Type</label><select id="teacherTestType"><option value="">Select</option><option value="mid_term">Mid Term</option><option value="end_term">End of Term</option></select></div><div class="field" style="justify-content:flex-end;"><button class="btn btn-primary" id="loadStudentsBtn"><i class="fas fa-users"></i> Load Students</button></div></div></div>
+            <div class="card"><div class="card-header"><h2><i class="fas fa-chalkboard-teacher"></i> Teacher Dashboard</h2><span class="subtitle">Enter results</span></div>
+                <div class="grid-3"><div class="field"><label><i class="fas fa-users"></i> Class</label><select id="teacherClass"><option value="">Select Class</option></select></div><div class="field"><label><i class="fas fa-book"></i> Subject</label><select id="teacherSubject"><option value="">Select</option><option value="English">English</option><option value="Mathematics">Mathematics</option><option value="Biology">Biology</option><option value="Chemistry">Chemistry</option><option value="Physics">Physics</option><option value="History">History</option><option value="Geography">Geography</option><option value="Civic Education">Civic Education</option><option value="Zambian Languages">Zambian Languages</option><option value="Religious Education">Religious Education</option><option value="Commerce">Commerce</option><option value="Principles of Accounts">Principles of Accounts</option><option value="Agricultural Science">Agricultural Science</option><option value="Computer Studies">Computer Studies</option></select></div><div class="field"><label><i class="fas fa-calendar-alt"></i> Term</label><select id="teacherTerm"><option value="">Select</option><option value="1">Term 1</option><option value="2">Term 2</option><option value="3">Term 3</option></select></div></div>
+                <div class="grid-3"><div class="field"><label><i class="fas fa-calendar-year"></i> Year</label><select id="teacherYear"><option value="">Select</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option></select></div><div class="field"><label><i class="fas fa-tag"></i> Test Type</label><select id="teacherTestType"><option value="">Select</option><option value="mid_term">Mid Term</option><option value="end_term">End of Term</option></select></div><div class="field" style="justify-content:flex-end;"><button class="btn btn-primary" id="loadStudentsBtn"><i class="fas fa-users"></i> Load Students</button></div></div>
+            </div>
             <div class="card"><div class="card-header"><h2><i class="fas fa-file-excel"></i> Import Results (Excel)</h2><span class="subtitle">Bulk upload scores</span></div><div class="import-area" id="teacherImportArea"><i class="fas fa-file-excel"></i><h3>Click or Drag Excel</h3><p>.xlsx, .xls</p><input type="file" class="file-input" id="teacherFileInput" accept=".xlsx,.xls"></div><div id="teacherImportPreview" class="import-preview" style="display:none;"></div><button class="btn btn-success btn-block" id="teacherImportBtn" style="display:none;margin-top:12px;"><i class="fas fa-upload"></i> Import Results</button></div>
             <div id="resultsEntry" style="display:none;"><div class="card"><div class="card-header"><h2><i class="fas fa-edit"></i> Enter Results</h2><button class="btn btn-sm btn-success" id="saveResultsBtn"><i class="fas fa-save"></i> Save All</button></div><div class="table-wrapper"><table><thead><tr><th>#</th><th>Name</th><th>Number</th><th>Score (%)</th><th>Grade</th><th>Comment</th></tr></thead><tbody id="resultsTableBody"><tr><td colspan="6" style="text-align:center;color:var(--ink-faint);">No students loaded.</td></tr></tbody></table></div></div></div>
         </div>
     </div>
 
-    <!-- ADMIN SECTION – with BULK REGISTER STUDENTS card -->
+    <!-- admin section with bulk register -->
     <div class="section" id="adminSection">
         <div class="card" id="adminLocked"><div class="card-header"><h2><i class="fas fa-lock"></i> Admin Access Required</h2><span class="subtitle">Login as admin</span></div><div style="text-align:center;padding:40px 20px;"><i class="fas fa-user-shield" style="font-size:48px;color:var(--gold);margin-bottom:16px;display:block;"></i><p style="color:var(--ink-soft);margin-bottom:16px;">Administrators only.</p><button class="btn btn-primary" onclick="openLoginModal('admin')"><i class="fas fa-sign-in-alt"></i> Login as Admin</button></div></div>
         <div id="adminContent" style="display:none;">
-            <!-- stats -->
             <div class="card"><div class="card-header"><h2><i class="fas fa-user-shield"></i> Admin Dashboard</h2><span class="subtitle">Overview</span></div><div class="grid-4"><div class="stat-card"><div class="icon"><i class="fas fa-users"></i></div><div class="number" id="totalStudents">0</div><div class="label">Total Students</div></div><div class="stat-card"><div class="icon"><i class="fas fa-user-tie"></i></div><div class="number" id="totalTeachers">0</div><div class="label">Total Teachers</div></div><div class="stat-card"><div class="icon"><i class="fas fa-book"></i></div><div class="number" id="totalSubjects">0</div><div class="label">Total Subjects</div></div><div class="stat-card"><div class="icon"><i class="fas fa-file-alt"></i></div><div class="number" id="totalResults">0</div><div class="label">Total Results</div></div></div></div>
 
-            <!-- ★ NEW: BULK REGISTER STUDENTS CARD ★ -->
+            <!-- BULK REGISTER CARD -->
             <div class="card" style="border-top-color: var(--oxblood);">
                 <div class="card-header">
                     <h2><i class="fas fa-user-plus" style="color:var(--oxblood);"></i> Bulk Register Students</h2>
-                    <span class="subtitle">Upload Excel file with student numbers & names</span>
+                    <span class="subtitle">Upload Excel with student numbers & names</span>
                 </div>
                 <div class="grid-3">
-                    <div class="field">
-                        <label><i class="fas fa-users"></i> Default Class</label>
-                        <select id="bulkClassSelect"><option value="">Select Class</option></select>
-                    </div>
-                    <div class="field" style="justify-content:flex-end; display:flex; flex-direction:column; gap:4px;">
-                        <label>&nbsp;</label>
-                        <button class="btn btn-primary" id="bulkRegisterTemplateBtn" style="width:100%;"><i class="fas fa-download"></i> Download Template</button>
-                    </div>
-                    <div class="field" style="justify-content:flex-end; display:flex; flex-direction:column; gap:4px;">
-                        <label>&nbsp;</label>
-                        <button class="btn btn-warning" id="bulkRegisterBtn" style="width:100%;"><i class="fas fa-upload"></i> Register Students</button>
-                    </div>
+                    <div class="field"><label><i class="fas fa-users"></i> Default Class</label><select id="bulkClassSelect"><option value="">Select Class</option></select></div>
+                    <div class="field" style="justify-content:flex-end; display:flex; flex-direction:column; gap:4px;"><label>&nbsp;</label><button class="btn btn-primary" id="bulkRegisterTemplateBtn" style="width:100%;"><i class="fas fa-download"></i> Download Template</button></div>
+                    <div class="field" style="justify-content:flex-end; display:flex; flex-direction:column; gap:4px;"><label>&nbsp;</label><button class="btn btn-warning" id="bulkRegisterBtn" style="width:100%;"><i class="fas fa-upload"></i> Register Students</button></div>
                 </div>
                 <div class="import-area" id="bulkImportArea" style="margin-top:8px;">
                     <i class="fas fa-file-excel" style="color:var(--oxblood);"></i>
@@ -313,7 +275,6 @@
                 <div id="bulkImportStatus" style="margin-top:8px; font-size:13px; color:var(--ink-soft);"></div>
             </div>
 
-            <!-- existing admin cards -->
             <div class="grid-2">
                 <div class="card"><div class="card-header"><h2><i class="fas fa-user-plus"></i> Add Student</h2></div><div class="field"><label>Student Number</label><input type="text" id="adminStudentNumber" placeholder="e.g. 2024-001"></div><div class="field"><label>Full Name</label><input type="text" id="adminStudentName" placeholder="e.g. Mary Mwansa"></div><div class="field"><label>Class</label><select id="adminStudentClass"><option value="">Select Class</option></select></div><button class="btn btn-success btn-block" id="addStudentBtn"><i class="fas fa-plus"></i> Add Student</button></div>
                 <div class="card"><div class="card-header"><h2><i class="fas fa-user-plus"></i> Add Teacher</h2></div><div class="field"><label>Name</label><input type="text" id="adminTeacherName" placeholder="e.g. Mr. John Banda"></div><div class="field"><label>Username</label><input type="text" id="adminTeacherUsername" placeholder="jbanda"></div><div class="field"><label>Password</label><input type="password" id="adminTeacherPassword" placeholder="Enter password"></div><button class="btn btn-success btn-block" id="addTeacherBtn"><i class="fas fa-plus"></i> Add Teacher</button></div>
@@ -330,8 +291,9 @@
 <script>
     (function(){
         "use strict";
+
         // ============================================================
-        // CONFIG & STATE (same as original)
+        // CONFIG
         // ============================================================
         const SUPABASE_URL = 'https://yhmjidkrwtxckecvjixo.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlobWppZGtyd3R4Y2tlY3ZqaXhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc0MzYzMDksImV4cCI6MjEwMzAxMjMwOX0.db6y1ac6HIMt4v_AW9M-IvypHXSz1aoMA-X3bAvpKnI';
@@ -362,10 +324,10 @@
         let supabaseClient = null;
         let currentUser = null;
         let isConnected = false;
-        let bulkData = null; // stores parsed bulk register data
+        let bulkData = null;
 
         // ============================================================
-        // DOM refs (original + bulk)
+        // DOM refs
         // ============================================================
         const toastDiv = document.getElementById('globalToast');
         const toastMsg = document.getElementById('toastMsg');
@@ -428,7 +390,7 @@
         const newClassTeacher = document.getElementById('newClassTeacher');
         const addClassBtn = document.getElementById('addClassBtn');
 
-        // BULK REGISTER
+        // bulk
         const bulkClassSelect = document.getElementById('bulkClassSelect');
         const bulkImportArea = document.getElementById('bulkImportArea');
         const bulkFileInput = document.getElementById('bulkFileInput');
@@ -440,7 +402,7 @@
         const bulkRegisterBtn = document.getElementById('bulkRegisterBtn');
 
         // ============================================================
-        // TOAST, CONNECTION, LOGIN (abridged from original)
+        // TOAST, LOGIN, CONNECTION (simplified)
         // ============================================================
         function showToast(msg, isError = false) {
             toastMsg.textContent = msg;
@@ -486,7 +448,6 @@
         loginModal.addEventListener('click', e=>{ if(e.target===this) loginModal.classList.remove('active'); });
         loginFloatingBtn.addEventListener('click', ()=>openLoginModal());
         logoutFromModalBtn.addEventListener('click', function(){ performLogout(); loginModal.classList.remove('active'); });
-
         function performLogout() {
             currentUser = null; updateLoginUI(); showToast('🔒 Logged out');
             studentResults.style.display = 'none'; resultsEntry.style.display = 'none';
@@ -539,7 +500,7 @@
         window.adminLogin = adminLogin;
 
         // ============================================================
-        // INIT SUPABASE (same)
+        // SUPABASE INIT
         // ============================================================
         function initSupabase() {
             try {
@@ -591,7 +552,7 @@
         }
 
         // ============================================================
-        // ADMIN STATS & CLASSES (same)
+        // ADMIN STATS & CLASSES
         // ============================================================
         async function loadAdminStats() {
             if (!supabaseClient || !isConnected) { loadFallbackStats(); return; }
@@ -642,13 +603,11 @@
         };
 
         // ============================================================
-        // BULK REGISTER STUDENTS – CORE LOGIC
+        // BULK REGISTER – full working
         // ============================================================
-        // 1) template download
         bulkRegisterTemplateBtn.addEventListener('click', function() {
             const wb = XLSX.utils.book_new();
             const data = [['Student Number', 'Name']];
-            // add 5 example rows
             data.push(['2024-001', 'Ireen Mwansa']);
             data.push(['2024-002', 'Mary Phiri']);
             data.push(['2024-003', 'Grace Zulu']);
@@ -660,7 +619,6 @@
             showToast('📥 Template downloaded');
         });
 
-        // 2) file upload / drag drop
         bulkImportArea.addEventListener('click', ()=> bulkFileInput.click());
         bulkImportArea.addEventListener('dragover', e=>{ e.preventDefault(); bulkImportArea.classList.add('dragover'); });
         bulkImportArea.addEventListener('dragleave', e=>{ e.preventDefault(); bulkImportArea.classList.remove('dragover'); });
@@ -679,7 +637,6 @@
                     const sheet = workbook.Sheets[workbook.SheetNames[0]];
                     const json = XLSX.utils.sheet_to_json(sheet);
                     if (!json || json.length===0) { showToast('⚠️ Empty file', true); return; }
-                    // validate columns: look for Student Number and Name
                     const headers = Object.keys(json[0]);
                     const hasNumber = headers.some(h => h.toLowerCase().includes('student') && (h.toLowerCase().includes('number') || h.toLowerCase().includes('id')));
                     const hasName = headers.some(h => h.toLowerCase().includes('name'));
@@ -687,7 +644,6 @@
                         showToast('⚠️ Missing columns: "Student Number" and "Name" required', true);
                         return;
                     }
-                    // map columns
                     const numKey = headers.find(h => h.toLowerCase().includes('student') && (h.toLowerCase().includes('number') || h.toLowerCase().includes('id')));
                     const nameKey = headers.find(h => h.toLowerCase().includes('name'));
                     const mapped = json.map(row => ({
@@ -733,7 +689,6 @@
             showToast('🧹 Cleared');
         });
 
-        // 3) confirm import
         bulkConfirmImportBtn.addEventListener('click', async function() {
             if (!currentUser || currentUser.role !== 'admin') { showToast('🔒 Admin login required', true); return; }
             if (!bulkData || bulkData.length===0) { showToast('⚠️ No data to import', true); return; }
@@ -747,7 +702,6 @@
 
             for (const row of bulkData) {
                 try {
-                    // check if student number exists
                     const { data: existing } = await supabaseClient
                         .from('students')
                         .select('id')
@@ -773,7 +727,6 @@
             showToast(msg);
             loadAdminStats();
             loadClasses();
-            // clear preview after import
             bulkData = null;
             bulkImportPreview.style.display = 'none';
             bulkImportPreview.innerHTML = '';
@@ -782,7 +735,6 @@
             bulkFileInput.value = '';
         });
 
-        // 4) optional "Register Students" button – same as confirm
         bulkRegisterBtn.addEventListener('click', function() {
             if (!bulkData || bulkData.length===0) {
                 showToast('⚠️ Please upload an Excel file first', true);
@@ -792,25 +744,144 @@
         });
 
         // ============================================================
-        // EXISTING TEACHER / STUDENT FUNCTIONS (stubs – original)
+        // TEACHER – LOAD STUDENTS (FIXED: uses real DB data)
         // ============================================================
-        // teacher load etc – we keep the original logic but we only need to ensure bulk works.
-        // For brevity, we copy the minimal event listeners from original.
-        // We'll just keep the existing ones from the original script.
-        // (original script already defines viewResultsBtn, loadStudentsBtn, saveResultsBtn, etc.)
-        // We'll re-bind them here if they were overwritten.
-        // Actually the original script in the file already has those bindings.
-        // Since we are replacing the entire script, we need to re-implement them.
-        // For space, we use a compact version.
+        loadStudentsBtn.addEventListener('click', async function() {
+            if (!currentUser || currentUser.role !== 'teacher') {
+                showToast('🔒 Teacher login required', true);
+                return;
+            }
+            const className = teacherClass.value;
+            const subject = teacherSubject.value;
+            const term = teacherTerm.value;
+            const year = teacherYear.value;
+            const testType = teacherTestType.value;
+
+            if (!className || !subject || !term || !year || !testType) {
+                showToast('⚠️ Fill all fields', true);
+                return;
+            }
+
+            // If offline or no supabase, fallback to demo
+            if (!supabaseClient || !isConnected) {
+                const demo = [
+                    { id:1, name:'Ireen Mwansa', student_number:'2024-001' },
+                    { id:2, name:'Mary Phiri', student_number:'2024-002' },
+                    { id:3, name:'Grace Zulu', student_number:'2024-003' }
+                ];
+                displayResultsEntry(demo, subject, term, year, testType);
+                resultsEntry.style.display = 'block';
+                showToast('✅ Demo students loaded (offline)');
+                return;
+            }
+
+            try {
+                showToast('🔄 Loading students from database...');
+                const { data: students, error } = await supabaseClient
+                    .from('students')
+                    .select('id, name, student_number')
+                    .eq('class', className)
+                    .order('name');
+
+                if (error) throw error;
+                if (!students || students.length === 0) {
+                    showToast('⚠️ No students found in this class', true);
+                    resultsTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--ink-faint);">No students in this class.</td></tr>`;
+                    resultsEntry.style.display = 'block';
+                    return;
+                }
+
+                displayResultsEntry(students, subject, term, year, testType);
+                resultsEntry.style.display = 'block';
+                showToast(`✅ ${students.length} students loaded from database`);
+            } catch (err) {
+                showToast('❌ Error loading students: ' + err.message, true);
+                console.error(err);
+            }
+        });
+
         // ============================================================
-        // Quick re-implementation of essential teacher/student functions
+        // DISPLAY RESULTS ENTRY (teacher)
+        // ============================================================
+        function displayResultsEntry(students, subject, term, year, testType) {
+            let html = '';
+            students.forEach((s, i) => {
+                html += `<tr data-student-id="${s.id}">
+                            <td>${i+1}</td>
+                            <td><strong>${s.name}</strong></td>
+                            <td>${s.student_number}</td>
+                            <td><input type="number" min="0" max="100" class="score-input" value="" style="width:70px;padding:6px 8px;border-radius:8px;border:1.5px solid var(--border);text-align:center;"></td>
+                            <td class="grade-display">-</td>
+                            <td><input type="text" class="comment-input" placeholder="Comment..." style="width:100%;padding:6px 8px;border-radius:8px;border:1.5px solid var(--border);font-size:12px;"></td>
+                        </tr>`;
+            });
+            resultsTableBody.innerHTML = html;
+
+            // live grade update
+            document.querySelectorAll('.score-input').forEach(inp => {
+                inp.addEventListener('input', function() {
+                    const row = this.closest('tr');
+                    const gd = row.querySelector('.grade-display');
+                    const score = parseInt(this.value);
+                    if (!isNaN(score) && score >= 0 && score <= 100) {
+                        const grade = score >= 80 ? 'A' : score >= 70 ? 'B' : score >= 60 ? 'C' : score >= 50 ? 'D' : 'F';
+                        const cls = score >= 80 ? 'badge-success' : score >= 60 ? 'badge-info' : score >= 50 ? 'badge-warning' : 'badge-danger';
+                        gd.textContent = grade;
+                        gd.className = 'grade-display ' + cls;
+                    } else {
+                        gd.textContent = '-';
+                        gd.className = 'grade-display';
+                    }
+                });
+            });
+        }
+
+        // ============================================================
+        // SAVE RESULTS (teacher) – demo
+        // ============================================================
+        saveResultsBtn.addEventListener('click', function() {
+            if (!currentUser || currentUser.role !== 'teacher') {
+                showToast('🔒 Teacher login required', true);
+                return;
+            }
+            showToast('✅ Results saved (demo)');
+        });
+
+        // ============================================================
+        // TEACHER IMPORT (demo)
+        // ============================================================
+        teacherImportArea.addEventListener('click', ()=>teacherFileInput.click());
+        teacherImportArea.addEventListener('dragover', e=>{ e.preventDefault(); teacherImportArea.classList.add('dragover'); });
+        teacherImportArea.addEventListener('dragleave', e=>{ e.preventDefault(); teacherImportArea.classList.remove('dragover'); });
+        teacherImportArea.addEventListener('drop', e=>{ e.preventDefault(); teacherImportArea.classList.remove('dragover'); if(e.dataTransfer.files.length) { teacherFileInput.files=e.dataTransfer.files; showToast('📂 File loaded (demo)'); } });
+        teacherFileInput.addEventListener('change', function(){ if(this.files.length) showToast('📂 File loaded (demo)'); });
+        teacherImportBtn.addEventListener('click', function(){ showToast('✅ Import complete (demo)'); });
+
+        // ============================================================
+        // ADD STUDENT/TEACHER/CLASS (demo)
+        // ============================================================
+        addStudentBtn.addEventListener('click', function() {
+            if (!currentUser || currentUser.role !== 'admin') { showToast('🔒 Admin login required', true); return; }
+            showToast('✅ Student added (demo)');
+        });
+        addTeacherBtn.addEventListener('click', function() {
+            if (!currentUser || currentUser.role !== 'admin') { showToast('🔒 Admin login required', true); return; }
+            showToast('✅ Teacher added (demo)');
+        });
+        addClassBtn.addEventListener('click', function() {
+            if (!currentUser || currentUser.role !== 'admin') { showToast('🔒 Admin login required', true); return; }
+            showToast('✅ Class added (demo)');
+        });
+
+        // ============================================================
+        // STUDENT VIEW RESULTS (demo)
+        // ============================================================
         viewResultsBtn.addEventListener('click', function() {
             const number = studentNumber.value.trim();
             const term = studentTerm.value;
             const year = studentYear.value;
             const testType = studentTestType.value;
             if (!number || !term || !year || !testType) { showToast('⚠️ Fill all fields', true); return; }
-            // demo mode always
             const demoStudent = { name:'Ireen Mwansa', student_number:number || '2024-001', class:'Form1_Mary', position:1, comment:'Excellent performance!' };
             const demoResults = [
                 { subject:'English', score:66 }, { subject:'Mathematics', score:72 }, { subject:'Biology', score:58 },
@@ -847,59 +918,8 @@
             setTimeout(()=>card.classList.remove('report-card-print'), 1000);
         });
 
-        // Teacher load & save (simplified)
-        loadStudentsBtn.addEventListener('click', function() {
-            if (!currentUser || currentUser.role !== 'teacher') { showToast('🔒 Teacher login required', true); return; }
-            const className = teacherClass.value, subject = teacherSubject.value, term = teacherTerm.value, year = teacherYear.value, testType = teacherTestType.value;
-            if (!className || !subject || !term || !year || !testType) { showToast('⚠️ Fill all fields', true); return; }
-            const demo = [{id:1,name:'Ireen Mwansa',student_number:'2024-001'},{id:2,name:'Mary Phiri',student_number:'2024-002'},{id:3,name:'Grace Zulu',student_number:'2024-003'}];
-            displayResultsEntry(demo, subject, term, year, testType);
-            resultsEntry.style.display = 'block';
-            showToast('✅ Students loaded (demo)');
-        });
-
-        function displayResultsEntry(students, subject, term, year, testType) {
-            let html=''; students.forEach((s,i)=>{
-                html += `<tr data-student-id="${s.id}"><td>${i+1}</td><td><strong>${s.name}</strong></td><td>${s.student_number}</td><td><input type="number" min="0" max="100" class="score-input" value="" style="width:70px;padding:6px 8px;border-radius:8px;border:1.5px solid var(--border);text-align:center;"></td><td class="grade-display">-</td><td><input type="text" class="comment-input" placeholder="Comment..." style="width:100%;padding:6px 8px;border-radius:8px;border:1.5px solid var(--border);font-size:12px;"></td></tr>`;
-            });
-            resultsTableBody.innerHTML = html;
-            document.querySelectorAll('.score-input').forEach(inp=>{
-                inp.addEventListener('input', function(){
-                    const row=this.closest('tr'); const gd=row.querySelector('.grade-display'); const score=parseInt(this.value);
-                    if(!isNaN(score)&&score>=0&&score<=100){ gd.textContent=score>=80?'A':score>=70?'B':score>=60?'C':score>=50?'D':'F'; gd.className='grade-display '+(score>=80?'badge-success':score>=60?'badge-info':score>=50?'badge-warning':'badge-danger'); } else { gd.textContent='-'; gd.className='grade-display'; }
-                });
-            });
-        }
-
-        saveResultsBtn.addEventListener('click', function() {
-            if (!currentUser || currentUser.role !== 'teacher') { showToast('🔒 Teacher login required', true); return; }
-            showToast('✅ Results saved (demo)');
-        });
-
-        // Add student/teacher from admin (simple)
-        addStudentBtn.addEventListener('click', function() {
-            if (!currentUser || currentUser.role !== 'admin') { showToast('🔒 Admin login required', true); return; }
-            showToast('✅ Student added (demo)');
-        });
-        addTeacherBtn.addEventListener('click', function() {
-            if (!currentUser || currentUser.role !== 'admin') { showToast('🔒 Admin login required', true); return; }
-            showToast('✅ Teacher added (demo)');
-        });
-        addClassBtn.addEventListener('click', function() {
-            if (!currentUser || currentUser.role !== 'admin') { showToast('🔒 Admin login required', true); return; }
-            showToast('✅ Class added (demo)');
-        });
-
-        // Teacher import (demo)
-        teacherImportArea.addEventListener('click', ()=>teacherFileInput.click());
-        teacherImportArea.addEventListener('dragover', e=>{ e.preventDefault(); teacherImportArea.classList.add('dragover'); });
-        teacherImportArea.addEventListener('dragleave', e=>{ e.preventDefault(); teacherImportArea.classList.remove('dragover'); });
-        teacherImportArea.addEventListener('drop', e=>{ e.preventDefault(); teacherImportArea.classList.remove('dragover'); if(e.dataTransfer.files.length) { teacherFileInput.files=e.dataTransfer.files; showToast('📂 File loaded (demo)'); } });
-        teacherFileInput.addEventListener('change', function(){ if(this.files.length) showToast('📂 File loaded (demo)'); });
-        teacherImportBtn.addEventListener('click', function(){ showToast('✅ Import complete (demo)'); });
-
         // ============================================================
-        // TAB SWITCHING (original)
+        // TAB SWITCHING
         // ============================================================
         document.querySelectorAll('.tab-btn').forEach(btn=>{
             btn.addEventListener('click', function(){
@@ -926,7 +946,7 @@
         // ============================================================
         initSupabase();
         updateLoginUI();
-        console.log('✅ Laura Girls · Bulk register ready');
+        console.log('✅ Laura Girls · Teacher load fixed · Bulk register ready');
     })();
 </script>
 </body>
