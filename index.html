@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Laura Girls · Teacher Load Fixed</title>
+    <title>Laura Girls · Excel Import Fixed</title>
     <meta name="theme-color" content="#1a237e">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,7 +15,7 @@
     </script>
     <style>
         /* -------------------------------------------------------------
-           base styles (same as original)
+           base styles
            ------------------------------------------------------------- */
         :root {
             --paper: #F4F5F1;
@@ -39,6 +39,7 @@
             --radius-md: 16px;
             --shadow-sm: 0 1px 2px rgba(21, 32, 26, 0.06);
             --shadow-md: 0 8px 24px rgba(21, 32, 26, 0.09);
+            --shadow-lg: 0 24px 60px rgba(21, 32, 26, 0.18);
         }
         * { margin:0; padding:0; box-sizing:border-box; }
         body { font-family:var(--font-body); background:var(--paper); color:var(--ink); min-height:100vh; line-height:1.5; }
@@ -142,6 +143,7 @@
         .import-preview table th { background:var(--marian-blue); color:#fff; padding:8px 10px; text-align:left; position:sticky; top:0; z-index:2; }
         .import-preview table td { padding:6px 10px; border-bottom:1px solid var(--border); }
         .footer-note { font-size:11px; color:var(--ink-faint); text-align:center; margin-top:30px; padding-top:16px; border-top:1px solid var(--border); letter-spacing:0.3px; }
+        .result-card { background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); border:1px solid var(--border); border-radius:var(--radius-md); padding:20px; margin-bottom:16px; box-shadow:var(--shadow-sm); border-left:4px solid var(--gold); }
         @media (max-width:480px) {
             .topbar .brand h1 { font-size:14px; }
             .topbar .brand .coat-of-arms { width:35px; height:35px; }
@@ -155,16 +157,6 @@
             .toast { bottom:70px; font-size:12px; padding:10px 16px; }
             .login-floating-btn { width:48px; height:48px; font-size:17px; bottom:70px; right:12px; }
         }
-        .result-card { background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); border:1px solid var(--border); border-radius:var(--radius-md); padding:20px; margin-bottom:16px; box-shadow:var(--shadow-sm); border-left:4px solid var(--gold); }
-        .result-card .subject-result { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--border); }
-        .result-card .subject-result:last-child { border-bottom:none; }
-        .result-card .subject-name { font-weight:600; }
-        .result-card .subject-score { font-family:var(--font-mono); font-weight:600; }
-        .result-card .subject-grade { font-weight:600; padding:2px 10px; border-radius:20px; font-size:12px; }
-        .result-card .total-score { font-size:18px; font-weight:700; color:var(--marian-blue); }
-        .result-card .average-score { font-size:16px; font-weight:600; color:var(--gold); }
-        .result-card .position { font-size:16px; font-weight:600; color:var(--oxblood); }
-        .result-card .comment { font-style:italic; color:var(--ink-soft); padding:8px 12px; background:var(--paper); border-radius:10px; margin-top:8px; }
         @media print {
             .topbar, .tab-nav, .no-print, .mary-bg, .connection-status, .login-modal, .login-floating-btn { display:none !important; }
             .section { display:block !important; }
@@ -801,7 +793,7 @@
         });
 
         // ============================================================
-        // TEACHER LOAD STUDENTS - FIXED: loads from database, not demo
+        // TEACHER LOAD STUDENTS
         // ============================================================
         loadStudentsBtn.addEventListener('click', async function() {
             if (!currentUser || currentUser.role !== 'teacher') {
@@ -820,7 +812,6 @@
                 return;
             }
 
-            // If offline or no supabase, show demo data
             if (!supabaseClient || !isConnected) {
                 const demo = [
                     { id:1, name:'Ireen Mwansa', student_number:'2024-001' },
@@ -835,8 +826,6 @@
 
             try {
                 showToast('🔄 Loading students from database...');
-                
-                // First, try to get students from the database
                 const { data: students, error } = await supabaseClient
                     .from('students')
                     .select('id, name, student_number')
@@ -845,7 +834,6 @@
 
                 if (error) throw error;
 
-                // If no students found in database, use demo data
                 if (!students || students.length === 0) {
                     showToast('⚠️ No students found in this class. Loading demo data.', true);
                     const demo = [
@@ -865,7 +853,6 @@
             } catch (err) {
                 showToast('❌ Error loading students: ' + err.message, true);
                 console.error(err);
-                // Fallback to demo on error
                 const demo = [
                     { id:1, name:'Ireen Mwansa', student_number:'2024-001' },
                     { id:2, name:'Mary Phiri', student_number:'2024-002' },
@@ -913,7 +900,7 @@
         }
 
         // ============================================================
-        // SAVE RESULTS (teacher)
+        // SAVE RESULTS
         // ============================================================
         saveResultsBtn.addEventListener('click', async function() {
             if (!currentUser || currentUser.role !== 'teacher') {
@@ -975,7 +962,6 @@
 
                 const studentIds = [...new Set(resultsToSave.map(r => r.student_id))];
 
-                // Delete existing results for these students
                 await supabaseClient
                     .from('results')
                     .delete()
@@ -985,7 +971,6 @@
                     .eq('year', year)
                     .eq('test_type', testType);
 
-                // Insert new results
                 const { error } = await supabaseClient
                     .from('results')
                     .insert(resultsToSave);
@@ -1005,7 +990,7 @@
         });
 
         // ============================================================
-        // TEACHER EXCEL IMPORT
+        // TEACHER EXCEL IMPORT - FIXED
         // ============================================================
         teacherImportLoadBtn.addEventListener('click', function() {
             const className = teacherImportClass.value;
@@ -1018,6 +1003,13 @@
                 showToast('⚠️ Fill all import fields', true);
                 return;
             }
+            // Store the import context
+            teacherImportArea.dataset.className = className;
+            teacherImportArea.dataset.subject = subject;
+            teacherImportArea.dataset.term = term;
+            teacherImportArea.dataset.year = year;
+            teacherImportArea.dataset.testType = testType;
+            
             teacherImportArea.style.display = 'block';
             teacherImportPreview.style.display = 'none';
             teacherImportBtn.style.display = 'none';
@@ -1047,20 +1039,32 @@
 
                     const headers = Object.keys(json[0]);
                     const hasNumber = headers.some(h => h.toLowerCase().includes('student') && (h.toLowerCase().includes('number') || h.toLowerCase().includes('id')));
-                    const hasScore = headers.some(h => h.toLowerCase().includes('score'));
+                    const hasScore = headers.some(h => h.toLowerCase().includes('score') || h.toLowerCase().includes('mark') || h.toLowerCase().includes('grade'));
+                    
                     if (!hasNumber || !hasScore) {
                         showToast('⚠️ Missing columns: "Student Number" and "Score" required', true);
                         return;
                     }
+                    
                     const numKey = headers.find(h => h.toLowerCase().includes('student') && (h.toLowerCase().includes('number') || h.toLowerCase().includes('id')));
-                    const scoreKey = headers.find(h => h.toLowerCase().includes('score'));
+                    const scoreKey = headers.find(h => h.toLowerCase().includes('score') || h.toLowerCase().includes('mark') || h.toLowerCase().includes('grade'));
 
-                    const mapped = json.map(row => ({
-                        student_number: String(row[numKey] || '').trim(),
-                        score: parseFloat(row[scoreKey]) || 0
-                    })).filter(r => r.student_number && !isNaN(r.score) && r.score >= 0 && r.score <= 100);
+                    const mapped = json.map(row => {
+                        let score = parseFloat(row[scoreKey]);
+                        // Handle percentage strings like "85%"
+                        if (typeof row[scoreKey] === 'string' && row[scoreKey].includes('%')) {
+                            score = parseFloat(row[scoreKey].replace('%', ''));
+                        }
+                        return {
+                            student_number: String(row[numKey] || '').trim(),
+                            score: isNaN(score) ? 0 : score
+                        };
+                    }).filter(r => r.student_number && !isNaN(r.score) && r.score >= 0 && r.score <= 100);
 
-                    if (mapped.length === 0) { showToast('⚠️ No valid rows found (need number and score 0-100)', true); return; }
+                    if (mapped.length === 0) { 
+                        showToast('⚠️ No valid rows found (need number and score 0-100)', true); 
+                        return; 
+                    }
 
                     teacherImportData = mapped;
                     displayTeacherImportPreview(mapped);
@@ -1110,14 +1114,15 @@
                 return;
             }
 
-            const className = teacherImportClass.value;
-            const subject = teacherImportSubject.value;
-            const term = teacherImportTerm.value;
-            const year = teacherImportYear.value;
-            const testType = teacherImportTestType.value;
+            // Get the import context from the data attributes
+            const className = teacherImportArea.dataset.className;
+            const subject = teacherImportArea.dataset.subject;
+            const term = teacherImportArea.dataset.term;
+            const year = teacherImportArea.dataset.year;
+            const testType = teacherImportArea.dataset.testType;
 
             if (!className || !subject || !term || !year || !testType) {
-                showToast('⚠️ Fill all import fields', true);
+                showToast('⚠️ Please click "Load & Preview" first to set the context', true);
                 return;
             }
 
@@ -1128,10 +1133,11 @@
 
             this.disabled = true;
             this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Importing...';
-            let imported = 0, errors = 0, notFound = 0;
+            let imported = 0, errors = 0, notFound = 0, duplicates = 0;
 
             for (const row of teacherImportData) {
                 try {
+                    // Find student by number
                     const { data: student, error: sError } = await supabaseClient
                         .from('students')
                         .select('id')
@@ -1143,6 +1149,7 @@
                         continue;
                     }
 
+                    // Check if result already exists
                     const { data: existing, error: eError } = await supabaseClient
                         .from('results')
                         .select('id')
@@ -1156,12 +1163,19 @@
                     const score = Math.min(Math.max(Math.round(row.score), 0), 100);
 
                     if (existing) {
+                        duplicates++;
+                        // Update existing
                         await supabaseClient
                             .from('results')
-                            .update({ score: score, teacher_id: currentUser.id })
+                            .update({ 
+                                score: score, 
+                                teacher_id: currentUser.id 
+                            })
                             .eq('id', existing.id);
+                        imported++;
                     } else {
-                        await supabaseClient
+                        // Insert new
+                        const { error: insertError } = await supabaseClient
                             .from('results')
                             .insert({
                                 student_id: student.id,
@@ -1172,17 +1186,23 @@
                                 score: score,
                                 teacher_id: currentUser.id
                             });
+                        
+                        if (insertError) {
+                            errors++;
+                            console.error('Insert error:', insertError);
+                        } else {
+                            imported++;
+                        }
                     }
-                    imported++;
                 } catch (err) {
                     errors++;
-                    console.error(err);
+                    console.error('Import error for row:', row, err);
                 }
             }
 
             this.disabled = false;
             this.innerHTML = '<i class="fas fa-upload"></i> Import Results';
-            const msg = `✅ ${imported} imported, ${notFound} not found, ${errors} errors.`;
+            const msg = `✅ ${imported} saved (${duplicates} updated), ${notFound} students not found, ${errors} errors.`;
             teacherImportStatus.innerHTML = msg;
             showToast(msg);
 
@@ -1195,18 +1215,19 @@
             teacherFileInput.value = '';
 
             // Reload students for the teacher
-            if (className) {
-                try {
-                    const { data: students } = await supabaseClient
-                        .from('students')
-                        .select('id, name, student_number')
-                        .eq('class', className)
-                        .order('name');
-                    if (students && students.length > 0) {
-                        displayResultsEntry(students, subject, term, year, testType);
-                        resultsEntry.style.display = 'block';
-                    }
-                } catch(e) {}
+            try {
+                const { data: students } = await supabaseClient
+                    .from('students')
+                    .select('id, name, student_number')
+                    .eq('class', className)
+                    .order('name');
+                if (students && students.length > 0) {
+                    displayResultsEntry(students, subject, term, year, testType);
+                    resultsEntry.style.display = 'block';
+                    showToast(`📋 Loaded ${students.length} students with imported results`);
+                }
+            } catch(e) {
+                console.warn('Could not reload students:', e);
             }
         });
 
@@ -1299,8 +1320,9 @@
         // ============================================================
         initSupabase();
         updateLoginUI();
-        console.log('✅ Laura Girls · Teacher load fixed - loads from database');
-        console.log('📝 If no students in database, demo data will show.');
+        console.log('✅ Laura Girls · Excel import fully fixed');
+        console.log('📝 Instructions: 1) Select class/subject/term/year/test type');
+        console.log('📝 2) Click "Load & Preview" 3) Upload Excel file 4) Click "Import Results"');
     })();
 </script>
 </body>
