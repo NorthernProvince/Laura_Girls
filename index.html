@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Laura Girls · Teacher Load Fixed</title>
+    <title>Laura Girls · Excel Import Fixed</title>
     <meta name="theme-color" content="#1a237e">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -186,7 +186,7 @@
     </span>
 </div>
 
-<!-- login modal (simplified) -->
+<!-- login modal -->
 <div class="login-modal" id="loginModal">
     <div class="modal-content">
         <button class="close-btn" id="closeLoginModal">&times;</button>
@@ -239,39 +239,56 @@
                 <div class="grid-3"><div class="field"><label><i class="fas fa-users"></i> Class</label><select id="teacherClass"><option value="">Select Class</option></select></div><div class="field"><label><i class="fas fa-book"></i> Subject</label><select id="teacherSubject"><option value="">Select</option><option value="English">English</option><option value="Mathematics">Mathematics</option><option value="Biology">Biology</option><option value="Chemistry">Chemistry</option><option value="Physics">Physics</option><option value="History">History</option><option value="Geography">Geography</option><option value="Civic Education">Civic Education</option><option value="Zambian Languages">Zambian Languages</option><option value="Religious Education">Religious Education</option><option value="Commerce">Commerce</option><option value="Principles of Accounts">Principles of Accounts</option><option value="Agricultural Science">Agricultural Science</option><option value="Computer Studies">Computer Studies</option></select></div><div class="field"><label><i class="fas fa-calendar-alt"></i> Term</label><select id="teacherTerm"><option value="">Select</option><option value="1">Term 1</option><option value="2">Term 2</option><option value="3">Term 3</option></select></div></div>
                 <div class="grid-3"><div class="field"><label><i class="fas fa-calendar-year"></i> Year</label><select id="teacherYear"><option value="">Select</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option></select></div><div class="field"><label><i class="fas fa-tag"></i> Test Type</label><select id="teacherTestType"><option value="">Select</option><option value="mid_term">Mid Term</option><option value="end_term">End of Term</option></select></div><div class="field" style="justify-content:flex-end;"><button class="btn btn-primary" id="loadStudentsBtn"><i class="fas fa-users"></i> Load Students</button></div></div>
             </div>
-            <div class="card"><div class="card-header"><h2><i class="fas fa-file-excel"></i> Import Results (Excel)</h2><span class="subtitle">Bulk upload scores</span></div><div class="import-area" id="teacherImportArea"><i class="fas fa-file-excel"></i><h3>Click or Drag Excel</h3><p>.xlsx, .xls</p><input type="file" class="file-input" id="teacherFileInput" accept=".xlsx,.xls"></div><div id="teacherImportPreview" class="import-preview" style="display:none;"></div><button class="btn btn-success btn-block" id="teacherImportBtn" style="display:none;margin-top:12px;"><i class="fas fa-upload"></i> Import Results</button></div>
+            <!-- EXCEL IMPORT CARD (FIXED) -->
+            <div class="card" style="border-top-color: var(--oxblood);">
+                <div class="card-header">
+                    <h2><i class="fas fa-file-excel" style="color:var(--oxblood);"></i> Import Results from Excel</h2>
+                    <span class="subtitle">Upload .xlsx / .xls with student numbers and scores</span>
+                </div>
+                <div class="grid-3" style="margin-bottom:12px;">
+                    <div class="field"><label><i class="fas fa-users"></i> Class</label><select id="teacherImportClass"><option value="">Select Class</option></select></div>
+                    <div class="field"><label><i class="fas fa-book"></i> Subject</label><select id="teacherImportSubject"><option value="">Select</option><option value="English">English</option><option value="Mathematics">Mathematics</option><option value="Biology">Biology</option><option value="Chemistry">Chemistry</option><option value="Physics">Physics</option><option value="History">History</option><option value="Geography">Geography</option><option value="Civic Education">Civic Education</option><option value="Zambian Languages">Zambian Languages</option><option value="Religious Education">Religious Education</option><option value="Commerce">Commerce</option><option value="Principles of Accounts">Principles of Accounts</option><option value="Agricultural Science">Agricultural Science</option><option value="Computer Studies">Computer Studies</option></select></div>
+                    <div class="field"><label><i class="fas fa-calendar-alt"></i> Term</label><select id="teacherImportTerm"><option value="">Select</option><option value="1">Term 1</option><option value="2">Term 2</option><option value="3">Term 3</option></select></div>
+                </div>
+                <div class="grid-3">
+                    <div class="field"><label><i class="fas fa-calendar-year"></i> Year</label><select id="teacherImportYear"><option value="">Select</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option></select></div>
+                    <div class="field"><label><i class="fas fa-tag"></i> Test Type</label><select id="teacherImportTestType"><option value="">Select</option><option value="mid_term">Mid Term</option><option value="end_term">End of Term</option></select></div>
+                    <div class="field" style="justify-content:flex-end;"><button class="btn btn-primary" id="teacherImportLoadBtn"><i class="fas fa-sync"></i> Load & Preview</button></div>
+                </div>
+                <div class="import-area" id="teacherImportArea">
+                    <i class="fas fa-file-excel" style="color:var(--oxblood);"></i>
+                    <h3>Click or Drag & Drop Excel File</h3>
+                    <p>Required columns: <strong>Student Number</strong> and <strong>Score</strong></p>
+                    <input type="file" class="file-input" id="teacherFileInput" accept=".xlsx,.xls">
+                </div>
+                <div id="teacherImportPreview" class="import-preview" style="display:none;"></div>
+                <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+                    <button class="btn btn-success" id="teacherImportBtn" style="display:none;"><i class="fas fa-upload"></i> Import Results</button>
+                    <button class="btn btn-outline" id="teacherImportClearBtn" style="display:none;"><i class="fas fa-times"></i> Clear</button>
+                </div>
+                <div id="teacherImportStatus" style="margin-top:8px; font-size:13px; color:var(--ink-soft);"></div>
+            </div>
             <div id="resultsEntry" style="display:none;"><div class="card"><div class="card-header"><h2><i class="fas fa-edit"></i> Enter Results</h2><button class="btn btn-sm btn-success" id="saveResultsBtn"><i class="fas fa-save"></i> Save All</button></div><div class="table-wrapper"><table><thead><tr><th>#</th><th>Name</th><th>Number</th><th>Score (%)</th><th>Grade</th><th>Comment</th></tr></thead><tbody id="resultsTableBody"><tr><td colspan="6" style="text-align:center;color:var(--ink-faint);">No students loaded.</td></tr></tbody></table></div></div></div>
         </div>
     </div>
 
-    <!-- admin section with bulk register -->
+    <!-- admin section -->
     <div class="section" id="adminSection">
         <div class="card" id="adminLocked"><div class="card-header"><h2><i class="fas fa-lock"></i> Admin Access Required</h2><span class="subtitle">Login as admin</span></div><div style="text-align:center;padding:40px 20px;"><i class="fas fa-user-shield" style="font-size:48px;color:var(--gold);margin-bottom:16px;display:block;"></i><p style="color:var(--ink-soft);margin-bottom:16px;">Administrators only.</p><button class="btn btn-primary" onclick="openLoginModal('admin')"><i class="fas fa-sign-in-alt"></i> Login as Admin</button></div></div>
         <div id="adminContent" style="display:none;">
             <div class="card"><div class="card-header"><h2><i class="fas fa-user-shield"></i> Admin Dashboard</h2><span class="subtitle">Overview</span></div><div class="grid-4"><div class="stat-card"><div class="icon"><i class="fas fa-users"></i></div><div class="number" id="totalStudents">0</div><div class="label">Total Students</div></div><div class="stat-card"><div class="icon"><i class="fas fa-user-tie"></i></div><div class="number" id="totalTeachers">0</div><div class="label">Total Teachers</div></div><div class="stat-card"><div class="icon"><i class="fas fa-book"></i></div><div class="number" id="totalSubjects">0</div><div class="label">Total Subjects</div></div><div class="stat-card"><div class="icon"><i class="fas fa-file-alt"></i></div><div class="number" id="totalResults">0</div><div class="label">Total Results</div></div></div></div>
 
-            <!-- BULK REGISTER CARD -->
+            <!-- bulk register card (short) -->
             <div class="card" style="border-top-color: var(--oxblood);">
-                <div class="card-header">
-                    <h2><i class="fas fa-user-plus" style="color:var(--oxblood);"></i> Bulk Register Students</h2>
-                    <span class="subtitle">Upload Excel with student numbers & names</span>
-                </div>
+                <div class="card-header"><h2><i class="fas fa-user-plus" style="color:var(--oxblood);"></i> Bulk Register Students</h2><span class="subtitle">Upload Excel with student numbers & names</span></div>
                 <div class="grid-3">
                     <div class="field"><label><i class="fas fa-users"></i> Default Class</label><select id="bulkClassSelect"><option value="">Select Class</option></select></div>
-                    <div class="field" style="justify-content:flex-end; display:flex; flex-direction:column; gap:4px;"><label>&nbsp;</label><button class="btn btn-primary" id="bulkRegisterTemplateBtn" style="width:100%;"><i class="fas fa-download"></i> Download Template</button></div>
-                    <div class="field" style="justify-content:flex-end; display:flex; flex-direction:column; gap:4px;"><label>&nbsp;</label><button class="btn btn-warning" id="bulkRegisterBtn" style="width:100%;"><i class="fas fa-upload"></i> Register Students</button></div>
+                    <div class="field" style="justify-content:flex-end;"><button class="btn btn-primary" id="bulkRegisterTemplateBtn" style="width:100%;"><i class="fas fa-download"></i> Template</button></div>
+                    <div class="field" style="justify-content:flex-end;"><button class="btn btn-warning" id="bulkRegisterBtn" style="width:100%;"><i class="fas fa-upload"></i> Register</button></div>
                 </div>
-                <div class="import-area" id="bulkImportArea" style="margin-top:8px;">
-                    <i class="fas fa-file-excel" style="color:var(--oxblood);"></i>
-                    <h3>Click or Drag & Drop Excel file</h3>
-                    <p>Required columns: <strong>Student Number</strong> and <strong>Name</strong></p>
-                    <input type="file" class="file-input" id="bulkFileInput" accept=".xlsx,.xls">
-                </div>
+                <div class="import-area" id="bulkImportArea" style="margin-top:8px;"><i class="fas fa-file-excel" style="color:var(--oxblood);"></i><h3>Click or Drag Excel</h3><p>Required: Student Number, Name</p><input type="file" class="file-input" id="bulkFileInput" accept=".xlsx,.xls"></div>
                 <div id="bulkImportPreview" class="import-preview" style="display:none;"></div>
-                <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
-                    <button class="btn btn-success" id="bulkConfirmImportBtn" style="display:none;"><i class="fas fa-check-circle"></i> Confirm & Register All</button>
-                    <button class="btn btn-outline" id="bulkClearPreviewBtn" style="display:none;"><i class="fas fa-times"></i> Clear</button>
-                </div>
+                <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;"><button class="btn btn-success" id="bulkConfirmImportBtn" style="display:none;"><i class="fas fa-check-circle"></i> Confirm</button><button class="btn btn-outline" id="bulkClearPreviewBtn" style="display:none;"><i class="fas fa-times"></i> Clear</button></div>
                 <div id="bulkImportStatus" style="margin-top:8px; font-size:13px; color:var(--ink-soft);"></div>
             </div>
 
@@ -325,6 +342,7 @@
         let currentUser = null;
         let isConnected = false;
         let bulkData = null;
+        let teacherImportData = null; // for excel import
 
         // ============================================================
         // DOM refs
@@ -364,10 +382,20 @@
         const saveResultsBtn = document.getElementById('saveResultsBtn');
         const teacherLocked = document.getElementById('teacherLocked');
         const teacherContent = document.getElementById('teacherContent');
+
+        // teacher import (new)
+        const teacherImportClass = document.getElementById('teacherImportClass');
+        const teacherImportSubject = document.getElementById('teacherImportSubject');
+        const teacherImportTerm = document.getElementById('teacherImportTerm');
+        const teacherImportYear = document.getElementById('teacherImportYear');
+        const teacherImportTestType = document.getElementById('teacherImportTestType');
+        const teacherImportLoadBtn = document.getElementById('teacherImportLoadBtn');
         const teacherImportArea = document.getElementById('teacherImportArea');
         const teacherFileInput = document.getElementById('teacherFileInput');
         const teacherImportPreview = document.getElementById('teacherImportPreview');
         const teacherImportBtn = document.getElementById('teacherImportBtn');
+        const teacherImportClearBtn = document.getElementById('teacherImportClearBtn');
+        const teacherImportStatus = document.getElementById('teacherImportStatus');
 
         // admin
         const adminStudentNumber = document.getElementById('adminStudentNumber');
@@ -402,7 +430,7 @@
         const bulkRegisterBtn = document.getElementById('bulkRegisterBtn');
 
         // ============================================================
-        // TOAST, LOGIN, CONNECTION (simplified)
+        // TOAST, LOGIN, CONNECTION
         // ============================================================
         function showToast(msg, isError = false) {
             toastMsg.textContent = msg;
@@ -456,7 +484,6 @@
             document.querySelector('.tab-btn[data-tab="student"]').click();
         }
 
-        // login functions
         function studentLogin() {
             const id = document.getElementById('studentLoginNumber').value.trim();
             if (!id) { showToast('⚠️ Please enter student number', true); return; }
@@ -520,8 +547,8 @@
             }
         }
 
-        function loadAllData() { loadAdminStats(); populateTeachersDropdown(); loadClasses(); populateClassDropdowns(); populateBulkClassDropdown(); updateLoginUI(); }
-        function loadFallbackData() { populateClassDropdowns(); populateBulkClassDropdown(); loadFallbackClasses(); loadFallbackStats(); updateLoginUI(); }
+        function loadAllData() { loadAdminStats(); populateTeachersDropdown(); loadClasses(); populateClassDropdowns(); populateBulkClassDropdown(); populateImportClassDropdowns(); updateLoginUI(); }
+        function loadFallbackData() { populateClassDropdowns(); populateBulkClassDropdown(); populateImportClassDropdowns(); loadFallbackClasses(); loadFallbackStats(); updateLoginUI(); }
         function loadFallbackClasses() {
             let html=''; CLASS_DEFINITIONS.forEach((c,i)=>{ html+=`<tr><td>${i+1}</td><td><strong>${c.display}</strong></td><td>${c.grade}</td><td>${c.stream}</td><td>0</td><td>Not Assigned</td><td><span class="badge badge-info">Offline</span></td></tr>`; });
             classesTableBody.innerHTML = html;
@@ -533,6 +560,11 @@
                 drop.innerHTML = '<option value="">Select Class</option>';
                 CLASS_DEFINITIONS.forEach(c=>{ const o=document.createElement('option'); o.value=c.id; o.textContent=c.display; drop.appendChild(o); });
             });
+        }
+        function populateImportClassDropdowns() {
+            const drop = teacherImportClass;
+            drop.innerHTML = '<option value="">Select Class</option>';
+            CLASS_DEFINITIONS.forEach(c=>{ const o=document.createElement('option'); o.value=c.id; o.textContent=c.display; drop.appendChild(o); });
         }
         function populateBulkClassDropdown() {
             bulkClassSelect.innerHTML = '<option value="">Select Class</option>';
@@ -603,7 +635,7 @@
         };
 
         // ============================================================
-        // BULK REGISTER – full working
+        // BULK REGISTER (same as before)
         // ============================================================
         bulkRegisterTemplateBtn.addEventListener('click', function() {
             const wb = XLSX.utils.book_new();
@@ -744,7 +776,7 @@
         });
 
         // ============================================================
-        // TEACHER – LOAD STUDENTS (FIXED: uses real DB data)
+        // TEACHER LOAD STUDENTS (fixed)
         // ============================================================
         loadStudentsBtn.addEventListener('click', async function() {
             if (!currentUser || currentUser.role !== 'teacher') {
@@ -762,7 +794,6 @@
                 return;
             }
 
-            // If offline or no supabase, fallback to demo
             if (!supabaseClient || !isConnected) {
                 const demo = [
                     { id:1, name:'Ireen Mwansa', student_number:'2024-001' },
@@ -793,16 +824,13 @@
 
                 displayResultsEntry(students, subject, term, year, testType);
                 resultsEntry.style.display = 'block';
-                showToast(`✅ ${students.length} students loaded from database`);
+                showToast(`✅ ${students.length} students loaded`);
             } catch (err) {
                 showToast('❌ Error loading students: ' + err.message, true);
                 console.error(err);
             }
         });
 
-        // ============================================================
-        // DISPLAY RESULTS ENTRY (teacher)
-        // ============================================================
         function displayResultsEntry(students, subject, term, year, testType) {
             let html = '';
             students.forEach((s, i) => {
@@ -817,7 +845,6 @@
             });
             resultsTableBody.innerHTML = html;
 
-            // live grade update
             document.querySelectorAll('.score-input').forEach(inp => {
                 inp.addEventListener('input', function() {
                     const row = this.closest('tr');
@@ -836,9 +863,6 @@
             });
         }
 
-        // ============================================================
-        // SAVE RESULTS (teacher) – demo
-        // ============================================================
         saveResultsBtn.addEventListener('click', function() {
             if (!currentUser || currentUser.role !== 'teacher') {
                 showToast('🔒 Teacher login required', true);
@@ -848,29 +872,215 @@
         });
 
         // ============================================================
-        // TEACHER IMPORT (demo)
+        // TEACHER EXCEL IMPORT – FIXED
         // ============================================================
-        teacherImportArea.addEventListener('click', ()=>teacherFileInput.click());
+        // 1) Load & Preview button: fetches students, then shows import area
+        teacherImportLoadBtn.addEventListener('click', function() {
+            const className = teacherImportClass.value;
+            const subject = teacherImportSubject.value;
+            const term = teacherImportTerm.value;
+            const year = teacherImportYear.value;
+            const testType = teacherImportTestType.value;
+
+            if (!className || !subject || !term || !year || !testType) {
+                showToast('⚠️ Fill all import fields', true);
+                return;
+            }
+            // show the import area
+            teacherImportArea.style.display = 'block';
+            teacherImportPreview.style.display = 'none';
+            teacherImportBtn.style.display = 'none';
+            teacherImportClearBtn.style.display = 'none';
+            teacherImportStatus.innerHTML = '';
+            showToast('📂 Upload your Excel file with scores');
+        });
+
+        // Drag & drop / click for file
+        teacherImportArea.addEventListener('click', ()=> teacherFileInput.click());
         teacherImportArea.addEventListener('dragover', e=>{ e.preventDefault(); teacherImportArea.classList.add('dragover'); });
         teacherImportArea.addEventListener('dragleave', e=>{ e.preventDefault(); teacherImportArea.classList.remove('dragover'); });
-        teacherImportArea.addEventListener('drop', e=>{ e.preventDefault(); teacherImportArea.classList.remove('dragover'); if(e.dataTransfer.files.length) { teacherFileInput.files=e.dataTransfer.files; showToast('📂 File loaded (demo)'); } });
-        teacherFileInput.addEventListener('change', function(){ if(this.files.length) showToast('📂 File loaded (demo)'); });
-        teacherImportBtn.addEventListener('click', function(){ showToast('✅ Import complete (demo)'); });
+        teacherImportArea.addEventListener('drop', e=>{
+            e.preventDefault(); teacherImportArea.classList.remove('dragover');
+            if (e.dataTransfer.files.length) { teacherFileInput.files = e.dataTransfer.files; handleTeacherImportFile(teacherFileInput.files[0]); }
+        });
+        teacherFileInput.addEventListener('change', function(){ if(this.files.length) handleTeacherImportFile(this.files[0]); });
 
-        // ============================================================
-        // ADD STUDENT/TEACHER/CLASS (demo)
-        // ============================================================
-        addStudentBtn.addEventListener('click', function() {
-            if (!currentUser || currentUser.role !== 'admin') { showToast('🔒 Admin login required', true); return; }
-            showToast('✅ Student added (demo)');
+        function handleTeacherImportFile(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type:'array' });
+                    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const json = XLSX.utils.sheet_to_json(sheet);
+                    if (!json || json.length===0) { showToast('⚠️ Empty file', true); return; }
+
+                    // Check columns: Student Number and Score
+                    const headers = Object.keys(json[0]);
+                    const hasNumber = headers.some(h => h.toLowerCase().includes('student') && (h.toLowerCase().includes('number') || h.toLowerCase().includes('id')));
+                    const hasScore = headers.some(h => h.toLowerCase().includes('score'));
+                    if (!hasNumber || !hasScore) {
+                        showToast('⚠️ Missing columns: "Student Number" and "Score" required', true);
+                        return;
+                    }
+                    const numKey = headers.find(h => h.toLowerCase().includes('student') && (h.toLowerCase().includes('number') || h.toLowerCase().includes('id')));
+                    const scoreKey = headers.find(h => h.toLowerCase().includes('score'));
+
+                    const mapped = json.map(row => ({
+                        student_number: String(row[numKey] || '').trim(),
+                        score: parseFloat(row[scoreKey]) || 0
+                    })).filter(r => r.student_number && !isNaN(r.score) && r.score >= 0 && r.score <= 100);
+
+                    if (mapped.length === 0) { showToast('⚠️ No valid rows found (need number and score 0-100)', true); return; }
+
+                    teacherImportData = mapped;
+                    displayTeacherImportPreview(mapped);
+                    teacherImportBtn.style.display = 'inline-flex';
+                    teacherImportClearBtn.style.display = 'inline-flex';
+                    teacherImportStatus.innerHTML = '';
+                    showToast(`✅ Loaded ${mapped.length} results from Excel`);
+                } catch(err) {
+                    showToast('❌ Error reading file: '+err.message, true);
+                    console.error(err);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function displayTeacherImportPreview(data) {
+            let html = `<div class="table-wrapper"><table><thead><tr><th>#</th><th>Student Number</th><th>Score</th><th>Status</th></tr></thead><tbody>`;
+            data.slice(0, 20).forEach((r, i) => {
+                const valid = r.student_number && !isNaN(r.score) && r.score >= 0 && r.score <= 100;
+                const cls = valid ? 'badge-success' : 'badge-warning';
+                html += `<tr><td>${i+1}</td><td>${r.student_number}</td><td>${r.score}%</td><td><span class="badge ${cls}">${valid ? '✅ Valid' : '⚠️ Invalid'}</span></td></tr>`;
+            });
+            if (data.length > 20) html += `<tr><td colspan="4" style="text-align:center;color:var(--ink-faint);">... and ${data.length-20} more</td></tr>`;
+            html += `</tbody></table></div><p style="font-size:12px;color:var(--ink-faint);margin-top:8px;">${data.length} records ready to import.</p>`;
+            teacherImportPreview.innerHTML = html;
+            teacherImportPreview.style.display = 'block';
+        }
+
+        teacherImportClearBtn.addEventListener('click', function() {
+            teacherImportData = null;
+            teacherImportPreview.style.display = 'none';
+            teacherImportPreview.innerHTML = '';
+            teacherImportBtn.style.display = 'none';
+            teacherImportClearBtn.style.display = 'none';
+            teacherImportStatus.innerHTML = '';
+            teacherFileInput.value = '';
+            showToast('🧹 Cleared');
         });
-        addTeacherBtn.addEventListener('click', function() {
-            if (!currentUser || currentUser.role !== 'admin') { showToast('🔒 Admin login required', true); return; }
-            showToast('✅ Teacher added (demo)');
-        });
-        addClassBtn.addEventListener('click', function() {
-            if (!currentUser || currentUser.role !== 'admin') { showToast('🔒 Admin login required', true); return; }
-            showToast('✅ Class added (demo)');
+
+        teacherImportBtn.addEventListener('click', async function() {
+            if (!currentUser || currentUser.role !== 'teacher') {
+                showToast('🔒 Teacher login required', true);
+                return;
+            }
+            if (!teacherImportData || teacherImportData.length === 0) {
+                showToast('⚠️ No data to import', true);
+                return;
+            }
+
+            const className = teacherImportClass.value;
+            const subject = teacherImportSubject.value;
+            const term = teacherImportTerm.value;
+            const year = teacherImportYear.value;
+            const testType = teacherImportTestType.value;
+
+            if (!className || !subject || !term || !year || !testType) {
+                showToast('⚠️ Fill all import fields', true);
+                return;
+            }
+
+            if (!supabaseClient || !isConnected) {
+                showToast('⚠️ Offline mode – import not available', true);
+                return;
+            }
+
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Importing...';
+            let imported = 0, errors = 0, notFound = 0;
+
+            for (const row of teacherImportData) {
+                try {
+                    // Find student by number
+                    const { data: student, error: sError } = await supabaseClient
+                        .from('students')
+                        .select('id')
+                        .eq('student_number', row.student_number)
+                        .maybeSingle();
+
+                    if (sError || !student) {
+                        notFound++;
+                        continue;
+                    }
+
+                    // Check if result already exists
+                    const { data: existing, error: eError } = await supabaseClient
+                        .from('results')
+                        .select('id')
+                        .eq('student_id', student.id)
+                        .eq('subject', subject)
+                        .eq('term', term)
+                        .eq('year', year)
+                        .eq('test_type', testType)
+                        .maybeSingle();
+
+                    const score = Math.min(Math.max(Math.round(row.score), 0), 100);
+
+                    if (existing) {
+                        await supabaseClient
+                            .from('results')
+                            .update({ score: score, teacher_id: currentUser.id })
+                            .eq('id', existing.id);
+                    } else {
+                        await supabaseClient
+                            .from('results')
+                            .insert({
+                                student_id: student.id,
+                                subject: subject,
+                                term: term,
+                                year: year,
+                                test_type: testType,
+                                score: score,
+                                teacher_id: currentUser.id
+                            });
+                    }
+                    imported++;
+                } catch (err) {
+                    errors++;
+                    console.error(err);
+                }
+            }
+
+            this.disabled = false;
+            this.innerHTML = '<i class="fas fa-upload"></i> Import Results';
+            const msg = `✅ ${imported} imported, ${notFound} not found, ${errors} errors.`;
+            teacherImportStatus.innerHTML = msg;
+            showToast(msg);
+
+            // Clear preview
+            teacherImportData = null;
+            teacherImportPreview.style.display = 'none';
+            teacherImportPreview.innerHTML = '';
+            teacherImportBtn.style.display = 'none';
+            teacherImportClearBtn.style.display = 'none';
+            teacherFileInput.value = '';
+
+            // Reload students for the teacher
+            if (className) {
+                try {
+                    const { data: students } = await supabaseClient
+                        .from('students')
+                        .select('id, name, student_number')
+                        .eq('class', className)
+                        .order('name');
+                    if (students && students.length > 0) {
+                        displayResultsEntry(students, subject, term, year, testType);
+                        resultsEntry.style.display = 'block';
+                    }
+                } catch(e) {}
+            }
         });
 
         // ============================================================
@@ -919,6 +1129,22 @@
         });
 
         // ============================================================
+        // ADD STUDENT/TEACHER/CLASS (demo)
+        // ============================================================
+        addStudentBtn.addEventListener('click', function() {
+            if (!currentUser || currentUser.role !== 'admin') { showToast('🔒 Admin login required', true); return; }
+            showToast('✅ Student added (demo)');
+        });
+        addTeacherBtn.addEventListener('click', function() {
+            if (!currentUser || currentUser.role !== 'admin') { showToast('🔒 Admin login required', true); return; }
+            showToast('✅ Teacher added (demo)');
+        });
+        addClassBtn.addEventListener('click', function() {
+            if (!currentUser || currentUser.role !== 'admin') { showToast('🔒 Admin login required', true); return; }
+            showToast('✅ Class added (demo)');
+        });
+
+        // ============================================================
         // TAB SWITCHING
         // ============================================================
         document.querySelectorAll('.tab-btn').forEach(btn=>{
@@ -946,7 +1172,7 @@
         // ============================================================
         initSupabase();
         updateLoginUI();
-        console.log('✅ Laura Girls · Teacher load fixed · Bulk register ready');
+        console.log('✅ Laura Girls · Excel import fixed');
     })();
 </script>
 </body>
