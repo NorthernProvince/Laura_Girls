@@ -14,6 +14,7 @@
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js">
     </script>
     <style>
+        /* ========== CSS (same as original, kept for brevity) ========== */
         :root {
             --paper: #F4F5F1;
             --surface: #FFFFFF;
@@ -60,7 +61,6 @@
             min-width: 0;
             text-align: center;
         }
-        /* Updated school logo style - placed at the very top */
         .topbar .brand .school-logo {
             width: 65px;
             height: 65px;
@@ -257,6 +257,16 @@
         .teacher-subject-card .teacher-name { font-weight:700; color:var(--marian-blue); font-size:15px; }
         .teacher-subject-card .subject-list { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
         .teacher-welcome { font-size:14px; color:var(--ink-soft); }
+        .school-selector-card { background:var(--paper); border-radius:12px; padding:16px; border:2px solid var(--gold); margin-bottom:16px; }
+        .school-selector-card .school-list { display:flex; flex-wrap:wrap; gap:12px; margin-top:10px; }
+        .school-selector-card .school-item { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:12px 16px; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; gap:12px; flex:1 1 200px; }
+        .school-selector-card .school-item:hover { border-color:var(--marian-blue); box-shadow:var(--shadow-md); }
+        .school-selector-card .school-item.active { border-color:var(--gold); background:var(--gold-tint); }
+        .school-selector-card .school-item .school-icon { width:40px; height:40px; border-radius:50%; overflow:hidden; border:2px solid var(--gold); flex-shrink:0; }
+        .school-selector-card .school-item .school-icon img { width:100%; height:100%; object-fit:contain; }
+        .school-selector-card .school-item .school-info { flex:1; }
+        .school-selector-card .school-item .school-info .name { font-weight:600; font-size:14px; color:var(--marian-blue); }
+        .school-selector-card .school-item .school-info .code { font-size:11px; color:var(--ink-faint); }
         @media (max-width:480px) {
             .topbar .brand h1 { font-size:14px; }
             .topbar .brand .school-logo { width:45px; height:45px; }
@@ -270,9 +280,10 @@
             .toast { bottom:70px; font-size:12px; padding:10px 16px; }
             .login-floating-btn { width:48px; height:48px; font-size:17px; bottom:70px; right:12px; }
             .score-input { width:55px; font-size:11px; padding:4px 6px; }
+            .school-selector-card .school-item { flex:1 1 100%; }
         }
         @media print {
-            .topbar, .tab-nav, .no-print, .mary-bg, .connection-status, .login-modal, .login-floating-btn { display:none !important; }
+            .topbar, .tab-nav, .no-print, .mary-bg, .connection-status, .login-modal, .login-floating-btn, .school-selector-card { display:none !important; }
             .section { display:block !important; }
             .card { box-shadow:none !important; border:1px solid #ddd !important; break-inside:avoid; background:#fff !important; backdrop-filter:none !important; }
             .table-wrapper { border:1px solid #ddd !important; }
@@ -306,13 +317,12 @@
 <!-- top bar -->
 <div class="topbar">
     <div class="brand">
-        <!-- School logo placed at the very top, above Ministry of Education -->
         <div class="school-logo">
-            <img src="https://raw.githubusercontent.com/NorthernProvince/Laura_Girls/main/image/logo-removebg-preview.png" alt="School Logo" onerror="this.style.display='none'">
+            <img id="schoolLogoImg" src="https://raw.githubusercontent.com/NorthernProvince/Laura_Girls/main/image/logo-removebg-preview.png" alt="School Logo" onerror="this.style.display='none'">
         </div>
         <div class="ministry">Ministry of Education</div>
-        <h1>Laura Girls Secondary School</h1>
-        <div class="motto">Education is the matter of the heart</div>
+        <h1 id="schoolNameHeader">Laura Girls Secondary School</h1>
+        <div class="motto" id="schoolMottoHeader">Education is the matter of the heart</div>
     </div>
     <!-- Seal removed -->
 </div>
@@ -355,6 +365,17 @@
         <button class="tab-btn" data-tab="teacher" id="teacherTabBtn"><i class="fas fa-chalkboard-teacher"></i> Teacher</button>
         <button class="tab-btn" data-tab="admin" id="adminTabBtn"><i class="fas fa-user-shield"></i> Admin</button>
         <button class="tab-btn hidden-tab" data-tab="classes"><i class="fas fa-users"></i> Classes</button>
+    </div>
+
+    <!-- School Selector (visible to super admin) -->
+    <div class="school-selector-card" id="schoolSelector" style="display:none;">
+        <div class="card-header">
+            <h2><i class="fas fa-school"></i> Select School</h2>
+            <span class="subtitle">Switch between schools (Super Admin only)</span>
+        </div>
+        <div class="school-list" id="schoolList">
+            <!-- Schools will be populated dynamically -->
+        </div>
     </div>
 
     <!-- student section -->
@@ -443,6 +464,51 @@
         "use strict";
 
         // ============================================================
+        // MULTI-SCHOOL CONFIGURATION
+        // ============================================================
+        const SCHOOL_CONFIG = {
+            // Current school - change this to switch schools
+            currentSchool: 'LGSS',
+            
+            // Available schools configuration
+            schools: {
+                'LGSS': {
+                    code: 'LGSS',
+                    name: 'Laura Girls Secondary School',
+                    motto: 'Education is the matter of the heart',
+                    logo: 'https://raw.githubusercontent.com/NorthernProvince/Laura_Girls/main/image/logo-removebg-preview.png',
+                    theme: {
+                        primary: '#1a237e',
+                        secondary: '#B8862E'
+                    },
+                    location: 'Kasama District'
+                },
+                'SMS': {
+                    code: 'SMS',
+                    name: 'St. Mary\'s Secondary School',
+                    motto: 'Excellence Through Faith',
+                    logo: 'https://raw.githubusercontent.com/NorthernProvince/Laura_Girls/main/image/logo-removebg-preview.png',
+                    theme: {
+                        primary: '#8B0000',
+                        secondary: '#DAA520'
+                    },
+                    location: 'Lusaka District'
+                },
+                'NPS': {
+                    code: 'NPS',
+                    name: 'Northern Province School',
+                    motto: 'Knowledge is Power',
+                    logo: 'https://raw.githubusercontent.com/NorthernProvince/Laura_Girls/main/image/logo-removebg-preview.png',
+                    theme: {
+                        primary: '#006400',
+                        secondary: '#FFD700'
+                    },
+                    location: 'Northern Province'
+                }
+            }
+        };
+
+        // ============================================================
         // CONFIG
         // ============================================================
         const SUPABASE_URL = 'https://yhmjidkrwtxckecvjixo.supabase.co';
@@ -483,85 +549,91 @@
         let isConnected = false;
         let bulkData = null;
         let teacherImportData = null;
+        let currentSchoolCode = SCHOOL_CONFIG.currentSchool;
 
         // ============================================================
-        // DOM refs
+        // SCHOOL MANAGEMENT FUNCTIONS
         // ============================================================
-        const toastDiv = document.getElementById('globalToast');
-        const toastMsg = document.getElementById('toastMsg');
-        const statusDot = document.getElementById('statusDot');
-        const statusText = document.getElementById('statusText');
-        const loginFloatingBtn = document.getElementById('loginFloatingBtn');
-        const loginModal = document.getElementById('loginModal');
-        const closeLoginModal = document.getElementById('closeLoginModal');
-        const logoutSection = document.getElementById('logoutSection');
-        const loginOptions = document.getElementById('loginOptions');
-        const loggedInUserName = document.getElementById('loggedInUserName');
-        const logoutFromModalBtn = document.getElementById('logoutFromModalBtn');
 
-        const studentNumber = document.getElementById('studentNumber');
-        const studentTerm = document.getElementById('studentTerm');
-        const studentYear = document.getElementById('studentYear');
-        const viewResultsBtn = document.getElementById('viewResultsBtn');
-        const studentResults = document.getElementById('studentResults');
-        const studentInfo = document.getElementById('studentInfo');
-        const resultsContent = document.getElementById('resultsContent');
-        const downloadResultsBtn = document.getElementById('downloadResultsBtn');
+        // Get current school config
+        function getCurrentSchool() {
+            return SCHOOL_CONFIG.schools[currentSchoolCode] || SCHOOL_CONFIG.schools['LGSS'];
+        }
 
-        const teacherClass = document.getElementById('teacherClass');
-        const teacherSubject = document.getElementById('teacherSubject');
-        const teacherTerm = document.getElementById('teacherTerm');
-        const teacherYear = document.getElementById('teacherYear');
-        const teacherTestType = document.getElementById('teacherTestType');
-        const loadStudentsBtn = document.getElementById('loadStudentsBtn');
-        const resultsEntry = document.getElementById('resultsEntry');
-        const resultsTableBody = document.getElementById('resultsTableBody');
-        const saveResultsBtn = document.getElementById('saveResultsBtn');
-        const teacherLocked = document.getElementById('teacherLocked');
-        const teacherContent = document.getElementById('teacherContent');
-        const teacherNameDisplay = document.getElementById('teacherNameDisplay');
+        // Apply school branding to header
+        function applySchoolBranding() {
+            const school = getCurrentSchool();
+            if (!school) return;
+            
+            document.getElementById('schoolNameHeader').textContent = school.name;
+            document.getElementById('schoolMottoHeader').textContent = school.motto;
+            document.getElementById('schoolLogoImg').src = school.logo;
+            
+            // Update theme colors
+            document.documentElement.style.setProperty('--marian-blue', school.theme.primary);
+            document.documentElement.style.setProperty('--gold', school.theme.secondary);
+            
+            // Update footer
+            const footer = document.querySelector('.footer-note');
+            if (footer) {
+                footer.textContent = `${school.name} · ${school.location} · Under the Patronage of Mary, Mother of Christ © 2026`;
+            }
+            
+            // Update page title
+            document.title = school.name;
+            
+            console.log(`🏫 Switched to: ${school.name} (${school.code})`);
+        }
 
-        const teacherImportClass = document.getElementById('teacherImportClass');
-        const teacherImportSubject = document.getElementById('teacherImportSubject');
-        const teacherImportTerm = document.getElementById('teacherImportTerm');
-        const teacherImportYear = document.getElementById('teacherImportYear');
-        const teacherImportTestType = document.getElementById('teacherImportTestType');
-        const teacherImportLoadBtn = document.getElementById('teacherImportLoadBtn');
-        const teacherImportArea = document.getElementById('teacherImportArea');
-        const teacherFileInput = document.getElementById('teacherFileInput');
-        const teacherImportPreview = document.getElementById('teacherImportPreview');
-        const teacherImportBtn = document.getElementById('teacherImportBtn');
-        const teacherImportClearBtn = document.getElementById('teacherImportClearBtn');
-        const teacherImportStatus = document.getElementById('teacherImportStatus');
+        // Switch to a different school
+        function switchSchool(schoolCode) {
+            if (!SCHOOL_CONFIG.schools[schoolCode]) {
+                showToast('❌ School not found', true);
+                return;
+            }
+            
+            currentSchoolCode = schoolCode;
+            localStorage.setItem('selectedSchool', schoolCode);
+            applySchoolBranding();
+            showToast(`✅ Switched to ${SCHOOL_CONFIG.schools[schoolCode].name}`);
+            
+            // Reload data for new school
+            if (isConnected) {
+                loadAllData();
+            }
+        }
 
-        const adminStudentNumber = document.getElementById('adminStudentNumber');
-        const adminStudentName = document.getElementById('adminStudentName');
-        const adminStudentClass = document.getElementById('adminStudentClass');
-        const addStudentBtn = document.getElementById('addStudentBtn');
-        const adminTeacherName = document.getElementById('adminTeacherName');
-        const adminTeacherUsername = document.getElementById('adminTeacherUsername');
-        const adminTeacherPassword = document.getElementById('adminTeacherPassword');
-        const addTeacherBtn = document.getElementById('addTeacherBtn');
-        const totalStudents = document.getElementById('totalStudents');
-        const totalTeachers = document.getElementById('totalTeachers');
-        const totalSubjects = document.getElementById('totalSubjects');
-        const totalResults = document.getElementById('totalResults');
-        const adminLocked = document.getElementById('adminLocked');
-        const adminContent = document.getElementById('adminContent');
-        const classesTableBody = document.getElementById('classesTableBody');
-        const newClassGrade = document.getElementById('newClassGrade');
-        const newClassStream = document.getElementById('newClassStream');
-        const addClassBtn = document.getElementById('addClassBtn');
-
-        const bulkClassSelect = document.getElementById('bulkClassSelect');
-        const bulkImportArea = document.getElementById('bulkImportArea');
-        const bulkFileInput = document.getElementById('bulkFileInput');
-        const bulkImportPreview = document.getElementById('bulkImportPreview');
-        const bulkConfirmImportBtn = document.getElementById('bulkConfirmImportBtn');
-        const bulkClearPreviewBtn = document.getElementById('bulkClearPreviewBtn');
-        const bulkImportStatus = document.getElementById('bulkImportStatus');
-        const bulkRegisterTemplateBtn = document.getElementById('bulkRegisterTemplateBtn');
-        const bulkRegisterBtn = document.getElementById('bulkRegisterBtn');
+        // Load available schools for super admin
+        function loadSchoolSelector() {
+            const container = document.getElementById('schoolSelector');
+            const list = document.getElementById('schoolList');
+            
+            // Only show to super admin
+            if (!currentUser || currentUser.role !== 'super_admin') {
+                container.style.display = 'none';
+                return;
+            }
+            
+            container.style.display = 'block';
+            list.innerHTML = '';
+            
+            Object.values(SCHOOL_CONFIG.schools).forEach(school => {
+                const isActive = school.code === currentSchoolCode;
+                const div = document.createElement('div');
+                div.className = `school-item ${isActive ? 'active' : ''}`;
+                div.innerHTML = `
+                    <div class="school-icon">
+                        <img src="${school.logo}" alt="${school.name}">
+                    </div>
+                    <div class="school-info">
+                        <div class="name">${school.name}</div>
+                        <div class="code">${school.code} ${isActive ? '✅' : ''}</div>
+                    </div>
+                `;
+                div.onclick = () => switchSchool(school.code);
+                list.appendChild(div);
+            });
+        }
 
         // ============================================================
         // TOAST, LOGIN, CONNECTION
@@ -596,6 +668,7 @@
                 if (currentUser.role === 'student') displayName = 'Student: ' + currentUser.id;
                 else if (currentUser.role === 'teacher') displayName = 'Teacher: ' + (currentUser.name || currentUser.id);
                 else if (currentUser.role === 'admin') displayName = 'Administrator';
+                else if (currentUser.role === 'super_admin') displayName = 'Super Admin';
                 loggedInUserName.textContent = displayName;
                 loginFloatingBtn.innerHTML = '<i class="fas fa-user-check"></i>';
                 loginFloatingBtn.classList.add('logged-in');
@@ -605,6 +678,9 @@
                 loginFloatingBtn.innerHTML = '<i class="fas fa-user-circle"></i>';
                 loginFloatingBtn.classList.remove('logged-in');
             }
+            
+            // Show/hide school selector based on user role
+            loadSchoolSelector();
         }
         closeLoginModal.addEventListener('click', ()=>loginModal.classList.remove('active'));
         loginModal.addEventListener('click', e=>{ if(e.target===this) loginModal.classList.remove('active'); });
@@ -687,6 +763,13 @@
         // ============================================================
         function initSupabase() {
             try {
+                // Load saved school preference
+                const savedSchool = localStorage.getItem('selectedSchool');
+                if (savedSchool && SCHOOL_CONFIG.schools[savedSchool]) {
+                    currentSchoolCode = savedSchool;
+                }
+                applySchoolBranding();
+                
                 if (typeof window.supabase === 'undefined' || !window.supabase.createClient) throw new Error('Supabase library not loaded');
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                 supabaseClient.from('students').select('id', { count:'exact', head:true })
@@ -710,6 +793,7 @@
             populateBulkClassDropdown(); 
             populateImportClassDropdowns(); 
             updateLoginUI(); 
+            loadSchoolSelector();
         }
         function loadFallbackData() { 
             populateClassDropdowns(); 
@@ -718,6 +802,7 @@
             loadFallbackClasses(); 
             loadFallbackStats(); 
             updateLoginUI(); 
+            loadSchoolSelector();
         }
 
         function loadFallbackClasses() {
@@ -1514,11 +1599,11 @@
                 <div class="result-card report-card-print" style="padding:12px 16px;">
                     <div class="result-header" style="display:flex;align-items:center;gap:12px;border-bottom:2px solid var(--gold);padding-bottom:8px;margin-bottom:10px;">
                         <div style="flex-shrink:0;">
-                            <img src="https://raw.githubusercontent.com/NorthernProvince/Laura_Girls/main/image/logo-removebg-preview.png" alt="School Logo" style="width:50px;height:50px;object-fit:contain;border-radius:50%;border:2px solid var(--gold);">
+                            <img src="${getCurrentSchool().logo}" alt="School Logo" style="width:50px;height:50px;object-fit:contain;border-radius:50%;border:2px solid var(--gold);">
                         </div>
                         <div style="flex:1;text-align:center;">
-                            <h1 style="font-family:var(--font-display);font-size:20px;color:var(--marian-blue);margin:0;">Laura Girls Secondary School</h1>
-                            <p style="color:var(--ink-soft);font-size:12px;margin:0;">Kasama District · Northern Province</p>
+                            <h1 style="font-family:var(--font-display);font-size:20px;color:var(--marian-blue);margin:0;">${getCurrentSchool().name}</h1>
+                            <p style="color:var(--ink-soft);font-size:12px;margin:0;">${getCurrentSchool().location} · Northern Province</p>
                             <p style="color:var(--ink-faint);font-size:10px;margin:2px 0 0;">Student Academic Report · <span class="test-type-badge combined" style="font-size:10px;padding:2px 10px;">Combined (Mid & End Term)</span> ${termDisplay}</p>
                         </div>
                     </div>
@@ -1612,7 +1697,7 @@
 
                     <div style="display:flex;justify-content:space-between;font-size:8px;color:var(--ink-faint);border-top:1px solid var(--border);padding-top:4px;margin-top:4px;">
                         <div>Generated: ${new Date().toLocaleDateString()}</div>
-                        <div>Laura Girls Secondary School · Kasama District</div>
+                        <div>${getCurrentSchool().name} · ${getCurrentSchool().location}</div>
                     </div>
                 </div>
             `;
@@ -1785,8 +1870,10 @@
         // ============================================================
         initSupabase();
         updateLoginUI();
-        console.log('✅ Laura Girls · School logo updated in header');
-        console.log('📝 Logo appears above Ministry of Education');
+        console.log('✅ Multi-school system initialized');
+        console.log('🏫 Current school:', getCurrentSchool().name);
+        console.log('📝 Available schools:', Object.keys(SCHOOL_CONFIG.schools).join(', '));
+        console.log('💡 Super Admin can switch schools via the school selector');
     })();
 </script>
 </body>
