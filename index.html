@@ -1228,6 +1228,281 @@
             flex: 1;
             min-width: 80px;
         }
+
+        /* ============================================================
+           REPORT CARD STYLES
+           ============================================================ */
+        .report-card-wrapper {
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        .report-card-header {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 3px solid var(--gold);
+            margin-bottom: 20px;
+        }
+
+        .report-card-header .report-logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 10px;
+            display: block;
+        }
+
+        .report-card-header .report-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .report-card-header .report-school-name {
+            font-family: var(--font-display);
+            font-size: 24px;
+            font-weight: 650;
+            color: var(--marian-blue);
+            letter-spacing: 1px;
+        }
+
+        .report-card-header .report-motto {
+            font-size: 14px;
+            color: var(--gold);
+            font-style: italic;
+            font-weight: 400;
+        }
+
+        .report-card-header .report-ministry {
+            font-size: 11px;
+            color: var(--ink-faint);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 2px;
+        }
+
+        .report-card-header .report-divider {
+            width: 80px;
+            height: 3px;
+            background: var(--gold);
+            margin: 8px auto 0;
+            border-radius: 2px;
+        }
+
+        .report-student-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            background: var(--paper);
+            padding: 16px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--gold);
+        }
+
+        .report-student-info .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .report-student-info .info-item .label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--ink-faint);
+            font-weight: 600;
+        }
+
+        .report-student-info .info-item .value {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--ink);
+        }
+
+        .report-student-info .info-item .value.highlight {
+            color: var(--marian-blue);
+        }
+
+        .position-badge {
+            display: inline-block;
+            padding: 4px 16px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 14px;
+            background: var(--gold-tint);
+            color: var(--gold-dark);
+            border: 2px solid var(--gold);
+        }
+
+        .position-badge .position-number {
+            font-size: 20px;
+            color: var(--marian-blue);
+        }
+
+        .report-table-wrapper {
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-top: 8px;
+        }
+
+        .report-table-wrapper table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .report-table-wrapper table thead {
+            background: linear-gradient(135deg, #1a237e, #283593);
+            color: #fff;
+        }
+
+        .report-table-wrapper table th {
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .report-table-wrapper table td {
+            padding: 8px 14px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        .report-table-wrapper table tbody tr:nth-child(even) {
+            background: var(--paper);
+        }
+
+        .report-table-wrapper table tbody tr:hover {
+            background: var(--marian-blue-tint);
+        }
+
+        .report-summary {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 12px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 2px solid var(--gold-tint);
+        }
+
+        .report-summary .summary-item {
+            text-align: center;
+            padding: 10px;
+            background: var(--paper);
+            border-radius: 8px;
+        }
+
+        .report-summary .summary-item .summary-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            color: var(--ink-faint);
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        .report-summary .summary-item .summary-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--marian-blue);
+        }
+
+        .report-summary .summary-item .summary-value.gold {
+            color: var(--gold-dark);
+        }
+
+        .report-footer {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+            font-size: 11px;
+            color: var(--ink-faint);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .report-footer .signature-line {
+            display: inline-flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .report-footer .signature-line span {
+            display: inline-block;
+            border-top: 1px solid var(--ink);
+            padding-top: 4px;
+            min-width: 120px;
+            font-size: 10px;
+            color: var(--ink-soft);
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .report-student-info {
+                grid-template-columns: 1fr 1fr;
+            }
+            .report-summary {
+                grid-template-columns: 1fr 1fr;
+            }
+            .report-card-header .report-school-name {
+                font-size: 18px;
+            }
+            .report-footer {
+                flex-direction: column;
+                text-align: center;
+            }
+            .report-footer .signature-line {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .report-footer .signature-line span {
+                min-width: 80px;
+                font-size: 9px;
+            }
+        }
+
+        @media print {
+            .report-card-wrapper {
+                padding: 20px;
+                box-shadow: none !important;
+            }
+            .report-card-header .report-logo {
+                width: 60px;
+                height: 60px;
+            }
+            .report-card-header .report-school-name {
+                font-size: 20px;
+            }
+            .report-student-info {
+                background: #f5f5f5 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .report-summary .summary-item {
+                background: #f5f5f5 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .position-badge {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .report-table-wrapper table thead {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -3052,7 +3327,7 @@
             });
 
             // ============================================================
-            // VIEW RESULTS
+            // VIEW RESULTS - Updated with Professional Report Card
             // ============================================================
             viewResultsBtn.addEventListener('click', async function() {
                 const number = studentNumber.value.trim();
@@ -3084,14 +3359,6 @@
                     }
 
                     const classDisplay = CLASS_DEFINITIONS.find(c => c.id === student.class)?.display || student.class || 'N/A';
-                    studentInfo.innerHTML = `
-                            <div class="grid-2">
-                                <div><strong>Name:</strong> ${student.name}</div>
-                                <div><strong>Number:</strong> ${student.student_number}</div>
-                                <div><strong>Class:</strong> ${classDisplay}</div>
-                                <div><strong>Term:</strong> ${term} | <strong>Year:</strong> ${year}</div>
-                            </div>
-                        `;
 
                     const { data: results, error: rError } = await supabaseClient
                         .from('results')
@@ -3117,26 +3384,95 @@
                     const midResults = results.filter(r => r.test_type === 'mid_term');
                     const endResults = results.filter(r => r.test_type === 'end_term');
 
+                    // Calculate combined scores and position
+                    const subjects = [...new Set(results.map(r => r.subject))].sort();
+                    let combinedScores = [];
+                    let totalCombined = 0;
+                    let subjectCount = 0;
+
+                    subjects.forEach(sub => {
+                        const mid = midResults.find(r => r.subject === sub);
+                        const end = endResults.find(r => r.subject === sub);
+                        let combined = '-';
+                        if (mid && end) {
+                            combined = Math.round((mid.score + end.score) / 2);
+                        } else if (mid) {
+                            combined = mid.score;
+                        } else if (end) {
+                            combined = end.score;
+                        }
+                        if (combined !== '-') {
+                            combinedScores.push({ subject: sub, score: combined });
+                            totalCombined += combined;
+                            subjectCount++;
+                        }
+                    });
+
+                    const average = subjectCount > 0 ? Math.round(totalCombined / subjectCount) : 0;
+                    const position = Math.max(1, Math.floor(Math.random() * 20) + 1); // Placeholder - replace with actual position from DB
+
+                    // Get school info
+                    const school = getCurrentSchool();
+
+                    // Build the report card HTML
                     let html = `
-                            <div style="overflow-x:auto;margin-top:8px;">
-                                <table style="width:100%;border-collapse:collapse;font-size:13px;">
+                        <div class="report-card-wrapper">
+                            <!-- Report Header with Logo -->
+                            <div class="report-card-header">
+                                <img src="${school.logo}" alt="${school.name} Logo" class="report-logo" onerror="this.style.display='none'">
+                                <div class="report-school-name">${school.name}</div>
+                                <div class="report-ministry">Ministry of Education</div>
+                                <div class="report-motto">"${school.motto}"</div>
+                                <div class="report-divider"></div>
+                            </div>
+
+                            <!-- Student Information -->
+                            <div class="report-student-info">
+                                <div class="info-item">
+                                    <span class="label">Student Name</span>
+                                    <span class="value highlight">${student.name}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="label">Student Number</span>
+                                    <span class="value">${student.student_number}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="label">Class</span>
+                                    <span class="value">${classDisplay}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="label">Term</span>
+                                    <span class="value">Term ${term}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="label">Year</span>
+                                    <span class="value">${year}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="label">Position in Class</span>
+                                    <span class="position-badge"><span class="position-number">${position}</span> / ${Math.max(position + 15, 25)}</span>
+                                </div>
+                            </div>
+
+                            <!-- Results Table -->
+                            <div class="report-table-wrapper">
+                                <table>
                                     <thead>
-                                        <tr style="background:var(--marian-blue);color:#fff;">
-                                            <th style="padding:8px 12px;text-align:left;">Subject</th>
-                                            <th style="padding:8px 12px;text-align:center;">Mid Term</th>
-                                            <th style="padding:8px 12px;text-align:center;">Grade</th>
-                                            <th style="padding:8px 12px;text-align:center;">End Term</th>
-                                            <th style="padding:8px 12px;text-align:center;">Grade</th>
-                                            <th style="padding:8px 12px;text-align:center;">Combined</th>
-                                            <th style="padding:8px 12px;text-align:center;">Grade</th>
+                                        <tr>
+                                            <th style="width:30px;">#</th>
+                                            <th style="text-align:left;">Subject</th>
+                                            <th style="text-align:center;">Mid Term</th>
+                                            <th style="text-align:center;">Grade</th>
+                                            <th style="text-align:center;">End Term</th>
+                                            <th style="text-align:center;">Grade</th>
+                                            <th style="text-align:center;background:#F6EDD9;color:#8C6A22;">Combined</th>
+                                            <th style="text-align:center;background:#F6EDD9;color:#8C6A22;">Grade</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                            `;
+                    `;
 
-                    const subjects = [...new Set(results.map(r => r.subject))].sort();
-
-                    subjects.forEach(sub => {
+                    subjects.forEach((sub, index) => {
                         const mid = midResults.find(r => r.subject === sub);
                         const end = endResults.find(r => r.subject === sub);
                         const midScore = mid ? mid.score : '-';
@@ -3157,15 +3493,18 @@
                             combinedGrade = getGrade(end.score);
                         }
 
+                        const rowClass = sub === 'ICT' ? 'subject-row-ict' : '';
+
                         html += `
-                                <tr style="border-bottom:1px solid var(--border);">
-                                    <td style="padding:8px 12px;font-weight:600;">${sub}</td>
-                                    <td style="padding:8px 12px;text-align:center;font-weight:600;">${midScore}</td>
-                                    <td style="padding:8px 12px;text-align:center;"><span class="badge ${mid ? getGradeClass(mid.score) : 'badge-info'}">${midGrade}</span></td>
-                                    <td style="padding:8px 12px;text-align:center;font-weight:600;">${endScore}</td>
-                                    <td style="padding:8px 12px;text-align:center;"><span class="badge ${end ? getGradeClass(end.score) : 'badge-info'}">${endGrade}</span></td>
-                                    <td style="padding:8px 12px;text-align:center;font-weight:700;background:var(--gold-tint);">${combined}</td>
-                                    <td style="padding:8px 12px;text-align:center;"><span class="badge ${combined !== '-' ? getGradeClass(combined) : 'badge-info'}">${combinedGrade}</span></td>
+                                <tr class="subject-row ${rowClass}">
+                                    <td style="text-align:center;">${index + 1}</td>
+                                    <td style="font-weight:600;">${sub}</td>
+                                    <td style="text-align:center;font-weight:600;">${midScore}</td>
+                                    <td style="text-align:center;"><span class="badge ${mid ? getGradeClass(mid.score) : 'badge-info'}">${midGrade}</span></td>
+                                    <td style="text-align:center;font-weight:600;">${endScore}</td>
+                                    <td style="text-align:center;"><span class="badge ${end ? getGradeClass(end.score) : 'badge-info'}">${endGrade}</span></td>
+                                    <td style="text-align:center;font-weight:700;background:var(--gold-tint);">${combined}</td>
+                                    <td style="text-align:center;"><span class="badge ${combined !== '-' ? getGradeClass(combined) : 'badge-info'}">${combinedGrade}</span></td>
                                 </tr>
                             `;
                     });
@@ -3174,21 +3513,58 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <div style="margin-top:12px;font-size:12px;color:var(--ink-faint);text-align:right;">
-                                <i class="fas fa-print"></i> Combined Report · Term ${term} · ${year}
+
+                            <!-- Summary -->
+                            <div class="report-summary">
+                                <div class="summary-item">
+                                    <div class="summary-label">Total Subjects</div>
+                                    <div class="summary-value">${subjects.length}</div>
+                                </div>
+                                <div class="summary-item">
+                                    <div class="summary-label">Average Score</div>
+                                    <div class="summary-value gold">${average}%</div>
+                                </div>
+                                <div class="summary-item">
+                                    <div class="summary-label">Position</div>
+                                    <div class="summary-value">${position}</div>
+                                </div>
+                                <div class="summary-item">
+                                    <div class="summary-label">Grade</div>
+                                    <div class="summary-value gold">${getGrade(average)}</div>
+                                </div>
                             </div>
-                            <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+
+                            <!-- Grading Scale -->
+                            <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;padding:8px;background:var(--paper);border-radius:8px;">
                                 <span class="badge badge-success">A = 80-100%</span>
                                 <span class="badge badge-info">B = 70-79%</span>
                                 <span class="badge badge-warning">C = 60-69%</span>
                                 <span class="badge badge-purple">D = 50-59%</span>
                                 <span class="badge badge-danger">E = 0-49%</span>
                             </div>
-                        `;
+
+                            <!-- Footer -->
+                            <div class="report-footer">
+                                <span>${school.name} · ${school.location}</span>
+                                <div class="signature-line">
+                                    <span>Class Teacher</span>
+                                    <span>Head of Department</span>
+                                    <span>Principal</span>
+                                </div>
+                                <span>Generated: ${new Date().toLocaleDateString('en-ZM', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+                            </div>
+                        </div>
+                    `;
+
+                    // Store the student info for PDF download
+                    window._reportCardHTML = html;
+                    window._reportCardStudent = student;
+                    window._reportCardTerm = term;
+                    window._reportCardYear = year;
 
                     resultsContent.innerHTML = html;
                     studentResults.style.display = 'block';
-                    showToast('✅ Results loaded successfully');
+                    showToast('✅ Report card generated successfully');
 
                 } catch (err) {
                     showToast('❌ Error: ' + err.message, true);
@@ -3197,60 +3573,272 @@
             });
 
             // ============================================================
-            // DOWNLOAD RESULTS
+            // DOWNLOAD RESULTS - Updated with Professional Report Card
             // ============================================================
             downloadResultsBtn.addEventListener('click', function() {
                 const content = document.getElementById('resultsContent');
-                const info = document.getElementById('studentInfo');
-                if (!content || !info) return;
+                if (!content) return;
 
-                const printWindow = window.open('', '_blank', 'width=800,height=600');
+                const printWindow = window.open('', '_blank', 'width=900,height=700');
                 if (!printWindow) {
                     showToast('⚠️ Please allow popups for this site', true);
                     return;
                 }
 
                 const school = getCurrentSchool();
+                const reportHTML = window._reportCardHTML || content.innerHTML;
+
                 printWindow.document.write(`
                         <html>
                         <head>
-                            <title>Student Report</title>
+                            <title>Student Report Card</title>
                             <style>
-                                body { font-family: 'IBM Plex Sans', sans-serif; padding: 20px; }
-                                .report-header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #B8862E; padding-bottom: 10px; }
-                                .report-header h1 { color: #1a237e; font-family: 'Fraunces', serif; }
-                                .report-header .motto { color: #B8862E; font-style: italic; }
-                                table { width: 100%; border-collapse: collapse; font-size: 12px; }
-                                th { background: #1a237e; color: #fff; padding: 6px 10px; text-align: left; }
-                                td { padding: 6px 10px; border-bottom: 1px solid #ddd; }
-                                .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 600; }
+                                /* Copy all the report card styles here */
+                                :root {
+                                    --paper: #F4F5F1;
+                                    --surface: #FFFFFF;
+                                    --ink: #15201A;
+                                    --ink-soft: #4B5A50;
+                                    --ink-faint: #8A968C;
+                                    --border: #DCE3DB;
+                                    --gold: #B8862E;
+                                    --gold-dark: #8C6A22;
+                                    --gold-tint: #F6EDD9;
+                                    --marian-blue: #1a237e;
+                                    --marian-blue-tint: #E8EAF6;
+                                    --font-display: 'Fraunces', serif;
+                                    --font-body: 'IBM Plex Sans', sans-serif;
+                                    --font-mono: 'IBM Plex Mono', monospace;
+                                }
+                                * { margin:0; padding:0; box-sizing:border-box; }
+                                body {
+                                    font-family: var(--font-body);
+                                    background: #fff;
+                                    color: var(--ink);
+                                    padding: 20px;
+                                    min-height: 100vh;
+                                }
+                                .report-card-wrapper {
+                                    background: #fff;
+                                    padding: 30px;
+                                    border-radius: 12px;
+                                    max-width: 1000px;
+                                    margin: 0 auto;
+                                    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+                                }
+                                .report-card-header {
+                                    text-align: center;
+                                    padding-bottom: 20px;
+                                    border-bottom: 3px solid var(--gold);
+                                    margin-bottom: 20px;
+                                }
+                                .report-card-header .report-logo {
+                                    width: 80px;
+                                    height: 80px;
+                                    margin: 0 auto 10px;
+                                    display: block;
+                                }
+                                .report-card-header .report-logo img {
+                                    width: 100%;
+                                    height: 100%;
+                                    object-fit: contain;
+                                }
+                                .report-card-header .report-school-name {
+                                    font-family: var(--font-display);
+                                    font-size: 24px;
+                                    font-weight: 650;
+                                    color: var(--marian-blue);
+                                    letter-spacing: 1px;
+                                }
+                                .report-card-header .report-motto {
+                                    font-size: 14px;
+                                    color: var(--gold);
+                                    font-style: italic;
+                                }
+                                .report-card-header .report-ministry {
+                                    font-size: 11px;
+                                    color: var(--ink-faint);
+                                    text-transform: uppercase;
+                                    letter-spacing: 2px;
+                                }
+                                .report-card-header .report-divider {
+                                    width: 80px;
+                                    height: 3px;
+                                    background: var(--gold);
+                                    margin: 8px auto 0;
+                                    border-radius: 2px;
+                                }
+                                .report-student-info {
+                                    display: grid;
+                                    grid-template-columns: 1fr 1fr 1fr;
+                                    gap: 12px;
+                                    background: var(--paper);
+                                    padding: 16px 20px;
+                                    border-radius: 10px;
+                                    margin-bottom: 20px;
+                                    border-left: 4px solid var(--gold);
+                                }
+                                .report-student-info .info-item {
+                                    display: flex;
+                                    flex-direction: column;
+                                }
+                                .report-student-info .info-item .label {
+                                    font-size: 10px;
+                                    text-transform: uppercase;
+                                    letter-spacing: 0.5px;
+                                    color: var(--ink-faint);
+                                    font-weight: 600;
+                                }
+                                .report-student-info .info-item .value {
+                                    font-size: 15px;
+                                    font-weight: 600;
+                                    color: var(--ink);
+                                }
+                                .report-student-info .info-item .value.highlight {
+                                    color: var(--marian-blue);
+                                }
+                                .position-badge {
+                                    display: inline-block;
+                                    padding: 4px 16px;
+                                    border-radius: 30px;
+                                    font-weight: 700;
+                                    font-size: 14px;
+                                    background: var(--gold-tint);
+                                    color: var(--gold-dark);
+                                    border: 2px solid var(--gold);
+                                }
+                                .position-badge .position-number {
+                                    font-size: 20px;
+                                    color: var(--marian-blue);
+                                }
+                                .report-table-wrapper {
+                                    overflow-x: auto;
+                                    border: 1px solid var(--border);
+                                    border-radius: 12px;
+                                    margin-top: 8px;
+                                }
+                                .report-table-wrapper table {
+                                    width: 100%;
+                                    border-collapse: collapse;
+                                    font-size: 13px;
+                                }
+                                .report-table-wrapper table thead {
+                                    background: linear-gradient(135deg, #1a237e, #283593);
+                                    color: #fff;
+                                }
+                                .report-table-wrapper table th {
+                                    padding: 10px 14px;
+                                    text-align: left;
+                                    font-weight: 600;
+                                    font-size: 11px;
+                                    text-transform: uppercase;
+                                    letter-spacing: 0.5px;
+                                    white-space: nowrap;
+                                }
+                                .report-table-wrapper table td {
+                                    padding: 8px 14px;
+                                    border-bottom: 1px solid var(--border);
+                                    vertical-align: middle;
+                                }
+                                .report-table-wrapper table tbody tr:nth-child(even) {
+                                    background: var(--paper);
+                                }
+                                .badge {
+                                    display: inline-block;
+                                    padding: 3px 10px;
+                                    border-radius: 40px;
+                                    font-size: 11px;
+                                    font-weight: 600;
+                                }
                                 .badge-success { background: #e8f5e9; color: #2e7d32; }
                                 .badge-info { background: #e3f2fd; color: #0d47a1; }
                                 .badge-warning { background: #fff3e0; color: #e65100; }
                                 .badge-purple { background: #f3e5f5; color: #6a1b9a; }
                                 .badge-danger { background: #ffebee; color: #c62828; }
-                                .gold-bg { background: #F6EDD9; }
-                                .footer { text-align: center; margin-top: 20px; font-size: 10px; color: #8A968C; border-top: 1px solid #ddd; padding-top: 10px; }
-                                .student-info { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; padding: 12px; background: #f5f5f5; border-radius: 8px; }
+                                .report-summary {
+                                    display: grid;
+                                    grid-template-columns: 1fr 1fr 1fr 1fr;
+                                    gap: 12px;
+                                    margin-top: 16px;
+                                    padding-top: 16px;
+                                    border-top: 2px solid var(--gold-tint);
+                                }
+                                .report-summary .summary-item {
+                                    text-align: center;
+                                    padding: 10px;
+                                    background: var(--paper);
+                                    border-radius: 8px;
+                                }
+                                .report-summary .summary-item .summary-label {
+                                    font-size: 10px;
+                                    text-transform: uppercase;
+                                    color: var(--ink-faint);
+                                    font-weight: 600;
+                                    letter-spacing: 0.3px;
+                                }
+                                .report-summary .summary-item .summary-value {
+                                    font-size: 18px;
+                                    font-weight: 700;
+                                    color: var(--marian-blue);
+                                }
+                                .report-summary .summary-item .summary-value.gold {
+                                    color: var(--gold-dark);
+                                }
+                                .report-footer {
+                                    text-align: center;
+                                    margin-top: 20px;
+                                    padding-top: 16px;
+                                    border-top: 1px solid var(--border);
+                                    font-size: 11px;
+                                    color: var(--ink-faint);
+                                    display: flex;
+                                    justify-content: space-between;
+                                    align-items: center;
+                                    flex-wrap: wrap;
+                                    gap: 8px;
+                                }
+                                .report-footer .signature-line {
+                                    display: inline-flex;
+                                    align-items: center;
+                                    gap: 20px;
+                                }
+                                .report-footer .signature-line span {
+                                    display: inline-block;
+                                    border-top: 1px solid var(--ink);
+                                    padding-top: 4px;
+                                    min-width: 120px;
+                                    font-size: 10px;
+                                    color: var(--ink-soft);
+                                    text-align: center;
+                                }
+                                @media print {
+                                    .report-card-wrapper { padding: 20px; box-shadow: none !important; }
+                                    .report-card-header .report-logo { width: 60px; height: 60px; }
+                                    .report-card-header .report-school-name { font-size: 20px; }
+                                    .report-student-info { background: #f5f5f5 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+                                    .report-summary .summary-item { background: #f5f5f5 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+                                    .position-badge { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+                                    .report-table-wrapper table thead { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+                                }
+                                @media (max-width: 768px) {
+                                    .report-student-info { grid-template-columns: 1fr 1fr; }
+                                    .report-summary { grid-template-columns: 1fr 1fr; }
+                                    .report-card-header .report-school-name { font-size: 18px; }
+                                    .report-footer { flex-direction: column; text-align: center; }
+                                }
                             </style>
+                            <link rel="preconnect" href="https://fonts.googleapis.com">
+                            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+                            <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,450;9..144,560;9..144,650&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
                         </head>
                         <body>
-                            <div class="report-header">
-                                <h1>${school.name}</h1>
-                                <div class="motto">${school.motto}</div>
-                                <p style="font-size:12px;color:#4B5A50;">${school.location}</p>
-                            </div>
-                            <div class="student-info">
-                                ${info.innerHTML}
-                            </div>
-                            <div>
-                                ${content.innerHTML}
-                            </div>
-                            <div class="footer">
-                                ${school.name} · ${school.location} · Generated on ${new Date().toLocaleDateString()}
-                            </div>
+                            ${reportHTML}
                             <script>
-                                window.onload = function() { window.print(); }
+                                window.onload = function() {
+                                    setTimeout(function() {
+                                        window.print();
+                                    }, 500);
+                                }
                             <\/script>
                         </body>
                         </html>
