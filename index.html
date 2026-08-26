@@ -7,15 +7,13 @@
     <meta name="theme-color" content="#1a237e">
     <meta name="description" content="Laura Girls Secondary School - Kasama District, Zambia.">
     
-    <!-- Vercel Analytics - only loads if deployed on Vercel -->
+    <!-- Vercel Analytics -->
     <script>
         try {
             window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-        } catch(e) {
-            console.log('Analytics not available');
-        }
+        } catch(e) {}
     </script>
-    <script defer src="/_vercel/insights/script.js" onerror="console.log('Analytics script not found - ignoring')"></script>
+    <script defer src="/_vercel/insights/script.js" onerror="console.log('Analytics not available')"></script>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,7 +24,7 @@
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js">
     </script>
     <style>
-        /* ========== CSS (same as before) ========== */
+        /* ========== CSS ========== */
         :root {
             --paper: #F4F5F1;
             --surface: #FFFFFF;
@@ -476,7 +474,7 @@
         "use strict";
 
         // ============================================================
-        // CONFIG - DIRECT DATABASE CONNECTION
+        // CONFIG - DATABASE ONLY (NO DEMO)
         // ============================================================
         const SUPABASE_URL = 'https://yhmjidkrwtxckecvjixo.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlobWppZGtyd3R4Y2tlY3ZqaXhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc0MzYzMDksImV4cCI6MjEwMzAxMjMwOX0.db6y1ac6HIMt4v_AW9M-IvypHXSz1aoMA-X3bAvpKnI';
@@ -514,7 +512,6 @@
         let supabaseClient = null;
         let currentUser = null;
         let isConnected = false;
-        let connectionAttempts = 0;
         let bulkData = null;
         let teacherImportData = null;
         let currentSchoolCode = 'LGSS';
@@ -758,33 +755,52 @@
         }
         window.studentLogin = studentLogin;
 
+        // TEACHER LOGIN - Database only
         function teacherLogin() {
             const username = document.getElementById('teacherLoginUsername').value.trim();
             const password = document.getElementById('teacherLoginPassword').value.trim();
+
             if (!username) { showToast('⚠️ Please enter your username', true); return; }
             if (!password) { showToast('⚠️ Please enter your password', true); return; }
 
-            // Check offline demo teachers first (for testing)
-            const validTeachers = {
-                'jbanda': { id: 1, name: 'Mr. John Banda', password: 'teacher123' },
-                'mphiri': { id: 2, name: 'Mrs. Mary Phiri', password: 'teacher123' },
-                'pzulu': { id: 3, name: 'Mr. Peter Zulu', password: 'teacher123' },
-                'gmwansa': { id: 4, name: 'Ms. Grace Mwansa', password: 'teacher123' }
-            };
-
-            if (validTeachers[username] && validTeachers[username].password === password) {
-                currentUser = { role: 'teacher', id: validTeachers[username].id, name: validTeachers[username].name };
-                showToast('✅ Logged in as teacher: ' + validTeachers[username].name);
-                loginModal.classList.remove('active');
-                updateLoginUI();
-                teacherLocked.style.display = 'none';
-                teacherContent.style.display = 'block';
-                document.querySelector('.tab-btn[data-tab="teacher"]').click();
-                teacherNameDisplay.textContent = `Welcome, ${validTeachers[username].name}`;
+            if (!supabaseClient || !isConnected) {
+                showToast('⚠️ Database not connected. Please refresh and try again.', true);
                 return;
             }
 
-            showToast('❌ Invalid credentials. Teachers: jbanda, mphiri, pzulu, gmwansa (password: teacher123)', true);
+            // Query database for teacher
+            supabaseClient
+                .from('teachers')
+                .select('*')
+                .eq('username', username)
+                .maybeSingle()
+                .then(({ data, error }) => {
+                    if (error) {
+                        showToast('❌ Database error: ' + error.message, true);
+                        return;
+                    }
+                    if (!data) {
+                        showToast('❌ Teacher not found. Please contact administrator.', true);
+                        return;
+                    }
+                    if (data.password !== password) {
+                        showToast('❌ Invalid password. Please try again.', true);
+                        return;
+                    }
+
+                    currentUser = { role: 'teacher', id: data.id, name: data.name };
+                    showToast('✅ Logged in as teacher: ' + data.name);
+                    loginModal.classList.remove('active');
+                    updateLoginUI();
+                    teacherLocked.style.display = 'none';
+                    teacherContent.style.display = 'block';
+                    document.querySelector('.tab-btn[data-tab="teacher"]').click();
+                    teacherNameDisplay.textContent = `Welcome, ${data.name}`;
+                })
+                .catch(err => {
+                    showToast('❌ Error: ' + err.message, true);
+                    console.error(err);
+                });
         }
         window.teacherLogin = teacherLogin;
 
@@ -805,7 +821,7 @@
         window.adminLogin = adminLogin;
 
         // ============================================================
-        // SUPABASE INIT - DIRECT CONNECTION
+        // SUPABASE INIT - DATABASE ONLY (NO DEMO)
         // ============================================================
         function initSupabase() {
             try {
@@ -816,13 +832,11 @@
                 applySchoolBranding();
 
                 if (typeof window.supabase === 'undefined' || !window.supabase.createClient) {
-                    console.error('Supabase library not loaded');
-                    setConnectionStatus('offline', 'Library Error');
-                    showToast('⚠️ Supabase library not loaded - please refresh', true);
+                    setConnectionStatus('offline', 'Error');
+                    showToast('⚠️ Supabase library not loaded. Please refresh.', true);
                     return;
                 }
 
-                // Create Supabase client with proper configuration
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
                     auth: {
                         persistSession: false,
@@ -831,53 +845,31 @@
                     }
                 });
 
-                // Test connection - try to fetch from students table
-                testConnection();
+                // Test connection
+                supabaseClient.from('students').select('id', { count: 'exact', head: true })
+                    .then(({ data, error }) => {
+                        if (error) {
+                            setConnectionStatus('offline', 'Error');
+                            showToast('❌ Database connection failed: ' + error.message, true);
+                            console.error('Connection error:', error);
+                            return;
+                        }
+                        isConnected = true;
+                        setConnectionStatus('online', 'Connected');
+                        showToast('✅ Database connected');
+                        loadAllData();
+                    })
+                    .catch((err) => {
+                        setConnectionStatus('offline', 'Error');
+                        showToast('❌ Cannot connect to database: ' + err.message, true);
+                        console.error('Connection error:', err);
+                    });
 
             } catch(e) {
-                console.error('Supabase initialization error:', e);
                 setConnectionStatus('offline', 'Error');
-                showToast('⚠️ ' + e.message, true);
+                showToast('❌ Initialization error: ' + e.message, true);
+                console.error('Init error:', e);
             }
-        }
-
-        function testConnection() {
-            connectionAttempts++;
-            setConnectionStatus('connecting', 'Connecting...');
-
-            // Use a more reliable test - try to get a count from the students table
-            supabaseClient.from('students').select('id', { count: 'exact', head: true })
-                .then(({ data, error, count }) => {
-                    if (error) {
-                        console.error('Database connection error:', error);
-                        // Check if it's a CORS or network error
-                        if (error.message && (error.message.includes('CORS') || error.message.includes('NetworkError'))) {
-                            setConnectionStatus('offline', 'CORS Error');
-                            showToast('⚠️ CORS error - please configure Supabase CORS settings', true);
-                            // Retry after 3 seconds
-                            setTimeout(testConnection, 3000);
-                        } else {
-                            setConnectionStatus('offline', 'Error');
-                            showToast('⚠️ Database error: ' + error.message, true);
-                        }
-                        return;
-                    }
-
-                    // Connection successful
-                    isConnected = true;
-                    setConnectionStatus('online', 'Connected');
-                    showToast('✅ Database connected successfully');
-                    loadAllData();
-                })
-                .catch((err) => {
-                    console.error('Connection test failed:', err);
-                    setConnectionStatus('offline', 'Offline');
-                    showToast('⚠️ Could not connect to database: ' + err.message, true);
-                    // Retry a few times
-                    if (connectionAttempts < 3) {
-                        setTimeout(testConnection, 2000);
-                    }
-                });
         }
 
         function loadAllData() {
@@ -929,6 +921,10 @@
         // ============================================================
         async function loadAdminStats() {
             if (!supabaseClient || !isConnected) {
+                totalStudents.textContent = '?';
+                totalTeachers.textContent = '?';
+                totalSubjects.textContent = '?';
+                totalResults.textContent = '?';
                 return;
             }
             try {
@@ -946,6 +942,7 @@
 
         async function loadClasses() {
             if (!supabaseClient || !isConnected) {
+                classesTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--ink-faint);">Database not connected</td></tr>`;
                 return;
             }
             try {
@@ -971,6 +968,7 @@
                 });
             } catch (e) {
                 console.error('Error loading classes:', e);
+                classesTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--ink-faint);">Error loading classes</td></tr>`;
             }
         }
 
@@ -1011,12 +1009,12 @@
             }
 
             if (!supabaseClient || !isConnected) {
-                showToast('⚠️ Not connected to database', true);
+                showToast('⚠️ Database not connected', true);
                 return;
             }
 
             try {
-                showToast('🔄 Loading students from database...');
+                showToast('🔄 Loading students...');
                 const { data: students, error } = await supabaseClient
                     .from('students')
                     .select('id, name, student_number')
@@ -1056,72 +1054,32 @@
                 displayResultsEntryWithScores(students, subject, term, year, testType, resultsMap);
                 resultsEntry.style.display = 'block';
                 const resultCount = results ? results.length : 0;
-                showToast(`✅ ${students.length} students loaded, ${resultCount} existing scores found`);
+                showToast(`✅ ${students.length} students loaded, ${resultCount} existing scores`);
 
             } catch (err) {
-                showToast('❌ Error loading students: ' + err.message, true);
+                showToast('❌ Error: ' + err.message, true);
                 console.error(err);
             }
         });
 
         function displayResultsEntryWithScores(students, subject, term, year, testType, resultsMap) {
             let html = '';
-            if (!students || students.length === 0) {
-                html = `<tr><td colspan="6" style="text-align:center;color:var(--ink-faint);">No students available.</td></tr>`;
-            } else {
-                students.forEach((s, i) => {
-                    const existing = resultsMap ? resultsMap[s.id] : null;
-                    const score = existing ? existing.score : '';
-                    const comment = existing ? existing.comment || '' : '';
-                    const grade = score ? getGrade(parseInt(score)) : '-';
-                    const gradeClass = score ? getGradeClass(parseInt(score)) : '';
+            students.forEach((s, i) => {
+                const existing = resultsMap ? resultsMap[s.id] : null;
+                const score = existing ? existing.score : '';
+                const comment = existing ? existing.comment || '' : '';
+                const grade = score ? getGrade(parseInt(score)) : '-';
+                const gradeClass = score ? getGradeClass(parseInt(score)) : '';
 
-                    html += `<tr data-student-id="${s.id}">
-                                <td>${i + 1}</td>
-                                <td><strong>${s.name}</strong></td>
-                                <td>${s.student_number}</td>
-                                <td><input type="number" min="0" max="100" class="score-input" value="${score}" style="width:70px;padding:6px 8px;border-radius:8px;border:1.5px solid var(--border);text-align:center;"></td>
-                                <td class="grade-display ${gradeClass}" style="text-align:center;">${grade}</td>
-                                <td><input type="text" class="comment-input" value="${comment}" placeholder="Comment..." style="width:100%;padding:6px 8px;border-radius:8px;border:1.5px solid var(--border);font-size:12px;"></td>
-                            </tr>`;
-                });
-            }
-            resultsTableBody.innerHTML = html;
-
-            document.querySelectorAll('.score-input').forEach(inp => {
-                inp.addEventListener('input', function() {
-                    const row = this.closest('tr');
-                    const gd = row.querySelector('.grade-display');
-                    const score = parseInt(this.value);
-                    if (!isNaN(score) && score >= 0 && score <= 100) {
-                        const grade = getGrade(score);
-                        const cls = getGradeClass(score);
-                        gd.textContent = grade;
-                        gd.className = 'grade-display ' + cls;
-                    } else {
-                        gd.textContent = '-';
-                        gd.className = 'grade-display';
-                    }
-                });
+                html += `<tr data-student-id="${s.id}">
+                            <td>${i + 1}</td>
+                            <td><strong>${s.name}</strong></td>
+                            <td>${s.student_number}</td>
+                            <td><input type="number" min="0" max="100" class="score-input" value="${score}" style="width:70px;padding:6px 8px;border-radius:8px;border:1.5px solid var(--border);text-align:center;"></td>
+                            <td class="grade-display ${gradeClass}" style="text-align:center;">${grade}</td>
+                            <td><input type="text" class="comment-input" value="${comment}" placeholder="Comment..." style="width:100%;padding:6px 8px;border-radius:8px;border:1.5px solid var(--border);font-size:12px;"></td>
+                        </tr>`;
             });
-        }
-
-        function displayResultsEntry(students, subject, term, year, testType) {
-            let html = '';
-            if (!students || students.length === 0) {
-                html = `<tr><td colspan="6" style="text-align:center;color:var(--ink-faint);">No students available.</td></tr>`;
-            } else {
-                students.forEach((s, i) => {
-                    html += `<tr data-student-id="${s.id}">
-                                <td>${i + 1}</td>
-                                <td><strong>${s.name}</strong></td>
-                                <td>${s.student_number}</td>
-                                <td><input type="number" min="0" max="100" class="score-input" value="" style="width:70px;padding:6px 8px;border-radius:8px;border:1.5px solid var(--border);text-align:center;"></td>
-                                <td class="grade-display" style="text-align:center;">-</td>
-                                <td><input type="text" class="comment-input" placeholder="Comment..." style="width:100%;padding:6px 8px;border-radius:8px;border:1.5px solid var(--border);font-size:12px;"></td>
-                            </tr>`;
-                });
-            }
             resultsTableBody.innerHTML = html;
 
             document.querySelectorAll('.score-input').forEach(inp => {
@@ -1178,7 +1136,7 @@
             }
 
             if (!supabaseClient || !isConnected) {
-                showToast('⚠️ Not connected to database', true);
+                showToast('⚠️ Database not connected', true);
                 return;
             }
 
@@ -1235,11 +1193,11 @@
 
                 if (error) throw error;
 
-                showToast(`✅ ${resultsToSave.length} results saved successfully!`);
+                showToast(`✅ ${resultsToSave.length} results saved!`);
                 this.innerHTML = '<i class="fas fa-save"></i> Save All';
                 this.disabled = false;
 
-                await loadStudentsWithResults(className, subject, term, year, testType);
+                loadStudentsBtn.click();
 
             } catch (err) {
                 showToast('❌ Error: ' + err.message, true);
@@ -1250,7 +1208,7 @@
         });
 
         // ============================================================
-        // TEACHER EXCEL IMPORT
+        // TEACHER EXCEL IMPORT - Database only
         // ============================================================
         teacherImportLoadBtn.addEventListener('click', function() {
             const className = teacherImportClass.value;
@@ -1265,7 +1223,7 @@
             }
 
             if (!supabaseClient || !isConnected) {
-                showToast('⚠️ Not connected to database', true);
+                showToast('⚠️ Database not connected', true);
                 return;
             }
 
@@ -1400,12 +1358,12 @@
             const testType = teacherImportArea.dataset.testType;
 
             if (!className || !subject || !term || !year || !testType) {
-                showToast('⚠️ Please click "Load & Preview" first to set the context', true);
+                showToast('⚠️ Please click "Load & Preview" first', true);
                 return;
             }
 
             if (!supabaseClient || !isConnected) {
-                showToast('⚠️ Not connected to database', true);
+                showToast('⚠️ Database not connected', true);
                 return;
             }
 
@@ -1487,13 +1445,12 @@
             teacherImportClearBtn.style.display = 'none';
             teacherFileInput.value = '';
 
-            showToast('🔄 Refreshing results table...');
-            await loadStudentsWithResults(className, subject, term, year, testType);
-            showToast(`📋 Results table updated with imported data`);
+            showToast('🔄 Refreshing results...');
+            loadStudentsBtn.click();
         });
 
         // ============================================================
-        // STUDENT VIEW RESULTS
+        // STUDENT VIEW RESULTS - Database only
         // ============================================================
         viewResultsBtn.addEventListener('click', async function() {
             const number = studentNumber.value.trim();
@@ -1514,7 +1471,7 @@
             }
 
             if (!supabaseClient || !isConnected) {
-                showToast('⚠️ Not connected to database', true);
+                showToast('⚠️ Database not connected', true);
                 return;
             }
 
@@ -1556,7 +1513,8 @@
 
                 displayCombinedResults(student, midResults || [], endResults || [], term, year);
                 studentResults.style.display = 'block';
-                showToast(`✅ Combined report loaded`);
+                const totalResults = (midResults ? midResults.length : 0) + (endResults ? endResults.length : 0);
+                showToast(`✅ ${totalResults} results loaded`);
 
             } catch (err) {
                 showToast('❌ Error: ' + err.message, true);
@@ -1737,7 +1695,7 @@
         });
 
         // ============================================================
-        // ADD STUDENT/TEACHER/CLASS
+        // ADD STUDENT/TEACHER/CLASS - Database only
         // ============================================================
         addStudentBtn.addEventListener('click', async function() {
             if (!currentUser || currentUser.role !== 'admin') {
@@ -1762,7 +1720,7 @@
             }
 
             if (!supabaseClient || !isConnected) {
-                showToast('⚠️ Not connected to database', true);
+                showToast('⚠️ Database not connected', true);
                 return;
             }
 
@@ -1807,7 +1765,7 @@
             }
 
             if (!supabaseClient || !isConnected) {
-                showToast('⚠️ Not connected to database', true);
+                showToast('⚠️ Database not connected', true);
                 return;
             }
 
@@ -1846,7 +1804,7 @@
             }
 
             if (!supabaseClient || !isConnected) {
-                showToast('⚠️ Not connected to database', true);
+                showToast('⚠️ Database not connected', true);
                 return;
             }
 
@@ -1881,7 +1839,7 @@
         });
 
         // ============================================================
-        // BULK REGISTER
+        // BULK REGISTER - Database only
         // ============================================================
         bulkRegisterTemplateBtn.addEventListener('click', function() {
             const wb = XLSX.utils.book_new();
@@ -2000,7 +1958,7 @@
                 return;
             }
             if (!supabaseClient || !isConnected) {
-                showToast('⚠️ Not connected to database', true);
+                showToast('⚠️ Database not connected', true);
                 return;
             }
 
@@ -2113,10 +2071,9 @@
         console.log('✅ Laura Girls School System');
         console.log('🏫 Current school:', getCurrentSchool().name);
         console.log('📝 Available schools:', Object.keys(SCHOOL_CONFIG.schools).join(', '));
-        console.log('👨‍🏫 Teachers: jbanda, mphiri, pzulu, gmwansa (password: teacher123)');
         console.log('🔑 Admin: admin123');
         console.log('📱 Database connection status:', isConnected ? 'Connected' : 'Offline');
-        console.log('💡 If offline, check Supabase CORS settings');
+        console.log('💡 All data comes from Supabase database');
     })();
 </script>
 </body>
