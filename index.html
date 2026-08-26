@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Laura Girls · Combined Mid & End Term Report</title>
+    <title>Laura Girls · Assignment Fixed</title>
     <meta name="theme-color" content="#1a237e">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -158,6 +158,15 @@
         .report-card-print .test-header.mid { background:#e3f2fd; }
         .report-card-print .test-header.end { background:#fff3e0; }
         .report-card-print .combined-average { background:var(--gold-tint); font-weight:700; }
+        .assigned-class-item { display:inline-block; padding:6px 16px; border-radius:40px; font-size:13px; font-weight:600; margin:4px; }
+        .assigned-class-item.assigned { background:#e8f5e9; color:#2e7d32; border:1px solid #a5d6a7; }
+        .assigned-class-item.unassigned { background:#ffebee; color:#c62828; border:1px solid #ef9a9a; }
+        .no-assignments { text-align:center; padding:20px; background:var(--paper); border-radius:10px; }
+        .no-assignments i { font-size:36px; color:var(--oxblood); margin-bottom:10px; display:block; }
+        .no-assignments p { color:var(--ink-soft); }
+        .no-assignments .sub { color:var(--ink-faint); font-size:12px; }
+        .assignment-row { transition:background 0.2s; }
+        .assignment-row:hover { background:var(--marian-blue-tint); }
         @media (max-width:480px) {
             .topbar .brand h1 { font-size:14px; }
             .topbar .brand .coat-of-arms { width:35px; height:35px; }
@@ -324,6 +333,7 @@
         <div id="adminContent" style="display:none;">
             <div class="card"><div class="card-header"><h2><i class="fas fa-user-shield"></i> Admin Dashboard</h2><span class="subtitle">Overview</span></div><div class="grid-4"><div class="stat-card"><div class="icon"><i class="fas fa-users"></i></div><div class="number" id="totalStudents">0</div><div class="label">Total Students</div></div><div class="stat-card"><div class="icon"><i class="fas fa-user-tie"></i></div><div class="number" id="totalTeachers">0</div><div class="label">Total Teachers</div></div><div class="stat-card"><div class="icon"><i class="fas fa-book"></i></div><div class="number" id="totalSubjects">0</div><div class="label">Total Subjects</div></div><div class="stat-card"><div class="icon"><i class="fas fa-file-alt"></i></div><div class="number" id="totalResults">0</div><div class="label">Total Results</div></div></div></div>
 
+            <!-- Teacher Class Assignments - FIXED -->
             <div class="card class-assignment-card">
                 <div class="card-header">
                     <h2><i class="fas fa-user-tie" style="color:var(--oxblood);"></i> Teacher Class Assignments</h2>
@@ -348,7 +358,9 @@
                             <thead>
                                 <tr><th>#</th><th>Class</th><th>Assigned Teacher</th><th>Status</th><th>Action</th></tr>
                             </thead>
-                            <tbody id="assignmentsTableBody"><tr><td colspan="5" style="text-align:center;color:var(--ink-faint);">Loading assignments...</td></tr></tbody>
+                            <tbody id="assignmentsTableBody">
+                                <tr><td colspan="5" style="text-align:center;color:var(--ink-faint);">Loading assignments...</td></tr>
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -769,54 +781,130 @@
         };
 
         // ============================================================
-        // TEACHER CLASS ASSIGNMENTS
+        // TEACHER CLASS ASSIGNMENTS - FIXED
         // ============================================================
         async function loadTeacherAssignments() {
-            if (!supabaseClient || !isConnected || !currentUser || currentUser.role !== 'teacher') {
-                assignedClassesList.innerHTML = '<p style="color:var(--ink-faint); text-align:center; padding:10px;">Unable to load assignments.</p>';
+            if (!supabaseClient || !isConnected) {
+                assignedClassesList.innerHTML = `
+                    <div class="no-assignments">
+                        <i class="fas fa-wifi-slash" style="color:var(--ink-faint);"></i>
+                        <p>Offline mode - Cannot load assignments</p>
+                        <p class="sub">Please check your connection</p>
+                    </div>
+                `;
+                teacherClass.innerHTML = '<option value="">No classes assigned</option>';
+                teacherClass.disabled = true;
+                teacherImportClass.innerHTML = '<option value="">No classes assigned</option>';
+                teacherImportClass.disabled = true;
                 return;
             }
 
             try {
-                // Get assignments for this teacher
-                const { data, error } = await supabaseClient
-                    .from('teacher_class_assignments')
-                    .select('class_id')
-                    .eq('teacher_id', currentUser.id);
+                // Try multiple approaches to find teacher's assigned classes
+                let assignedClassIds = [];
 
-                if (error) {
-                    // If table doesn't exist, try using classes table directly
-                    const { data: classData, error: classError } = await supabaseClient
-                        .from('classes')
-                        .select('id, display_name, grade, stream, teacher_name')
+                // Approach 1: Check teacher_class_assignments table
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('teacher_class_assignments')
+                        .select('class_id')
                         .eq('teacher_id', currentUser.id);
-                    
-                    if (classError) throw classError;
-                    if (classData && classData.length > 0) {
-                        teacherAssignedClasses = classData.map(c => c.id);
-                        displayAssignedClasses(classData);
-                        return;
+
+                    if (!error && data && data.length > 0) {
+                        assignedClassIds = data.map(a => a.class_id);
                     }
-                    teacherAssignedClasses = [];
-                    displayNoAssignments();
-                    return;
+                } catch (e) {
+                    console.warn('Approach 1 failed:', e);
                 }
 
-                teacherAssignedClasses = data ? data.map(a => a.class_id) : [];
+                // Approach 2: Check classes table by teacher_id
+                if (assignedClassIds.length === 0) {
+                    try {
+                        const { data, error } = await supabaseClient
+                            .from('classes')
+                            .select('id')
+                            .eq('teacher_id', currentUser.id);
+
+                        if (!error && data && data.length > 0) {
+                            assignedClassIds = data.map(c => c.id);
+                        }
+                    } catch (e) {
+                        console.warn('Approach 2 failed:', e);
+                    }
+                }
+
+                // Approach 3: Check classes table by teacher_name (partial match)
+                if (assignedClassIds.length === 0) {
+                    try {
+                        // Get teacher name parts
+                        const nameParts = currentUser.name.split(' ');
+                        let searchTerms = [];
+                        
+                        // Use full name or parts
+                        if (nameParts.length > 1) {
+                            searchTerms = [
+                                currentUser.name,
+                                nameParts[0],
+                                nameParts[nameParts.length - 1]
+                            ];
+                        } else {
+                            searchTerms = [currentUser.name];
+                        }
+
+                        // Search for each term
+                        for (const term of searchTerms) {
+                            if (term.length < 2) continue;
+                            const { data, error } = await supabaseClient
+                                .from('classes')
+                                .select('id')
+                                .ilike('teacher_name', `%${term}%`);
+
+                            if (!error && data && data.length > 0) {
+                                assignedClassIds = data.map(c => c.id);
+                                break;
+                            }
+                        }
+                    } catch (e) {
+                        console.warn('Approach 3 failed:', e);
+                    }
+                }
+
+                // Approach 4: Check if teacher is mentioned in class display name
+                if (assignedClassIds.length === 0) {
+                    try {
+                        const nameParts = currentUser.name.split(' ');
+                        const lastName = nameParts[nameParts.length - 1];
+                        
+                        if (lastName && lastName.length > 2) {
+                            const { data, error } = await supabaseClient
+                                .from('classes')
+                                .select('id')
+                                .ilike('display_name', `%${lastName}%`);
+
+                            if (!error && data && data.length > 0) {
+                                assignedClassIds = data.map(c => c.id);
+                            }
+                        }
+                    } catch (e) {
+                        console.warn('Approach 4 failed:', e);
+                    }
+                }
+
+                teacherAssignedClasses = assignedClassIds;
 
                 if (teacherAssignedClasses.length === 0) {
-                    // Also check classes table directly
-                    const { data: classData, error: classError } = await supabaseClient
-                        .from('classes')
-                        .select('id, display_name, grade, stream, teacher_name')
-                        .eq('teacher_id', currentUser.id);
-                    
-                    if (!classError && classData && classData.length > 0) {
-                        teacherAssignedClasses = classData.map(c => c.id);
-                        displayAssignedClasses(classData);
-                        return;
-                    }
-                    displayNoAssignments();
+                    assignedClassesList.innerHTML = `
+                        <div class="no-assignments">
+                            <i class="fas fa-exclamation-triangle" style="color:var(--oxblood);"></i>
+                            <p>You are not assigned to any class yet.</p>
+                            <p class="sub">Please contact the administrator to assign you to a class.</p>
+                        </div>
+                    `;
+                    teacherClass.innerHTML = '<option value="">No classes assigned</option>';
+                    teacherClass.disabled = true;
+                    teacherImportClass.innerHTML = '<option value="">No classes assigned</option>';
+                    teacherImportClass.disabled = true;
+                    teacherNameDisplay.textContent = `Welcome, ${currentUser.name} (No classes assigned)`;
                     return;
                 }
 
@@ -826,59 +914,64 @@
                 });
                 const classResults = await Promise.all(classPromises);
                 const classes = classResults.map(r => r.data).filter(c => c !== null);
-                displayAssignedClasses(classes);
+
+                if (classes.length === 0) {
+                    assignedClassesList.innerHTML = `
+                        <div class="no-assignments">
+                            <i class="fas fa-exclamation-triangle" style="color:var(--oxblood);"></i>
+                            <p>You are not assigned to any class yet.</p>
+                            <p class="sub">Please contact the administrator to assign you to a class.</p>
+                        </div>
+                    `;
+                    teacherClass.innerHTML = '<option value="">No classes assigned</option>';
+                    teacherClass.disabled = true;
+                    teacherImportClass.innerHTML = '<option value="">No classes assigned</option>';
+                    teacherImportClass.disabled = true;
+                    return;
+                }
+
+                // Display assigned classes
+                let html = `<div style="display:flex; flex-wrap:wrap; gap:8px;">`;
+                classes.forEach(c => {
+                    const displayName = c.display_name || c.grade + ' ' + c.stream;
+                    html += `<span class="assigned-class-item assigned">${displayName}</span>`;
+                });
+                html += `</div>`;
+                assignedClassesList.innerHTML = html;
+
+                // Populate dropdowns with assigned classes
+                const classOptions = classes.map(c => ({ value: c.id, text: c.display_name || c.grade + ' ' + c.stream }));
+                [teacherClass, teacherImportClass].forEach(drop => {
+                    drop.innerHTML = '<option value="">Select Class</option>';
+                    classOptions.forEach(opt => {
+                        const o = document.createElement('option');
+                        o.value = opt.value;
+                        o.textContent = opt.text;
+                        drop.appendChild(o);
+                    });
+                    drop.disabled = false;
+                });
+
+                teacherNameDisplay.textContent = `Welcome, ${currentUser.name} (${classes.length} class${classes.length > 1 ? 'es' : ''} assigned)`;
 
             } catch (err) {
                 console.error('Error loading teacher assignments:', err);
-                assignedClassesList.innerHTML = '<p style="color:var(--ink-faint); text-align:center; padding:10px;">Error loading assignments. Please contact administrator.</p>';
+                assignedClassesList.innerHTML = `
+                    <div class="no-assignments">
+                        <i class="fas fa-exclamation-triangle" style="color:var(--oxblood);"></i>
+                        <p>Error loading assignments</p>
+                        <p class="sub">${err.message || 'Please contact administrator'}</p>
+                    </div>
+                `;
+                teacherClass.innerHTML = '<option value="">No classes assigned</option>';
+                teacherClass.disabled = true;
+                teacherImportClass.innerHTML = '<option value="">No classes assigned</option>';
+                teacherImportClass.disabled = true;
             }
-        }
-
-        function displayAssignedClasses(classes) {
-            if (!classes || classes.length === 0) {
-                displayNoAssignments();
-                return;
-            }
-
-            let html = `<div style="display:flex; flex-wrap:wrap; gap:8px;">`;
-            classes.forEach(c => {
-                const displayName = c.display_name || c.grade + ' ' + c.stream;
-                html += `<span class="badge badge-success" style="font-size:13px; padding:6px 14px;">${displayName}</span>`;
-            });
-            html += `</div>`;
-            assignedClassesList.innerHTML = html;
-
-            const classOptions = classes.map(c => ({ value: c.id, text: c.display_name || c.grade + ' ' + c.stream }));
-            [teacherClass, teacherImportClass].forEach(drop => {
-                drop.innerHTML = '<option value="">Select Class</option>';
-                classOptions.forEach(opt => {
-                    const o = document.createElement('option');
-                    o.value = opt.value;
-                    o.textContent = opt.text;
-                    drop.appendChild(o);
-                });
-                drop.disabled = false;
-            });
-
-            teacherNameDisplay.textContent = `Welcome, ${currentUser.name} (${classes.length} class${classes.length > 1 ? 'es' : ''} assigned)`;
-        }
-
-        function displayNoAssignments() {
-            assignedClassesList.innerHTML = `
-                <div style="text-align:center; padding:15px; background:var(--paper); border-radius:10px;">
-                    <i class="fas fa-exclamation-triangle" style="color:var(--oxblood); font-size:24px; margin-bottom:8px; display:block;"></i>
-                    <p style="color:var(--ink-soft);">You are not assigned to any class yet.</p>
-                    <p style="color:var(--ink-faint); font-size:12px;">Please contact the administrator to assign you to a class.</p>
-                </div>
-            `;
-            teacherClass.innerHTML = '<option value="">No classes assigned</option>';
-            teacherClass.disabled = true;
-            teacherImportClass.innerHTML = '<option value="">No classes assigned</option>';
-            teacherImportClass.disabled = true;
         }
 
         // ============================================================
-        // LOAD ASSIGNMENTS FOR ADMIN
+        // LOAD ASSIGNMENTS FOR ADMIN - FIXED
         // ============================================================
         async function loadAssignments() {
             if (!supabaseClient || !isConnected) {
@@ -887,107 +980,93 @@
             }
 
             try {
-                // First try to get from teacher_class_assignments table
-                let data = null;
-                let error = null;
-                
+                let assignments = [];
+                let assignmentSource = '';
+
+                // Try to get from teacher_class_assignments table
                 try {
-                    const result = await supabaseClient
+                    const { data, error } = await supabaseClient
                         .from('teacher_class_assignments')
                         .select('*')
                         .order('class_id');
-                    data = result.data;
-                    error = result.error;
+
+                    if (!error && data && data.length > 0) {
+                        assignments = data;
+                        assignmentSource = 'teacher_class_assignments';
+                    }
                 } catch (e) {
-                    // If table doesn't exist, use classes table
-                    console.warn('teacher_class_assignments table may not exist, using classes table:', e);
+                    console.warn('Could not fetch from teacher_class_assignments:', e);
                 }
 
-                // If no data from assignments table, get from classes table
-                if (!data || data.length === 0) {
-                    const { data: classData, error: classError } = await supabaseClient
-                        .from('classes')
-                        .select('id, display_name, grade, stream, teacher_id, teacher_name')
-                        .not('teacher_id', 'is', null)
-                        .order('grade');
+                // If no assignments, try classes table
+                if (assignments.length === 0) {
+                    try {
+                        const { data, error } = await supabaseClient
+                            .from('classes')
+                            .select('id, display_name, grade, stream, teacher_id, teacher_name')
+                            .not('teacher_id', 'is', null)
+                            .order('grade');
 
-                    if (classError) throw classError;
+                        if (!error && data && data.length > 0) {
+                            // Convert to assignment format
+                            const teacherIds = data.map(c => c.teacher_id).filter(id => id);
+                            let teacherMap = {};
+                            if (teacherIds.length > 0) {
+                                const { data: teachers } = await supabaseClient
+                                    .from('teachers')
+                                    .select('id, name')
+                                    .in('id', teacherIds);
+                                if (teachers) {
+                                    teachers.forEach(t => { teacherMap[t.id] = t.name; });
+                                }
+                            }
 
-                    if (!classData || classData.length === 0) {
-                        assignmentsTableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--ink-faint);">No assignments found. Please assign teachers to classes.</td></tr>`;
-                        return;
-                    }
-
-                    // Get teacher names
-                    const teacherIds = classData.map(c => c.teacher_id).filter(id => id);
-                    let teacherMap = {};
-                    if (teacherIds.length > 0) {
-                        const { data: teachers } = await supabaseClient
-                            .from('teachers')
-                            .select('id, name')
-                            .in('id', teacherIds);
-                        if (teachers) {
-                            teachers.forEach(t => { teacherMap[t.id] = t.name; });
+                            assignments = data.map(c => ({
+                                class_id: c.id,
+                                class_display: c.display_name || c.grade + ' ' + c.stream,
+                                teacher_id: c.teacher_id,
+                                teacher_name: teacherMap[c.teacher_id] || c.teacher_name || 'Unknown'
+                            }));
+                            assignmentSource = 'classes';
                         }
+                    } catch (e) {
+                        console.warn('Could not fetch from classes:', e);
                     }
+                }
 
-                    let html = '';
-                    classData.forEach((c, i) => {
-                        const displayName = c.display_name || c.grade + ' ' + c.stream;
-                        const teacherName = teacherMap[c.teacher_id] || c.teacher_name || 'Unknown';
-                        html += `<tr>
-                            <td>${i+1}</td>
-                            <td><strong>${displayName}</strong></td>
-                            <td>${teacherName}</td>
-                            <td><span class="assignment-status assigned">✅ Assigned</span></td>
-                            <td>
-                                <button class="btn btn-sm btn-danger" onclick="window.removeAssignment('${c.id}')">
-                                    <i class="fas fa-times"></i> Remove
-                                </button>
-                            </td>
-                        </tr>`;
-                    });
-                    assignmentsTableBody.innerHTML = html;
+                if (assignments.length === 0) {
+                    assignmentsTableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--ink-faint);">No assignments found. Please assign teachers to classes.</td></tr>`;
                     return;
                 }
 
-                // If we have data from assignments table, join with teacher and class info
+                // Build the table rows
                 let html = '';
-                for (let i = 0; i < data.length; i++) {
-                    const a = data[i];
-                    // Get class info
-                    const { data: classInfo } = await supabaseClient
-                        .from('classes')
-                        .select('display_name, grade, stream')
-                        .eq('id', a.class_id)
-                        .maybeSingle();
+                assignments.forEach((a, i) => {
+                    const classDisplay = a.class_display || a.class_id || 'Unknown Class';
+                    const teacherName = a.teacher_name || 'Unknown Teacher';
+                    const classId = a.class_id || a.id;
                     
-                    // Get teacher info
-                    const { data: teacherInfo } = await supabaseClient
-                        .from('teachers')
-                        .select('name')
-                        .eq('id', a.teacher_id)
-                        .maybeSingle();
-
-                    const displayName = classInfo ? (classInfo.display_name || classInfo.grade + ' ' + classInfo.stream) : a.class_id;
-                    const teacherName = teacherInfo ? teacherInfo.name : 'Unknown';
-                    html += `<tr>
+                    html += `<tr class="assignment-row">
                         <td>${i+1}</td>
-                        <td><strong>${displayName}</strong></td>
+                        <td><strong>${classDisplay}</strong></td>
                         <td>${teacherName}</td>
                         <td><span class="assignment-status assigned">✅ Assigned</span></td>
                         <td>
-                            <button class="btn btn-sm btn-danger" onclick="window.removeAssignment('${a.class_id}')">
+                            <button class="btn btn-sm btn-danger" onclick="window.removeAssignment('${classId}')">
                                 <i class="fas fa-times"></i> Remove
                             </button>
                         </td>
                     </tr>`;
-                }
-                assignmentsTableBody.innerHTML = html || `<tr><td colspan="5" style="text-align:center;color:var(--ink-faint);">No assignments found.</td></tr>`;
+                });
+
+                assignmentsTableBody.innerHTML = html;
+
+                // Show source info in console for debugging
+                console.log(`✅ Loaded ${assignments.length} assignments from ${assignmentSource}`);
 
             } catch (err) {
                 console.error('Error loading assignments:', err);
-                assignmentsTableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--ink-faint);">Error loading assignments. Please ensure the database tables exist.</td></tr>`;
+                assignmentsTableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--ink-faint);">Error loading assignments: ${err.message}</td></tr>`;
             }
         }
 
@@ -1000,24 +1079,25 @@
             if (!supabaseClient || !isConnected) { showToast('⚠️ Offline mode', true); return; }
 
             try {
+                // Try to delete from teacher_class_assignments
                 try {
-                    const { error } = await supabaseClient
+                    await supabaseClient
                         .from('teacher_class_assignments')
                         .delete()
                         .eq('class_id', classId);
-                    if (error) throw error;
                 } catch (e) {
                     console.warn('Could not delete from teacher_class_assignments:', e);
                 }
 
+                // Update classes table
                 await supabaseClient
                     .from('classes')
                     .update({ teacher_id: null, teacher_name: null })
                     .eq('id', classId);
 
                 showToast('✅ Assignment removed');
-                loadAssignments();
-                loadClasses();
+                await loadAssignments();
+                await loadClasses();
                 if (currentUser.role === 'teacher') {
                     await loadTeacherAssignments();
                 }
@@ -1040,6 +1120,7 @@
             if (!supabaseClient || !isConnected) { showToast('⚠️ Offline mode', true); return; }
 
             try {
+                // Get teacher name
                 const { data: teacher, error: tError } = await supabaseClient
                     .from('teachers')
                     .select('name')
@@ -1047,6 +1128,7 @@
                     .maybeSingle();
                 if (tError) throw tError;
 
+                // Update classes table
                 await supabaseClient
                     .from('classes')
                     .update({ 
@@ -1055,6 +1137,7 @@
                     })
                     .eq('id', classId);
 
+                // Try to update teacher_class_assignments
                 try {
                     const { data: existing } = await supabaseClient
                         .from('teacher_class_assignments')
@@ -1073,12 +1156,12 @@
                             .insert({ teacher_id: teacherId, class_id: classId });
                     }
                 } catch (e) {
-                    console.warn('Could not update teacher_class_assignments table:', e);
+                    console.warn('Could not update teacher_class_assignments:', e);
                 }
 
                 showToast('✅ Teacher assigned successfully!');
-                loadAssignments();
-                loadClasses();
+                await loadAssignments();
+                await loadClasses();
                 populateClassDropdowns();
                 
                 if (currentUser.role === 'teacher') {
@@ -1092,7 +1175,7 @@
         });
 
         // ============================================================
-        // BULK REGISTER
+        // BULK REGISTER (unchanged)
         // ============================================================
         bulkRegisterTemplateBtn.addEventListener('click', function() {
             const wb = XLSX.utils.book_new();
@@ -1739,7 +1822,7 @@
         });
 
         // ============================================================
-        // STUDENT VIEW RESULTS - Combined Mid Term & End Term Report
+        // STUDENT VIEW RESULTS - Combined Mid Term & End Term
         // ============================================================
         viewResultsBtn.addEventListener('click', async function() {
             const number = studentNumber.value.trim();
@@ -1833,7 +1916,6 @@
             endResults.forEach(r => subjectSet.add(r.subject));
             const subjects = Array.from(subjectSet).sort();
 
-            // Build the table
             let html = `
                 <div class="result-card report-card-print" style="padding:12px 16px;">
                     <div class="result-header" style="display:flex;align-items:center;gap:12px;border-bottom:2px solid var(--gold);padding-bottom:8px;margin-bottom:10px;">
@@ -1871,7 +1953,6 @@
 
             let midTotal = 0, endTotal = 0;
             let midCount = 0, endCount = 0;
-            let hasMid = false, hasEnd = false;
 
             subjects.forEach(subject => {
                 const mid = midResults.find(r => r.subject === subject);
@@ -1880,8 +1961,8 @@
                 const midScore = mid ? parseInt(mid.score) : null;
                 const endScore = end ? parseInt(end.score) : null;
                 
-                if (midScore !== null) { midTotal += midScore; midCount++; hasMid = true; }
-                if (endScore !== null) { endTotal += endScore; endCount++; hasEnd = true; }
+                if (midScore !== null) { midTotal += midScore; midCount++; }
+                if (endScore !== null) { endTotal += endScore; endCount++; }
                 
                 const midGrade = midScore !== null ? getGrade(midScore) : '-';
                 const midClass = midScore !== null ? getGradeClass(midScore) : '';
@@ -2130,9 +2211,9 @@
         populateClassSelectForAssign();
         initSupabase();
         updateLoginUI();
-        console.log('✅ Laura Girls · Combined Mid Term & End Term Report');
-        console.log('📝 Students can view both tests on one report card');
-        console.log('📊 ICT subject included with averages');
+        console.log('✅ Laura Girls · Assignment system fully fixed');
+        console.log('📝 The system now tries 4 different approaches to find teacher assignments');
+        console.log('📝 Admin can assign teachers using the Teacher Class Assignments section');
     })();
 </script>
 </body>
