@@ -267,6 +267,12 @@
         .teacher-subject-card .teacher-name { font-weight:700; color:var(--marian-blue); font-size:15px; }
         .teacher-subject-card .subject-list { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
         .teacher-welcome { font-size:14px; color:var(--ink-soft); }
+        .admin-tabs { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+        .admin-tabs .admin-tab { padding:10px 20px; border-radius:30px; background:var(--paper); border:1px solid var(--border); cursor:pointer; font-weight:600; font-size:13px; color:var(--ink-soft); transition:all 0.2s; }
+        .admin-tabs .admin-tab:hover { background:var(--marian-blue-tint); border-color:var(--marian-blue); }
+        .admin-tabs .admin-tab.active { background:var(--marian-blue); color:#fff; border-color:var(--marian-blue); }
+        .admin-tab-content { display:none; }
+        .admin-tab-content.active { display:block; }
         .school-selector-card { background:var(--paper); border-radius:12px; padding:16px; border:2px solid var(--gold); margin-bottom:16px; }
         .school-selector-card .school-list { display:flex; flex-wrap:wrap; gap:12px; margin-top:10px; }
         .school-selector-card .school-item { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:12px 16px; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; gap:12px; flex:1 1 200px; }
@@ -291,9 +297,10 @@
             .login-floating-btn { width:48px; height:48px; font-size:17px; bottom:70px; right:12px; }
             .score-input { width:55px; font-size:11px; padding:4px 6px; }
             .school-selector-card .school-item { flex:1 1 100%; }
+            .admin-tabs .admin-tab { font-size:12px; padding:8px 14px; }
         }
         @media print {
-            .topbar, .tab-nav, .no-print, .mary-bg, .connection-status, .login-modal, .login-floating-btn, .school-selector-card { display:none !important; }
+            .topbar, .tab-nav, .no-print, .mary-bg, .connection-status, .login-modal, .login-floating-btn, .school-selector-card, .admin-tabs { display:none !important; }
             .section { display:block !important; }
             .card { box-shadow:none !important; border:1px solid #ddd !important; break-inside:avoid; background:#fff !important; backdrop-filter:none !important; }
             .table-wrapper { border:1px solid #ddd !important; }
@@ -377,14 +384,71 @@
         <button class="tab-btn hidden-tab" data-tab="classes"><i class="fas fa-users"></i> Classes</button>
     </div>
 
-    <!-- School Selector -->
+    <!-- School Selector - Changed to Admin Tabs -->
     <div class="school-selector-card" id="schoolSelector">
-        <div class="card-header">
-            <h2><i class="fas fa-school"></i> Select School</h2>
-            <span class="subtitle">Switch between schools (Admin only)</span>
+        <div class="admin-tabs" id="adminTabs">
+            <button class="admin-tab active" data-admintab="assignments"><i class="fas fa-tasks"></i> Assignments</button>
+            <button class="admin-tab" data-admintab="learners"><i class="fas fa-users"></i> Learners Work</button>
         </div>
-        <div class="school-list" id="schoolList">
-            <!-- Schools will be populated dynamically -->
+        
+        <!-- Assignments Tab Content -->
+        <div id="assignmentsTab" class="admin-tab-content active">
+            <div class="card-header">
+                <h2><i class="fas fa-tasks"></i> Teacher Assignments</h2>
+                <span class="subtitle">Manage teacher class assignments</span>
+            </div>
+            <div class="grid-3">
+                <div class="field">
+                    <label><i class="fas fa-user-tie"></i> Teacher</label>
+                    <select id="assignTeacherSelect"><option value="">Select Teacher</option></select>
+                </div>
+                <div class="field">
+                    <label><i class="fas fa-users"></i> Class</label>
+                    <select id="assignClassSelect"><option value="">Select Class</option></select>
+                </div>
+                <div class="field" style="justify-content:flex-end;">
+                    <button class="btn btn-success" id="assignTeacherBtn"><i class="fas fa-plus"></i> Assign Teacher</button>
+                </div>
+            </div>
+            <div style="margin-top:12px;">
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>#</th><th>Class</th><th>Subject</th><th>Assigned Teacher</th><th>Action</th></tr></thead>
+                        <tbody id="assignmentsTableBody"><tr><td colspan="5" style="text-align:center;color:var(--ink-faint);">Loading assignments...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Learners Work Tab Content -->
+        <div id="learnersTab" class="admin-tab-content">
+            <div class="card-header">
+                <h2><i class="fas fa-users"></i> Learners Work</h2>
+                <span class="subtitle">Manage students and their work</span>
+            </div>
+            <div class="grid-3">
+                <div class="field">
+                    <label><i class="fas fa-user-plus"></i> Student Number</label>
+                    <input type="text" id="adminStudentNumber" placeholder="e.g. 2024-001">
+                </div>
+                <div class="field">
+                    <label><i class="fas fa-user"></i> Full Name</label>
+                    <input type="text" id="adminStudentName" placeholder="e.g. Mary Mwansa">
+                </div>
+                <div class="field">
+                    <label><i class="fas fa-users"></i> Class</label>
+                    <select id="adminStudentClass"><option value="">Select Class</option></select>
+                </div>
+            </div>
+            <button class="btn btn-success btn-block" id="addStudentBtn"><i class="fas fa-plus"></i> Add Student</button>
+            <div style="margin-top:12px;">
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>#</th><th>Student Number</th><th>Name</th><th>Class</th><th>Action</th></tr></thead>
+                        <tbody id="studentsTableBody"><tr><td colspan="5" style="text-align:center;color:var(--ink-faint);">Loading students...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -441,7 +505,97 @@
     <div class="section" id="adminSection">
         <div class="card" id="adminLocked"><div class="card-header"><h2><i class="fas fa-lock"></i> Admin Access Required</h2><span class="subtitle">Login as admin</span></div><div style="text-align:center;padding:40px 20px;"><i class="fas fa-user-shield" style="font-size:48px;color:var(--gold);margin-bottom:16px;display:block;"></i><p style="color:var(--ink-soft);margin-bottom:16px;">Administrators only.</p><button class="btn btn-primary" onclick="openLoginModal('admin')"><i class="fas fa-sign-in-alt"></i> Login as Admin</button></div></div>
         <div id="adminContent" style="display:none;">
+            <!-- Admin dashboard stats -->
             <div class="card"><div class="card-header"><h2><i class="fas fa-user-shield"></i> Admin Dashboard</h2><span class="subtitle">Overview</span></div><div class="grid-4"><div class="stat-card"><div class="icon"><i class="fas fa-users"></i></div><div class="number" id="totalStudents">0</div><div class="label">Total Students</div></div><div class="stat-card"><div class="icon"><i class="fas fa-user-tie"></i></div><div class="number" id="totalTeachers">0</div><div class="label">Total Teachers</div></div><div class="stat-card"><div class="icon"><i class="fas fa-book"></i></div><div class="number" id="totalSubjects">0</div><div class="label">Total Subjects</div></div><div class="stat-card"><div class="icon"><i class="fas fa-file-alt"></i></div><div class="number" id="totalResults">0</div><div class="label">Total Results</div></div></div></div>
+
+            <!-- School Selector with Admin Tabs -->
+            <div class="school-selector-card" id="adminSchoolSelector">
+                <div class="admin-tabs" id="adminTabs2">
+                    <button class="admin-tab active" data-admintab="assignments2"><i class="fas fa-tasks"></i> Assignments</button>
+                    <button class="admin-tab" data-admintab="learners2"><i class="fas fa-users"></i> Learners Work</button>
+                </div>
+                
+                <!-- Assignments Tab Content -->
+                <div id="assignmentsTab2" class="admin-tab-content active">
+                    <div class="card-header">
+                        <h2><i class="fas fa-tasks"></i> Teacher Assignments</h2>
+                        <span class="subtitle">Assign teachers to classes and subjects</span>
+                    </div>
+                    <div class="grid-3">
+                        <div class="field">
+                            <label><i class="fas fa-user-tie"></i> Teacher</label>
+                            <select id="assignTeacherSelect2"><option value="">Select Teacher</option></select>
+                        </div>
+                        <div class="field">
+                            <label><i class="fas fa-users"></i> Class</label>
+                            <select id="assignClassSelect2"><option value="">Select Class</option></select>
+                        </div>
+                        <div class="field">
+                            <label><i class="fas fa-book"></i> Subject</label>
+                            <select id="assignSubjectSelect2"><option value="">Select Subject</option>
+                                <option value="English">English</option>
+                                <option value="Mathematics">Mathematics</option>
+                                <option value="Biology">Biology</option>
+                                <option value="Chemistry">Chemistry</option>
+                                <option value="Physics">Physics</option>
+                                <option value="History">History</option>
+                                <option value="Geography">Geography</option>
+                                <option value="Civic Education">Civic Education</option>
+                                <option value="Zambian Languages">Zambian Languages</option>
+                                <option value="Religious Education">Religious Education</option>
+                                <option value="Commerce">Commerce</option>
+                                <option value="Principles of Accounts">Principles of Accounts</option>
+                                <option value="Agricultural Science">Agricultural Science</option>
+                                <option value="ICT">ICT</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="grid-3">
+                        <div class="field" style="justify-content:flex-end;">
+                            <button class="btn btn-success" id="assignTeacherBtn2"><i class="fas fa-plus"></i> Assign Teacher to Subject</button>
+                        </div>
+                    </div>
+                    <div style="margin-top:12px;">
+                        <div class="table-wrapper">
+                            <table>
+                                <thead><tr><th>#</th><th>Class</th><th>Subject</th><th>Assigned Teacher</th><th>Action</th></tr></thead>
+                                <tbody id="assignmentsTableBody2"><tr><td colspan="5" style="text-align:center;color:var(--ink-faint);">Loading assignments...</td></tr></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Learners Work Tab Content -->
+                <div id="learnersTab2" class="admin-tab-content">
+                    <div class="card-header">
+                        <h2><i class="fas fa-users"></i> Learners Work</h2>
+                        <span class="subtitle">Manage students</span>
+                    </div>
+                    <div class="grid-3">
+                        <div class="field">
+                            <label><i class="fas fa-user-plus"></i> Student Number</label>
+                            <input type="text" id="adminStudentNumber2" placeholder="e.g. 2024-001">
+                        </div>
+                        <div class="field">
+                            <label><i class="fas fa-user"></i> Full Name</label>
+                            <input type="text" id="adminStudentName2" placeholder="e.g. Mary Mwansa">
+                        </div>
+                        <div class="field">
+                            <label><i class="fas fa-users"></i> Class</label>
+                            <select id="adminStudentClass2"><option value="">Select Class</option></select>
+                        </div>
+                    </div>
+                    <button class="btn btn-success btn-block" id="addStudentBtn2"><i class="fas fa-plus"></i> Add Student</button>
+                    <div style="margin-top:12px;">
+                        <div class="table-wrapper">
+                            <table>
+                                <thead><tr><th>#</th><th>Student Number</th><th>Name</th><th>Class</th><th>Action</th></tr></thead>
+                                <tbody id="studentsTableBody2"><tr><td colspan="5" style="text-align:center;color:var(--ink-faint);">Loading students...</td></tr></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <div class="card" style="border-top-color: var(--oxblood);">
                 <div class="card-header"><h2><i class="fas fa-user-plus" style="color:var(--oxblood);"></i> Bulk Register Students</h2><span class="subtitle">Upload Excel with student numbers & names</span></div>
@@ -457,7 +611,6 @@
             </div>
 
             <div class="grid-2">
-                <div class="card"><div class="card-header"><h2><i class="fas fa-user-plus"></i> Add Student</h2></div><div class="field"><label>Student Number</label><input type="text" id="adminStudentNumber" placeholder="e.g. 2024-001"></div><div class="field"><label>Full Name</label><input type="text" id="adminStudentName" placeholder="e.g. Mary Mwansa"></div><div class="field"><label>Class</label><select id="adminStudentClass"><option value="">Select Class</option></select></div><button class="btn btn-success btn-block" id="addStudentBtn"><i class="fas fa-plus"></i> Add Student</button></div>
                 <div class="card"><div class="card-header"><h2><i class="fas fa-user-plus"></i> Add Teacher</h2></div><div class="field"><label>Name</label><input type="text" id="adminTeacherName" placeholder="e.g. John Banda"></div><div class="field"><label>Username</label><input type="text" id="adminTeacherUsername" placeholder="jbanda"></div><div class="field"><label>Password</label><input type="password" id="adminTeacherPassword" placeholder="Enter password"></div><button class="btn btn-success btn-block" id="addTeacherBtn"><i class="fas fa-plus"></i> Add Teacher</button></div>
             </div>
             <div class="card"><div class="card-header"><h2><i class="fas fa-users"></i> Class Management</h2><span class="subtitle">View & manage classes</span></div><div class="table-wrapper"><table><thead><tr><th>#</th><th>Class Name</th><th>Grade</th><th>Stream</th><th>Students</th><th>Action</th></tr></thead><tbody id="classesTableBody"><tr><td colspan="6" style="text-align:center;color:var(--ink-faint);">Loading...</td></tr></tbody></table></div><div style="margin-top:16px;"><div class="grid-3"><div class="field"><label><i class="fas fa-graduation-cap"></i> Grade</label><select id="newClassGrade"><option value="">Select</option><option value="Form1">Form 1</option><option value="Form2">Form 2</option><option value="Grade10">Grade 10</option><option value="Grade11">Grade 11</option><option value="Grade12">Grade 12</option></select></div><div class="field"><label><i class="fas fa-layer-group"></i> Stream</label><select id="newClassStream"><option value="">Select</option><option value="Mary">Mary</option><option value="Joseph">Joseph</option><option value="Mazz">Mazz</option><option value="Laura">Laura</option></select></div></div><button class="btn btn-success btn-block" id="addClassBtn"><i class="fas fa-plus"></i> Add Class</button></div></div>
@@ -474,7 +627,7 @@
         "use strict";
 
         // ============================================================
-        // CONFIG - DATABASE ONLY (NO DEMO)
+        // CONFIG
         // ============================================================
         const SUPABASE_URL = 'https://yhmjidkrwtxckecvjixo.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlobWppZGtyd3R4Y2tlY3ZqaXhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc0MzYzMDksImV4cCI6MjEwMzAxMjMwOX0.db6y1ac6HIMt4v_AW9M-IvypHXSz1aoMA-X3bAvpKnI';
@@ -566,10 +719,27 @@
         const teacherImportClearBtn = document.getElementById('teacherImportClearBtn');
         const teacherImportStatus = document.getElementById('teacherImportStatus');
 
-        const adminStudentNumber = document.getElementById('adminStudentNumber');
-        const adminStudentName = document.getElementById('adminStudentName');
+        // Admin refs - updated
+        const assignTeacherSelect = document.getElementById('assignTeacherSelect');
+        const assignClassSelect = document.getElementById('assignClassSelect');
+        const assignTeacherBtn = document.getElementById('assignTeacherBtn');
+        const assignmentsTableBody = document.getElementById('assignmentsTableBody');
         const adminStudentClass = document.getElementById('adminStudentClass');
         const addStudentBtn = document.getElementById('addStudentBtn');
+        const studentsTableBody = document.getElementById('studentsTableBody');
+
+        // Admin refs - second set
+        const assignTeacherSelect2 = document.getElementById('assignTeacherSelect2');
+        const assignClassSelect2 = document.getElementById('assignClassSelect2');
+        const assignSubjectSelect2 = document.getElementById('assignSubjectSelect2');
+        const assignTeacherBtn2 = document.getElementById('assignTeacherBtn2');
+        const assignmentsTableBody2 = document.getElementById('assignmentsTableBody2');
+        const adminStudentClass2 = document.getElementById('adminStudentClass2');
+        const addStudentBtn2 = document.getElementById('addStudentBtn2');
+        const studentsTableBody2 = document.getElementById('studentsTableBody2');
+
+        const adminStudentNumber = document.getElementById('adminStudentNumber');
+        const adminStudentName = document.getElementById('adminStudentName');
         const adminTeacherName = document.getElementById('adminTeacherName');
         const adminTeacherUsername = document.getElementById('adminTeacherUsername');
         const adminTeacherPassword = document.getElementById('adminTeacherPassword');
@@ -660,29 +830,33 @@
             }
         }
 
-        function loadSchoolSelector() {
-            const container = document.getElementById('schoolSelector');
-            const list = document.getElementById('schoolList');
-            const showSelector = currentUser && (currentUser.role === 'admin' || currentUser.role === 'super_admin');
-            if (!showSelector) {
-                container.style.display = 'none';
-                return;
-            }
-            container.style.display = 'block';
-            list.innerHTML = '';
-            Object.values(SCHOOL_CONFIG.schools).forEach(school => {
-                const isActive = school.code === currentSchoolCode;
-                const div = document.createElement('div');
-                div.className = `school-item ${isActive ? 'active' : ''}`;
-                div.innerHTML = `
-                    <div class="school-icon"><img src="${school.logo}" alt="${school.name}"></div>
-                    <div class="school-info">
-                        <div class="name">${school.name}</div>
-                        <div class="code">${school.code} ${isActive ? ' ✅ Active' : ''}</div>
-                    </div>
-                `;
-                div.onclick = () => switchSchool(school.code);
-                list.appendChild(div);
+        // ============================================================
+        // ADMIN TAB SWITCHING
+        // ============================================================
+        function setupAdminTabs() {
+            // Setup for both sets of admin tabs
+            const tabSets = [
+                { tabs: document.querySelectorAll('#adminTabs .admin-tab'), contents: ['assignmentsTab', 'learnersTab'] },
+                { tabs: document.querySelectorAll('#adminTabs2 .admin-tab'), contents: ['assignmentsTab2', 'learnersTab2'] }
+            ];
+
+            tabSets.forEach(set => {
+                set.tabs.forEach(tab => {
+                    tab.addEventListener('click', function() {
+                        const target = this.dataset.admintab;
+                        // Remove active from all tabs in this set
+                        set.tabs.forEach(t => t.classList.remove('active'));
+                        this.classList.add('active');
+                        // Hide all contents for this set
+                        set.contents.forEach(id => {
+                            const el = document.getElementById(id);
+                            if (el) el.classList.remove('active');
+                        });
+                        // Show target content
+                        const targetEl = document.getElementById(target);
+                        if (targetEl) targetEl.classList.add('active');
+                    });
+                });
             });
         }
 
@@ -729,7 +903,6 @@
                 loginFloatingBtn.innerHTML = '<i class="fas fa-user-circle"></i>';
                 loginFloatingBtn.classList.remove('logged-in');
             }
-            loadSchoolSelector();
         }
         closeLoginModal.addEventListener('click', ()=>loginModal.classList.remove('active'));
         loginModal.addEventListener('click', e=>{ if(e.target===this) loginModal.classList.remove('active'); });
@@ -755,7 +928,6 @@
         }
         window.studentLogin = studentLogin;
 
-        // TEACHER LOGIN - Database only
         function teacherLogin() {
             const username = document.getElementById('teacherLoginUsername').value.trim();
             const password = document.getElementById('teacherLoginPassword').value.trim();
@@ -764,11 +936,10 @@
             if (!password) { showToast('⚠️ Please enter your password', true); return; }
 
             if (!supabaseClient || !isConnected) {
-                showToast('⚠️ Database not connected. Please refresh and try again.', true);
+                showToast('⚠️ Database not connected', true);
                 return;
             }
 
-            // Query database for teacher
             supabaseClient
                 .from('teachers')
                 .select('*')
@@ -813,7 +984,7 @@
                 adminLocked.style.display = 'none'; adminContent.style.display = 'block';
                 document.querySelector('.tab-btn[data-tab="admin"]').click();
                 loadAdminStats(); loadClasses(); populateBulkClassDropdown();
-                loadSchoolSelector();
+                populateAdminDropdowns(); loadAssignments(); loadStudents();
                 return;
             }
             showToast('❌ Invalid admin password. Default: admin123', true);
@@ -821,7 +992,7 @@
         window.adminLogin = adminLogin;
 
         // ============================================================
-        // SUPABASE INIT - DATABASE ONLY (NO DEMO)
+        // SUPABASE INIT
         // ============================================================
         function initSupabase() {
             try {
@@ -845,7 +1016,6 @@
                     }
                 });
 
-                // Test connection
                 supabaseClient.from('students').select('id', { count: 'exact', head: true })
                     .then(({ data, error }) => {
                         if (error) {
@@ -878,12 +1048,15 @@
             populateClassDropdowns();
             populateBulkClassDropdown();
             populateImportClassDropdowns();
+            populateAdminDropdowns();
+            loadAssignments();
+            loadStudents();
             updateLoginUI();
-            loadSchoolSelector();
+            setupAdminTabs();
         }
 
         function populateClassDropdowns() {
-            [teacherClass, adminStudentClass].forEach(drop => {
+            [teacherClass, adminStudentClass, adminStudentClass2].forEach(drop => {
                 drop.innerHTML = '<option value="">Select Class</option>';
                 CLASS_DEFINITIONS.forEach(c => {
                     const o = document.createElement('option');
@@ -913,6 +1086,54 @@
                 o.value = c.id;
                 o.textContent = c.display;
                 bulkClassSelect.appendChild(o);
+            });
+        }
+
+        function populateAdminDropdowns() {
+            // Populate teacher dropdowns for assignments
+            if (!supabaseClient || !isConnected) {
+                [assignTeacherSelect, assignTeacherSelect2].forEach(drop => {
+                    drop.innerHTML = '<option value="">Select Teacher</option>';
+                });
+                [assignClassSelect, assignClassSelect2].forEach(drop => {
+                    drop.innerHTML = '<option value="">Select Class</option>';
+                    CLASS_DEFINITIONS.forEach(c => {
+                        const o = document.createElement('option');
+                        o.value = c.id;
+                        o.textContent = c.display;
+                        drop.appendChild(o);
+                    });
+                });
+                return;
+            }
+
+            // Load teachers
+            supabaseClient.from('teachers').select('id, name').order('name')
+                .then(({ data, error }) => {
+                    if (error) throw error;
+                    [assignTeacherSelect, assignTeacherSelect2].forEach(drop => {
+                        drop.innerHTML = '<option value="">Select Teacher</option>';
+                        if (data) {
+                            data.forEach(t => {
+                                const o = document.createElement('option');
+                                o.value = t.id;
+                                o.textContent = t.name;
+                                drop.appendChild(o);
+                            });
+                        }
+                    });
+                })
+                .catch(err => console.error('Error loading teachers:', err));
+
+            // Load classes for assignment dropdowns
+            [assignClassSelect, assignClassSelect2].forEach(drop => {
+                drop.innerHTML = '<option value="">Select Class</option>';
+                CLASS_DEFINITIONS.forEach(c => {
+                    const o = document.createElement('option');
+                    o.value = c.id;
+                    o.textContent = c.display;
+                    drop.appendChild(o);
+                });
             });
         }
 
@@ -949,7 +1170,7 @@
                 const { data, error } = await supabaseClient.from('classes').select('*').order('grade', { ascending: true });
                 if (error) throw error;
                 if (!data || data.length === 0) {
-                    classesTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--ink-faint);">No classes found. Please add classes.</td></tr>`;
+                    classesTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--ink-faint);">No classes found.</td></tr>`;
                     return;
                 }
                 let html = '';
@@ -989,7 +1210,363 @@
         };
 
         // ============================================================
-        // TEACHER LOAD STUDENTS
+        // LOAD ASSIGNMENTS
+        // ============================================================
+        async function loadAssignments() {
+            if (!supabaseClient || !isConnected) {
+                [assignmentsTableBody, assignmentsTableBody2].forEach(body => {
+                    body.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--ink-faint);">Database not connected</td></tr>`;
+                });
+                return;
+            }
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('teacher_subject_assignments')
+                    .select('*, teachers(name), classes(display_name)')
+                    .order('class_id');
+
+                if (error) throw error;
+
+                if (!data || data.length === 0) {
+                    const msg = `<tr><td colspan="5" style="text-align:center;color:var(--ink-faint);">No assignments found.</td></tr>`;
+                    assignmentsTableBody.innerHTML = msg;
+                    assignmentsTableBody2.innerHTML = msg;
+                    return;
+                }
+
+                let html = '';
+                data.forEach((a, i) => {
+                    const classDisplay = a.classes ? a.classes.display_name : a.class_id;
+                    const teacherName = a.teachers ? a.teachers.name : 'Unknown';
+                    html += `<tr class="assignment-row">
+                        <td>${i + 1}</td>
+                        <td><strong>${classDisplay}</strong></td>
+                        <td><span class="badge badge-purple">${a.subject}</span></td>
+                        <td>${teacherName}</td>
+                        <td>
+                            <button class="btn btn-sm btn-danger" onclick="window.removeAssignment('${a.class_id}', '${a.subject}')">
+                                <i class="fas fa-times"></i> Remove
+                            </button>
+                        </td>
+                    </tr>`;
+                });
+
+                assignmentsTableBody.innerHTML = html;
+                assignmentsTableBody2.innerHTML = html;
+
+            } catch (err) {
+                console.error('Error loading assignments:', err);
+                const msg = `<tr><td colspan="5" style="text-align:center;color:var(--ink-faint);">Error loading assignments</td></tr>`;
+                assignmentsTableBody.innerHTML = msg;
+                assignmentsTableBody2.innerHTML = msg;
+            }
+        }
+
+        window.removeAssignment = async function(classId, subject) {
+            if (!currentUser || currentUser.role !== 'admin') {
+                showToast('🔒 Admin only', true);
+                return;
+            }
+            if (!confirm('Remove this assignment?')) return;
+            if (!supabaseClient || !isConnected) {
+                showToast('⚠️ Not connected to database', true);
+                return;
+            }
+
+            try {
+                let query = supabaseClient
+                    .from('teacher_subject_assignments')
+                    .delete()
+                    .eq('class_id', classId);
+                if (subject) {
+                    query = query.eq('subject', subject);
+                }
+                await query;
+                showToast('✅ Assignment removed');
+                loadAssignments();
+            } catch (err) {
+                showToast('❌ Error: ' + err.message, true);
+                console.error(err);
+            }
+        };
+
+        // ============================================================
+        // ASSIGN TEACHER
+        // ============================================================
+        function setupAssignmentButton(btnId, teacherSelectId, classSelectId, subjectSelectId) {
+            const btn = document.getElementById(btnId);
+            const teacherSelect = document.getElementById(teacherSelectId);
+            const classSelect = document.getElementById(classSelectId);
+            const subjectSelect = document.getElementById(subjectSelectId);
+
+            btn.addEventListener('click', async function() {
+                if (!currentUser || currentUser.role !== 'admin') {
+                    showToast('🔒 Admin login required', true);
+                    return;
+                }
+                const teacherId = teacherSelect.value;
+                const classId = classSelect.value;
+                const subject = subjectSelect ? subjectSelect.value : null;
+
+                if (!teacherId) { showToast('⚠️ Please select a teacher', true); return; }
+                if (!classId) { showToast('⚠️ Please select a class', true); return; }
+                if (!subject) { showToast('⚠️ Please select a subject', true); return; }
+
+                if (!supabaseClient || !isConnected) {
+                    showToast('⚠️ Database not connected', true);
+                    return;
+                }
+
+                try {
+                    const { data: existing } = await supabaseClient
+                        .from('teacher_subject_assignments')
+                        .select('*')
+                        .eq('class_id', classId)
+                        .eq('subject', subject)
+                        .maybeSingle();
+
+                    if (existing) {
+                        await supabaseClient
+                            .from('teacher_subject_assignments')
+                            .update({ teacher_id: teacherId })
+                            .eq('class_id', classId)
+                            .eq('subject', subject);
+                    } else {
+                        await supabaseClient
+                            .from('teacher_subject_assignments')
+                            .insert({ teacher_id: teacherId, class_id: classId, subject: subject });
+                    }
+
+                    const { data: teacher } = await supabaseClient
+                        .from('teachers')
+                        .select('name')
+                        .eq('id', teacherId)
+                        .maybeSingle();
+
+                    showToast(`✅ ${teacher ? teacher.name : 'Teacher'} assigned to ${subject} in this class!`);
+                    loadAssignments();
+                } catch (err) {
+                    showToast('❌ Error: ' + err.message, true);
+                    console.error(err);
+                }
+            });
+        }
+
+        // ============================================================
+        // LOAD STUDENTS FOR ADMIN
+        // ============================================================
+        async function loadStudents() {
+            if (!supabaseClient || !isConnected) {
+                [studentsTableBody, studentsTableBody2].forEach(body => {
+                    body.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--ink-faint);">Database not connected</td></tr>`;
+                });
+                return;
+            }
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('students')
+                    .select('*')
+                    .order('name');
+
+                if (error) throw error;
+
+                if (!data || data.length === 0) {
+                    const msg = `<tr><td colspan="5" style="text-align:center;color:var(--ink-faint);">No students found.</td></tr>`;
+                    studentsTableBody.innerHTML = msg;
+                    studentsTableBody2.innerHTML = msg;
+                    return;
+                }
+
+                let html = '';
+                data.forEach((s, i) => {
+                    const classDisplay = CLASS_DEFINITIONS.find(c => c.id === s.class)?.display || s.class || 'N/A';
+                    html += `<tr>
+                        <td>${i + 1}</td>
+                        <td><strong>${s.student_number}</strong></td>
+                        <td>${s.name}</td>
+                        <td>${classDisplay}</td>
+                        <td>
+                            <button class="btn btn-sm btn-danger" onclick="window.deleteStudent('${s.id}')">
+                                <i class="fas fa-times"></i> Remove
+                            </button>
+                        </td>
+                    </tr>`;
+                });
+
+                studentsTableBody.innerHTML = html;
+                studentsTableBody2.innerHTML = html;
+
+            } catch (err) {
+                console.error('Error loading students:', err);
+                const msg = `<tr><td colspan="5" style="text-align:center;color:var(--ink-faint);">Error loading students</td></tr>`;
+                studentsTableBody.innerHTML = msg;
+                studentsTableBody2.innerHTML = msg;
+            }
+        }
+
+        window.deleteStudent = async function(id) {
+            if (!currentUser || currentUser.role !== 'admin') {
+                showToast('🔒 Admin only', true);
+                return;
+            }
+            if (!confirm('Delete this student?')) return;
+            if (!supabaseClient || !isConnected) {
+                showToast('⚠️ Not connected to database', true);
+                return;
+            }
+
+            try {
+                await supabaseClient.from('students').delete().eq('id', id);
+                showToast('✅ Student deleted');
+                loadStudents();
+                loadAdminStats();
+                loadClasses();
+            } catch (err) {
+                showToast('❌ Error: ' + err.message, true);
+                console.error(err);
+            }
+        };
+
+        // ============================================================
+        // ADD STUDENT (Admin)
+        // ============================================================
+        function setupAddStudent(btnId, numberId, nameId, classId) {
+            const btn = document.getElementById(btnId);
+            const numberInput = document.getElementById(numberId);
+            const nameInput = document.getElementById(nameId);
+            const classSelect = document.getElementById(classId);
+
+            btn.addEventListener('click', async function() {
+                if (!currentUser || currentUser.role !== 'admin') {
+                    showToast('🔒 Admin login required', true);
+                    return;
+                }
+                const number = numberInput.value.trim();
+                const name = nameInput.value.trim();
+                const className = classSelect.value;
+
+                if (!number) { showToast('⚠️ Please enter student number', true); return; }
+                if (!name) { showToast('⚠️ Please enter student name', true); return; }
+                if (!className) { showToast('⚠️ Please select class', true); return; }
+
+                if (!supabaseClient || !isConnected) {
+                    showToast('⚠️ Database not connected', true);
+                    return;
+                }
+
+                try {
+                    const { error } = await supabaseClient
+                        .from('students')
+                        .insert({ student_number: number, name: name, class: className });
+
+                    if (error) throw error;
+                    showToast('✅ Student added successfully!');
+                    numberInput.value = '';
+                    nameInput.value = '';
+                    classSelect.value = '';
+                    loadStudents();
+                    loadAdminStats();
+                    loadClasses();
+                } catch (err) {
+                    showToast('❌ Error: ' + err.message, true);
+                    console.error(err);
+                }
+            });
+        }
+
+        // ============================================================
+        // ADD TEACHER
+        // ============================================================
+        addTeacherBtn.addEventListener('click', async function() {
+            if (!currentUser || currentUser.role !== 'admin') {
+                showToast('🔒 Admin login required', true);
+                return;
+            }
+            const name = adminTeacherName.value.trim();
+            const username = adminTeacherUsername.value.trim();
+            const password = adminTeacherPassword.value.trim();
+
+            if (!name) { showToast('⚠️ Please enter teacher name', true); return; }
+            if (!username) { showToast('⚠️ Please enter username', true); return; }
+            if (!password) { showToast('⚠️ Please enter password', true); return; }
+
+            if (!supabaseClient || !isConnected) {
+                showToast('⚠️ Database not connected', true);
+                return;
+            }
+
+            try {
+                const { error } = await supabaseClient
+                    .from('teachers')
+                    .insert({ name: name, username: username, password: password });
+
+                if (error) throw error;
+                showToast('✅ Teacher added successfully!');
+                adminTeacherName.value = '';
+                adminTeacherUsername.value = '';
+                adminTeacherPassword.value = '';
+                loadAdminStats();
+                populateAdminDropdowns();
+            } catch (err) {
+                showToast('❌ Error: ' + err.message, true);
+                console.error(err);
+            }
+        });
+
+        // ============================================================
+        // ADD CLASS
+        // ============================================================
+        addClassBtn.addEventListener('click', async function() {
+            if (!currentUser || currentUser.role !== 'admin') {
+                showToast('🔒 Admin login required', true);
+                return;
+            }
+            const grade = newClassGrade.value;
+            const stream = newClassStream.value;
+
+            if (!grade) { showToast('⚠️ Please select a grade', true); return; }
+            if (!stream) { showToast('⚠️ Please select a stream', true); return; }
+
+            if (!supabaseClient || !isConnected) {
+                showToast('⚠️ Database not connected', true);
+                return;
+            }
+
+            try {
+                const classId = grade + '_' + stream;
+                const displayName = grade + ' ' + stream;
+
+                const { error } = await supabaseClient
+                    .from('classes')
+                    .insert({
+                        id: classId,
+                        grade: grade,
+                        stream: stream,
+                        display_name: displayName
+                    });
+
+                if (error) throw error;
+
+                showToast('✅ Class added successfully!');
+                newClassGrade.value = '';
+                newClassStream.value = '';
+                loadClasses();
+                populateClassDropdowns();
+                populateAdminDropdowns();
+            } catch (err) {
+                if (err.message.includes('duplicate')) {
+                    showToast('❌ Class already exists', true);
+                } else {
+                    showToast('❌ Error: ' + err.message, true);
+                }
+                console.error(err);
+            }
+        });
+
+        // ============================================================
+        // TEACHER LOAD STUDENTS (original)
         // ============================================================
         loadStudentsBtn.addEventListener('click', async function() {
             if (!currentUser || currentUser.role !== 'teacher') {
@@ -1004,7 +1581,7 @@
             const testType = teacherTestType.value;
 
             if (!className || !subject || !term || !year || !testType) {
-                showToast('⚠️ Please select Class, Subject, Term, Year, and Test Type', true);
+                showToast('⚠️ Please select all fields', true);
                 return;
             }
 
@@ -1085,996 +1662,4 @@
             document.querySelectorAll('.score-input').forEach(inp => {
                 inp.addEventListener('input', function() {
                     const row = this.closest('tr');
-                    const gd = row.querySelector('.grade-display');
-                    const score = parseInt(this.value);
-                    if (!isNaN(score) && score >= 0 && score <= 100) {
-                        const grade = getGrade(score);
-                        const cls = getGradeClass(score);
-                        gd.textContent = grade;
-                        gd.className = 'grade-display ' + cls;
-                    } else {
-                        gd.textContent = '-';
-                        gd.className = 'grade-display';
-                    }
-                });
-            });
-        }
-
-        function getGrade(score) {
-            if (score >= 80) return 'A';
-            if (score >= 70) return 'B';
-            if (score >= 60) return 'C';
-            if (score >= 50) return 'D';
-            return 'F';
-        }
-
-        function getGradeClass(score) {
-            if (score >= 80) return 'badge-success';
-            if (score >= 60) return 'badge-info';
-            if (score >= 50) return 'badge-warning';
-            return 'badge-danger';
-        }
-
-        // ============================================================
-        // SAVE RESULTS
-        // ============================================================
-        saveResultsBtn.addEventListener('click', async function() {
-            if (!currentUser || currentUser.role !== 'teacher') {
-                showToast('🔒 Teacher login required', true);
-                return;
-            }
-
-            const className = teacherClass.value;
-            const subject = teacherSubject.value;
-            const term = teacherTerm.value;
-            const year = teacherYear.value;
-            const testType = teacherTestType.value;
-
-            if (!className || !subject || !term || !year || !testType) {
-                showToast('⚠️ Please select all fields', true);
-                return;
-            }
-
-            if (!supabaseClient || !isConnected) {
-                showToast('⚠️ Database not connected', true);
-                return;
-            }
-
-            const rows = document.querySelectorAll('#resultsTableBody tr');
-            const resultsToSave = [];
-            let hasValidScores = false;
-
-            rows.forEach(row => {
-                const studentId = row.dataset.studentId;
-                if (!studentId) return;
-                const scoreInput = row.querySelector('.score-input');
-                const commentInput = row.querySelector('.comment-input');
-                const score = parseInt(scoreInput.value);
-
-                if (!isNaN(score) && score >= 0 && score <= 100) {
-                    hasValidScores = true;
-                    resultsToSave.push({
-                        student_id: studentId,
-                        subject: subject,
-                        term: term,
-                        year: year,
-                        test_type: testType,
-                        score: score,
-                        comment: commentInput.value || '',
-                        teacher_id: currentUser.id
-                    });
-                }
-            });
-
-            if (!hasValidScores || resultsToSave.length === 0) {
-                showToast('⚠️ No valid scores to save', true);
-                return;
-            }
-
-            try {
-                showToast('🔄 Saving results...');
-                this.disabled = true;
-                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-
-                const studentIds = [...new Set(resultsToSave.map(r => r.student_id))];
-
-                await supabaseClient
-                    .from('results')
-                    .delete()
-                    .in('student_id', studentIds)
-                    .eq('subject', subject)
-                    .eq('term', term)
-                    .eq('year', year)
-                    .eq('test_type', testType);
-
-                const { error } = await supabaseClient
-                    .from('results')
-                    .insert(resultsToSave);
-
-                if (error) throw error;
-
-                showToast(`✅ ${resultsToSave.length} results saved!`);
-                this.innerHTML = '<i class="fas fa-save"></i> Save All';
-                this.disabled = false;
-
-                loadStudentsBtn.click();
-
-            } catch (err) {
-                showToast('❌ Error: ' + err.message, true);
-                console.error(err);
-                this.innerHTML = '<i class="fas fa-save"></i> Save All';
-                this.disabled = false;
-            }
-        });
-
-        // ============================================================
-        // TEACHER EXCEL IMPORT - Database only
-        // ============================================================
-        teacherImportLoadBtn.addEventListener('click', function() {
-            const className = teacherImportClass.value;
-            const subject = teacherImportSubject.value;
-            const term = teacherImportTerm.value;
-            const year = teacherImportYear.value;
-            const testType = teacherImportTestType.value;
-
-            if (!className || !subject || !term || !year || !testType) {
-                showToast('⚠️ Fill all import fields', true);
-                return;
-            }
-
-            if (!supabaseClient || !isConnected) {
-                showToast('⚠️ Database not connected', true);
-                return;
-            }
-
-            teacherImportArea.dataset.className = className;
-            teacherImportArea.dataset.subject = subject;
-            teacherImportArea.dataset.term = term;
-            teacherImportArea.dataset.year = year;
-            teacherImportArea.dataset.testType = testType;
-
-            teacherImportArea.style.display = 'block';
-            teacherImportPreview.style.display = 'none';
-            teacherImportBtn.style.display = 'none';
-            teacherImportClearBtn.style.display = 'none';
-            teacherImportStatus.innerHTML = '';
-            showToast('📂 Upload your Excel file with scores');
-        });
-
-        teacherImportArea.addEventListener('click', () => teacherFileInput.click());
-        teacherImportArea.addEventListener('dragover', e => {
-            e.preventDefault();
-            teacherImportArea.classList.add('dragover');
-        });
-        teacherImportArea.addEventListener('dragleave', e => {
-            e.preventDefault();
-            teacherImportArea.classList.remove('dragover');
-        });
-        teacherImportArea.addEventListener('drop', e => {
-            e.preventDefault();
-            teacherImportArea.classList.remove('dragover');
-            if (e.dataTransfer.files.length) {
-                teacherFileInput.files = e.dataTransfer.files;
-                handleTeacherImportFile(teacherFileInput.files[0]);
-            }
-        });
-        teacherFileInput.addEventListener('change', function() {
-            if (this.files.length) handleTeacherImportFile(this.files[0]);
-        });
-
-        function handleTeacherImportFile(file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    const sheet = workbook.Sheets[workbook.SheetNames[0]];
-                    const json = XLSX.utils.sheet_to_json(sheet);
-                    if (!json || json.length === 0) {
-                        showToast('⚠️ Empty file', true);
-                        return;
-                    }
-
-                    const headers = Object.keys(json[0]);
-                    const hasNumber = headers.some(h => h.toLowerCase().includes('student') && (h.toLowerCase().includes('number') || h.toLowerCase().includes('id')));
-                    const hasScore = headers.some(h => h.toLowerCase().includes('score') || h.toLowerCase().includes('mark') || h.toLowerCase().includes('grade'));
-
-                    if (!hasNumber || !hasScore) {
-                        showToast('⚠️ Missing columns: "Student Number" and "Score" required', true);
-                        return;
-                    }
-
-                    const numKey = headers.find(h => h.toLowerCase().includes('student') && (h.toLowerCase().includes('number') || h.toLowerCase().includes('id')));
-                    const scoreKey = headers.find(h => h.toLowerCase().includes('score') || h.toLowerCase().includes('mark') || h.toLowerCase().includes('grade'));
-
-                    const mapped = json.map(row => {
-                        let score = parseFloat(row[scoreKey]);
-                        if (typeof row[scoreKey] === 'string' && row[scoreKey].includes('%')) {
-                            score = parseFloat(row[scoreKey].replace('%', ''));
-                        }
-                        return {
-                            student_number: String(row[numKey] || '').trim(),
-                            score: isNaN(score) ? 0 : score
-                        };
-                    }).filter(r => r.student_number && !isNaN(r.score) && r.score >= 0 && r.score <= 100);
-
-                    if (mapped.length === 0) {
-                        showToast('⚠️ No valid rows found (need number and score 0-100)', true);
-                        return;
-                    }
-
-                    teacherImportData = mapped;
-                    displayTeacherImportPreview(mapped);
-                    teacherImportBtn.style.display = 'inline-flex';
-                    teacherImportClearBtn.style.display = 'inline-flex';
-                    teacherImportStatus.innerHTML = '';
-                    showToast(`✅ Loaded ${mapped.length} results from Excel`);
-                } catch (err) {
-                    showToast('❌ Error reading file: ' + err.message, true);
-                    console.error(err);
-                }
-            };
-            reader.readAsArrayBuffer(file);
-        }
-
-        function displayTeacherImportPreview(data) {
-            let html = `<div class="table-wrapper"><table><thead><tr><th>#</th><th>Student Number</th><th>Score</th><th>Status</th></tr></thead><tbody>`;
-            data.slice(0, 20).forEach((r, i) => {
-                const valid = r.student_number && !isNaN(r.score) && r.score >= 0 && r.score <= 100;
-                const cls = valid ? 'badge-success' : 'badge-warning';
-                html += `<tr><td>${i + 1}</td><td>${r.student_number}</td><td>${r.score}%</td><td><span class="badge ${cls}">${valid ? '✅ Valid' : '⚠️ Invalid'}</span></td></tr>`;
-            });
-            if (data.length > 20) html += `<tr><td colspan="4" style="text-align:center;color:var(--ink-faint);">... and ${data.length - 20} more</td></tr>`;
-            html += `</tbody></table></div><p style="font-size:12px;color:var(--ink-faint);margin-top:8px;">${data.length} records ready to import.</p>`;
-            teacherImportPreview.innerHTML = html;
-            teacherImportPreview.style.display = 'block';
-        }
-
-        teacherImportClearBtn.addEventListener('click', function() {
-            teacherImportData = null;
-            teacherImportPreview.style.display = 'none';
-            teacherImportPreview.innerHTML = '';
-            teacherImportBtn.style.display = 'none';
-            teacherImportClearBtn.style.display = 'none';
-            teacherImportStatus.innerHTML = '';
-            teacherFileInput.value = '';
-            showToast('🧹 Cleared');
-        });
-
-        teacherImportBtn.addEventListener('click', async function() {
-            if (!currentUser || currentUser.role !== 'teacher') {
-                showToast('🔒 Teacher login required', true);
-                return;
-            }
-            if (!teacherImportData || teacherImportData.length === 0) {
-                showToast('⚠️ No data to import', true);
-                return;
-            }
-
-            const className = teacherImportArea.dataset.className;
-            const subject = teacherImportArea.dataset.subject;
-            const term = teacherImportArea.dataset.term;
-            const year = teacherImportArea.dataset.year;
-            const testType = teacherImportArea.dataset.testType;
-
-            if (!className || !subject || !term || !year || !testType) {
-                showToast('⚠️ Please click "Load & Preview" first', true);
-                return;
-            }
-
-            if (!supabaseClient || !isConnected) {
-                showToast('⚠️ Database not connected', true);
-                return;
-            }
-
-            this.disabled = true;
-            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Importing...';
-            let imported = 0,
-                errors = 0,
-                notFound = 0,
-                duplicates = 0;
-
-            for (const row of teacherImportData) {
-                try {
-                    const { data: student, error: sError } = await supabaseClient
-                        .from('students')
-                        .select('id')
-                        .eq('student_number', row.student_number)
-                        .maybeSingle();
-
-                    if (sError || !student) {
-                        notFound++;
-                        continue;
-                    }
-
-                    const { data: existing, error: eError } = await supabaseClient
-                        .from('results')
-                        .select('id')
-                        .eq('student_id', student.id)
-                        .eq('subject', subject)
-                        .eq('term', term)
-                        .eq('year', year)
-                        .eq('test_type', testType)
-                        .maybeSingle();
-
-                    const score = Math.min(Math.max(Math.round(row.score), 0), 100);
-
-                    if (existing) {
-                        duplicates++;
-                        await supabaseClient
-                            .from('results')
-                            .update({ score: score, teacher_id: currentUser.id })
-                            .eq('id', existing.id);
-                        imported++;
-                    } else {
-                        const { error: insertError } = await supabaseClient
-                            .from('results')
-                            .insert({
-                                student_id: student.id,
-                                subject: subject,
-                                term: term,
-                                year: year,
-                                test_type: testType,
-                                score: score,
-                                teacher_id: currentUser.id
-                            });
-
-                        if (insertError) {
-                            errors++;
-                            console.error('Insert error:', insertError);
-                        } else {
-                            imported++;
-                        }
-                    }
-                } catch (err) {
-                    errors++;
-                    console.error('Import error for row:', row, err);
-                }
-            }
-
-            this.disabled = false;
-            this.innerHTML = '<i class="fas fa-upload"></i> Import Results';
-            const msg = `✅ ${imported} saved (${duplicates} updated), ${notFound} students not found, ${errors} errors.`;
-            teacherImportStatus.innerHTML = msg;
-            showToast(msg);
-
-            teacherImportData = null;
-            teacherImportPreview.style.display = 'none';
-            teacherImportPreview.innerHTML = '';
-            teacherImportBtn.style.display = 'none';
-            teacherImportClearBtn.style.display = 'none';
-            teacherFileInput.value = '';
-
-            showToast('🔄 Refreshing results...');
-            loadStudentsBtn.click();
-        });
-
-        // ============================================================
-        // STUDENT VIEW RESULTS - Database only
-        // ============================================================
-        viewResultsBtn.addEventListener('click', async function() {
-            const number = studentNumber.value.trim();
-            const term = studentTerm.value;
-            const year = studentYear.value;
-
-            if (!number) {
-                showToast('⚠️ Please enter your student number', true);
-                return;
-            }
-            if (!term) {
-                showToast('⚠️ Please select a term', true);
-                return;
-            }
-            if (!year) {
-                showToast('⚠️ Please select a year', true);
-                return;
-            }
-
-            if (!supabaseClient || !isConnected) {
-                showToast('⚠️ Database not connected', true);
-                return;
-            }
-
-            try {
-                showToast('🔄 Fetching your results...');
-
-                const { data: student, error: studentError } = await supabaseClient
-                    .from('students')
-                    .select('*')
-                    .eq('student_number', number)
-                    .maybeSingle();
-
-                if (studentError) throw studentError;
-                if (!student) {
-                    showToast('❌ Student not found. Please check your student number.', true);
-                    studentResults.style.display = 'none';
-                    return;
-                }
-
-                const { data: midResults, error: midError } = await supabaseClient
-                    .from('results')
-                    .select('*')
-                    .eq('student_id', student.id)
-                    .eq('term', term)
-                    .eq('year', year)
-                    .eq('test_type', 'mid_term');
-
-                if (midError) throw midError;
-
-                const { data: endResults, error: endError } = await supabaseClient
-                    .from('results')
-                    .select('*')
-                    .eq('student_id', student.id)
-                    .eq('term', term)
-                    .eq('year', year)
-                    .eq('test_type', 'end_term');
-
-                if (endError) throw endError;
-
-                displayCombinedResults(student, midResults || [], endResults || [], term, year);
-                studentResults.style.display = 'block';
-                const totalResults = (midResults ? midResults.length : 0) + (endResults ? endResults.length : 0);
-                showToast(`✅ ${totalResults} results loaded`);
-
-            } catch (err) {
-                showToast('❌ Error: ' + err.message, true);
-                console.error(err);
-                studentResults.style.display = 'none';
-            }
-        });
-
-        function displayCombinedResults(student, midResults, endResults, term, year) {
-            const classDisplay = getClassDisplay(student.class);
-            const termDisplay = `Term ${term} · ${year}`;
-            const school = getCurrentSchool();
-
-            studentInfo.innerHTML = `
-                <div class="grid-3">
-                    <div><strong>Name:</strong> ${student.name}</div>
-                    <div><strong>Student Number:</strong> ${student.student_number}</div>
-                    <div><strong>Class:</strong> ${classDisplay}</div>
-                    <div><strong>Term:</strong> ${term}</div>
-                    <div><strong>Year:</strong> ${year}</div>
-                    <div><strong>Report Type:</strong> <span class="test-type-badge combined">📊 Combined (Mid & End Term)</span></div>
-                </div>
-            `;
-
-            const subjectSet = new Set();
-            midResults.forEach(r => subjectSet.add(r.subject));
-            endResults.forEach(r => subjectSet.add(r.subject));
-            const subjects = Array.from(subjectSet).sort();
-
-            let midTotal = 0,
-                endTotal = 0;
-            let midCount = 0,
-                endCount = 0;
-            let overallTotal = 0,
-                overallCount = 0;
-
-            let html = `
-                <div class="result-card report-card-print" style="padding:12px 16px;">
-                    <div class="result-header" style="display:flex;align-items:center;gap:12px;border-bottom:2px solid var(--gold);padding-bottom:8px;margin-bottom:10px;">
-                        <div style="flex-shrink:0;">
-                            <img src="${school.logo}" alt="School Logo" style="width:50px;height:50px;object-fit:contain;border-radius:50%;border:2px solid var(--gold);">
-                        </div>
-                        <div style="flex:1;text-align:center;">
-                            <h1 style="font-family:var(--font-display);font-size:20px;color:var(--marian-blue);margin:0;">${school.name}</h1>
-                            <p style="color:var(--ink-soft);font-size:12px;margin:0;">${school.location} · Northern Province</p>
-                            <p style="color:var(--ink-faint);font-size:10px;margin:2px 0 0;">Student Academic Report · <span class="test-type-badge combined" style="font-size:10px;padding:2px 10px;">Combined (Mid & End Term)</span> ${termDisplay}</p>
-                        </div>
-                    </div>
-
-                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;background:var(--paper);padding:6px 10px;border-radius:6px;margin-bottom:8px;font-size:12px;">
-                        <div><strong>Student:</strong> ${student.name}</div>
-                        <div><strong>Number:</strong> ${student.student_number}</div>
-                        <div><strong>Class:</strong> ${classDisplay}</div>
-                        <div><strong>Term:</strong> ${term} · ${year}</div>
-                    </div>
-
-                    <div style="margin-bottom:8px;overflow:hidden;border:1px solid var(--border);border-radius:6px;">
-                        <table style="width:100%;border-collapse:collapse;font-size:11px;">
-                            <thead>
-                                <tr style="background:var(--marian-blue);color:#fff;">
-                                    <th style="padding:5px 8px;text-align:left;font-size:10px;width:22%;">Subject</th>
-                                    <th style="padding:5px 8px;text-align:center;font-size:10px;width:18%;" class="mid-header">Mid Term</th>
-                                    <th style="padding:5px 8px;text-align:center;font-size:10px;width:15%;" class="mid-header">Grade</th>
-                                    <th style="padding:5px 8px;text-align:center;font-size:10px;width:18%;" class="end-header">End of Term</th>
-                                    <th style="padding:5px 8px;text-align:center;font-size:10px;width:15%;" class="end-header">Grade</th>
-                                    <th style="padding:5px 8px;text-align:center;font-size:10px;width:12%;" class="avg-header">Avg</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-            `;
-
-            subjects.forEach(subject => {
-                const mid = midResults.find(r => r.subject === subject);
-                const end = endResults.find(r => r.subject === subject);
-
-                const midScore = mid ? parseInt(mid.score) : null;
-                const endScore = end ? parseInt(end.score) : null;
-
-                if (midScore !== null) {
-                    midTotal += midScore;
-                    midCount++;
-                    overallTotal += midScore;
-                    overallCount++;
-                }
-                if (endScore !== null) {
-                    endTotal += endScore;
-                    endCount++;
-                    overallTotal += endScore;
-                    overallCount++;
-                }
-
-                const midGrade = midScore !== null ? getGrade(midScore) : '-';
-                const midClass = midScore !== null ? getGradeClass(midScore) : '';
-                const endGrade = endScore !== null ? getGrade(endScore) : '-';
-                const endClass = endScore !== null ? getGradeClass(endScore) : '';
-
-                const avg = (midScore !== null && endScore !== null) ? Math.round((midScore + endScore) / 2) :
-                    (midScore !== null ? midScore : (endScore !== null ? endScore : null));
-                const avgGrade = avg !== null ? getGrade(avg) : '-';
-                const avgClass = avg !== null ? getGradeClass(avg) : '';
-
-                const isICT = subject === 'ICT';
-                const rowClass = isICT ? 'subject-row-ict' : 'subject-row';
-
-                html += `
-                    <tr class="${rowClass}">
-                        <td style="padding:4px 8px;font-weight:${isICT ? '700' : '600'};font-size:11px;">${subject} ${isICT ? '💻' : ''}</td>
-                        <td class="score-cell" style="background:#e8f0fe;">${midScore !== null ? midScore + '%' : '—'}</td>
-                        <td class="grade-cell" style="background:#e8f0fe;"><span class="badge ${midClass}" style="font-size:10px;padding:1px 8px;">${midGrade}</span></td>
-                        <td class="score-cell" style="background:#fef3e8;">${endScore !== null ? endScore + '%' : '—'}</td>
-                        <td class="grade-cell" style="background:#fef3e8;"><span class="badge ${endClass}" style="font-size:10px;padding:1px 8px;">${endGrade}</span></td>
-                        <td class="score-cell" style="background:var(--gold-tint);font-weight:700;">${avg !== null ? avg + '%' : '—'}</td>
-                    </tr>
-                `;
-            });
-
-            const midAvg = midCount > 0 ? (midTotal / midCount) : 0;
-            const endAvg = endCount > 0 ? (endTotal / endCount) : 0;
-            const overallAvg = overallCount > 0 ? (overallTotal / overallCount) : 0;
-
-            html += `
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;background:var(--gold-tint);padding:8px 12px;border-radius:6px;margin-bottom:6px;">
-                        <div style="text-align:center;">
-                            <div style="font-size:9px;color:var(--ink-faint);text-transform:uppercase;font-weight:600;">Mid Term Avg</div>
-                            <div style="font-family:var(--font-mono);font-size:18px;font-weight:700;color:var(--marian-blue);">${midCount > 0 ? midAvg.toFixed(1) + '%' : '—'}</div>
-                        </div>
-                        <div style="text-align:center;">
-                            <div style="font-size:9px;color:var(--ink-faint);text-transform:uppercase;font-weight:600;">End of Term Avg</div>
-                            <div style="font-family:var(--font-mono);font-size:18px;font-weight:700;color:var(--oxblood);">${endCount > 0 ? endAvg.toFixed(1) + '%' : '—'}</div>
-                        </div>
-                        <div style="text-align:center;">
-                            <div style="font-size:9px;color:var(--ink-faint);text-transform:uppercase;font-weight:600;">Overall Avg</div>
-                            <div style="font-family:var(--font-mono);font-size:18px;font-weight:700;color:var(--gold);">${overallAvg.toFixed(1) + '%'}</div>
-                        </div>
-                    </div>
-
-                    ${student.comment ? `
-                    <div style="padding:4px 10px;background:var(--paper);border-radius:4px;border-left:3px solid var(--gold);margin-bottom:4px;">
-                        <div style="font-size:9px;font-weight:600;color:var(--ink-faint);text-transform:uppercase;letter-spacing:0.3px;">Teacher's Comment</div>
-                        <div style="font-style:italic;color:var(--ink-soft);font-size:11px;margin-top:2px;">${student.comment}</div>
-                    </div>` : ''}
-
-                    <div style="display:flex;justify-content:space-between;font-size:8px;color:var(--ink-faint);border-top:1px solid var(--border);padding-top:4px;margin-top:4px;">
-                        <div>Generated: ${new Date().toLocaleDateString()}</div>
-                        <div>${school.name} · ${school.location}</div>
-                    </div>
-                </div>
-            `;
-
-            if (subjects.length === 0) {
-                html = `
-                    <div style="text-align:center;padding:30px;color:var(--ink-faint);">
-                        <i class="fas fa-folder-open" style="font-size:30px;display:block;margin-bottom:12px;"></i>
-                        <p>No results found for this term. Please check your selection or contact your teacher.</p>
-                    </div>
-                `;
-            }
-
-            resultsContent.innerHTML = html;
-        }
-
-        function getClassDisplay(classId) {
-            const found = CLASS_DEFINITIONS.find(c => c.id === classId);
-            return found ? found.display : classId;
-        }
-
-        downloadResultsBtn.addEventListener('click', function() {
-            const card = document.getElementById('resultsCard');
-            card.classList.add('report-card-print');
-            window.print();
-            setTimeout(() => {
-                card.classList.remove('report-card-print');
-            }, 1000);
-        });
-
-        // ============================================================
-        // ADD STUDENT/TEACHER/CLASS - Database only
-        // ============================================================
-        addStudentBtn.addEventListener('click', async function() {
-            if (!currentUser || currentUser.role !== 'admin') {
-                showToast('🔒 Admin login required', true);
-                return;
-            }
-            const number = adminStudentNumber.value.trim();
-            const name = adminStudentName.value.trim();
-            const className = adminStudentClass.value;
-
-            if (!number) {
-                showToast('⚠️ Please enter student number', true);
-                return;
-            }
-            if (!name) {
-                showToast('⚠️ Please enter student name', true);
-                return;
-            }
-            if (!className) {
-                showToast('⚠️ Please select class', true);
-                return;
-            }
-
-            if (!supabaseClient || !isConnected) {
-                showToast('⚠️ Database not connected', true);
-                return;
-            }
-
-            try {
-                const { error } = await supabaseClient
-                    .from('students')
-                    .insert({ student_number: number, name: name, class: className });
-
-                if (error) throw error;
-                showToast('✅ Student added successfully!');
-                adminStudentNumber.value = '';
-                adminStudentName.value = '';
-                adminStudentClass.value = '';
-                loadAdminStats();
-                loadClasses();
-            } catch (err) {
-                showToast('❌ Error: ' + err.message, true);
-                console.error(err);
-            }
-        });
-
-        addTeacherBtn.addEventListener('click', async function() {
-            if (!currentUser || currentUser.role !== 'admin') {
-                showToast('🔒 Admin login required', true);
-                return;
-            }
-            const name = adminTeacherName.value.trim();
-            const username = adminTeacherUsername.value.trim();
-            const password = adminTeacherPassword.value.trim();
-
-            if (!name) {
-                showToast('⚠️ Please enter teacher name', true);
-                return;
-            }
-            if (!username) {
-                showToast('⚠️ Please enter username', true);
-                return;
-            }
-            if (!password) {
-                showToast('⚠️ Please enter password', true);
-                return;
-            }
-
-            if (!supabaseClient || !isConnected) {
-                showToast('⚠️ Database not connected', true);
-                return;
-            }
-
-            try {
-                const { error } = await supabaseClient
-                    .from('teachers')
-                    .insert({ name: name, username: username, password: password });
-
-                if (error) throw error;
-                showToast('✅ Teacher added successfully!');
-                adminTeacherName.value = '';
-                adminTeacherUsername.value = '';
-                adminTeacherPassword.value = '';
-                loadAdminStats();
-            } catch (err) {
-                showToast('❌ Error: ' + err.message, true);
-                console.error(err);
-            }
-        });
-
-        addClassBtn.addEventListener('click', async function() {
-            if (!currentUser || currentUser.role !== 'admin') {
-                showToast('🔒 Admin login required', true);
-                return;
-            }
-            const grade = newClassGrade.value;
-            const stream = newClassStream.value;
-
-            if (!grade) {
-                showToast('⚠️ Please select a grade', true);
-                return;
-            }
-            if (!stream) {
-                showToast('⚠️ Please select a stream', true);
-                return;
-            }
-
-            if (!supabaseClient || !isConnected) {
-                showToast('⚠️ Database not connected', true);
-                return;
-            }
-
-            try {
-                const classId = grade + '_' + stream;
-                const displayName = grade + ' ' + stream;
-
-                const { error } = await supabaseClient
-                    .from('classes')
-                    .insert({
-                        id: classId,
-                        grade: grade,
-                        stream: stream,
-                        display_name: displayName
-                    });
-
-                if (error) throw error;
-
-                showToast('✅ Class added successfully!');
-                newClassGrade.value = '';
-                newClassStream.value = '';
-                loadClasses();
-                populateClassDropdowns();
-            } catch (err) {
-                if (err.message.includes('duplicate')) {
-                    showToast('❌ Class already exists', true);
-                } else {
-                    showToast('❌ Error: ' + err.message, true);
-                }
-                console.error(err);
-            }
-        });
-
-        // ============================================================
-        // BULK REGISTER - Database only
-        // ============================================================
-        bulkRegisterTemplateBtn.addEventListener('click', function() {
-            const wb = XLSX.utils.book_new();
-            const data = [['Student Number', 'Name']];
-            data.push(['2024-001', 'Ireen Mwansa']);
-            data.push(['2024-002', 'Mary Phiri']);
-            data.push(['2024-003', 'Grace Zulu']);
-            data.push(['2024-004', 'Mercy Banda']);
-            data.push(['2024-005', 'Faith Mumba']);
-            const ws = XLSX.utils.aoa_to_sheet(data);
-            XLSX.utils.book_append_sheet(wb, ws, 'Students');
-            XLSX.writeFile(wb, 'Bulk_Student_Register_Template.xlsx');
-            showToast('📥 Template downloaded');
-        });
-
-        bulkImportArea.addEventListener('click', () => bulkFileInput.click());
-        bulkImportArea.addEventListener('dragover', e => {
-            e.preventDefault();
-            bulkImportArea.classList.add('dragover');
-        });
-        bulkImportArea.addEventListener('dragleave', e => {
-            e.preventDefault();
-            bulkImportArea.classList.remove('dragover');
-        });
-        bulkImportArea.addEventListener('drop', e => {
-            e.preventDefault();
-            bulkImportArea.classList.remove('dragover');
-            if (e.dataTransfer.files.length) {
-                bulkFileInput.files = e.dataTransfer.files;
-                handleBulkFile(bulkFileInput.files[0]);
-            }
-        });
-        bulkFileInput.addEventListener('change', function() {
-            if (this.files.length) handleBulkFile(this.files[0]);
-        });
-
-        function handleBulkFile(file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    const sheet = workbook.Sheets[workbook.SheetNames[0]];
-                    const json = XLSX.utils.sheet_to_json(sheet);
-                    if (!json || json.length === 0) {
-                        showToast('⚠️ Empty file', true);
-                        return;
-                    }
-                    const headers = Object.keys(json[0]);
-                    const hasNumber = headers.some(h => h.toLowerCase().includes('student') && (h.toLowerCase().includes('number') || h.toLowerCase().includes('id')));
-                    const hasName = headers.some(h => h.toLowerCase().includes('name'));
-                    if (!hasNumber || !hasName) {
-                        showToast('⚠️ Missing columns: "Student Number" and "Name" required', true);
-                        return;
-                    }
-                    const numKey = headers.find(h => h.toLowerCase().includes('student') && (h.toLowerCase().includes('number') || h.toLowerCase().includes('id')));
-                    const nameKey = headers.find(h => h.toLowerCase().includes('name'));
-                    const mapped = json.map(row => ({
-                        student_number: String(row[numKey] || '').trim(),
-                        name: String(row[nameKey] || '').trim()
-                    })).filter(r => r.student_number && r.name);
-                    if (mapped.length === 0) {
-                        showToast('⚠️ No valid rows found', true);
-                        return;
-                    }
-                    bulkData = mapped;
-                    displayBulkPreview(mapped);
-                    bulkConfirmImportBtn.style.display = 'inline-flex';
-                    bulkClearPreviewBtn.style.display = 'inline-flex';
-                    bulkImportStatus.innerHTML = '';
-                    showToast(`✅ Loaded ${mapped.length} students`);
-                } catch (err) {
-                    showToast('❌ Error reading file: ' + err.message, true);
-                    console.error(err);
-                }
-            };
-            reader.readAsArrayBuffer(file);
-        }
-
-        function displayBulkPreview(data) {
-            let html = `<div class="table-wrapper"><table><thead><tr><th>#</th><th>Student Number</th><th>Name</th><th>Status</th></tr></thead><tbody>`;
-            data.slice(0, 20).forEach((r, i) => {
-                const status = r.student_number && r.name ? '✅ Ready' : '⚠️ Incomplete';
-                const cls = r.student_number && r.name ? 'badge-success' : 'badge-warning';
-                html += `<tr><td>${i + 1}</td><td>${r.student_number}</td><td>${r.name}</td><td><span class="badge ${cls}">${status}</span></td></tr>`;
-            });
-            if (data.length > 20) html += `<tr><td colspan="4" style="text-align:center;color:var(--ink-faint);">... and ${data.length - 20} more</td></tr>`;
-            html += `</tbody></table></div><p style="font-size:12px;color:var(--ink-faint);margin-top:8px;">${data.length} students ready to register.</p>`;
-            bulkImportPreview.innerHTML = html;
-            bulkImportPreview.style.display = 'block';
-        }
-
-        bulkClearPreviewBtn.addEventListener('click', function() {
-            bulkData = null;
-            bulkImportPreview.style.display = 'none';
-            bulkImportPreview.innerHTML = '';
-            bulkConfirmImportBtn.style.display = 'none';
-            bulkClearPreviewBtn.style.display = 'none';
-            bulkImportStatus.innerHTML = '';
-            bulkFileInput.value = '';
-            showToast('🧹 Cleared');
-        });
-
-        bulkConfirmImportBtn.addEventListener('click', async function() {
-            if (!currentUser || currentUser.role !== 'admin') {
-                showToast('🔒 Admin login required', true);
-                return;
-            }
-            if (!bulkData || bulkData.length === 0) {
-                showToast('⚠️ No data to import', true);
-                return;
-            }
-            const selectedClass = bulkClassSelect.value;
-            if (!selectedClass) {
-                showToast('⚠️ Please select a default class', true);
-                return;
-            }
-            if (!supabaseClient || !isConnected) {
-                showToast('⚠️ Database not connected', true);
-                return;
-            }
-
-            this.disabled = true;
-            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registering...';
-            let success = 0,
-                errors = 0,
-                duplicates = 0;
-
-            for (const row of bulkData) {
-                try {
-                    const { data: existing } = await supabaseClient
-                        .from('students')
-                        .select('id')
-                        .eq('student_number', row.student_number)
-                        .maybeSingle();
-                    if (existing) {
-                        duplicates++;
-                        continue;
-                    }
-
-                    const { error } = await supabaseClient
-                        .from('students')
-                        .insert({
-                            student_number: row.student_number,
-                            name: row.name,
-                            class: selectedClass
-                        });
-                    if (error) {
-                        errors++;
-                    } else {
-                        success++;
-                    }
-                } catch (e) {
-                    errors++;
-                }
-            }
-
-            this.disabled = false;
-            this.innerHTML = '<i class="fas fa-check-circle"></i> Confirm & Register All';
-            const msg = `✅ ${success} registered, ${duplicates} duplicates, ${errors} errors.`;
-            bulkImportStatus.innerHTML = msg;
-            showToast(msg);
-            loadAdminStats();
-            loadClasses();
-            bulkData = null;
-            bulkImportPreview.style.display = 'none';
-            bulkImportPreview.innerHTML = '';
-            bulkConfirmImportBtn.style.display = 'none';
-            bulkClearPreviewBtn.style.display = 'none';
-            bulkFileInput.value = '';
-        });
-
-        bulkRegisterBtn.addEventListener('click', function() {
-            if (!bulkData || bulkData.length === 0) {
-                showToast('⚠️ Please upload an Excel file first', true);
-                return;
-            }
-            bulkConfirmImportBtn.click();
-        });
-
-        // ============================================================
-        // TAB SWITCHING
-        // ============================================================
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const tab = this.dataset.tab;
-                if (tab === 'teacher') {
-                    if (!currentUser || currentUser.role !== 'teacher') {
-                        teacherLocked.style.display = 'block';
-                        teacherContent.style.display = 'none';
-                    } else {
-                        teacherLocked.style.display = 'none';
-                        teacherContent.style.display = 'block';
-                    }
-                }
-                if (tab === 'admin') {
-                    if (!currentUser || currentUser.role !== 'admin') {
-                        adminLocked.style.display = 'block';
-                        adminContent.style.display = 'none';
-                    } else {
-                        adminLocked.style.display = 'none';
-                        adminContent.style.display = 'block';
-                        loadAdminStats();
-                        loadClasses();
-                        populateBulkClassDropdown();
-                    }
-                }
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-                const sec = document.getElementById(tab + 'Section');
-                if (sec) sec.classList.add('active');
-            });
-        });
-
-        // ============================================================
-        // BOOT
-        // ============================================================
-        const savedSchool = localStorage.getItem('selectedSchool');
-        if (savedSchool && SCHOOL_CONFIG.schools[savedSchool]) {
-            currentSchoolCode = savedSchool;
-        }
-        applySchoolBranding();
-
-        // Initialize Supabase
-        initSupabase();
-        updateLoginUI();
-
-        console.log('✅ Laura Girls School System');
-        console.log('🏫 Current school:', getCurrentSchool().name);
-        console.log('📝 Available schools:', Object.keys(SCHOOL_CONFIG.schools).join(', '));
-        console.log('🔑 Admin: admin123');
-        console.log('📱 Database connection status:', isConnected ? 'Connected' : 'Offline');
-        console.log('💡 All data comes from Supabase database');
-    })();
-</script>
-</body>
-</html>
+                   
