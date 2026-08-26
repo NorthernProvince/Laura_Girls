@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Laura Girls · Teacher Access</title>
+    <title>Laura Girls Secondary School</title>
     <meta name="theme-color" content="#1a237e">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -44,8 +44,8 @@
         .mary-bg::before { content:''; position:absolute; top:0; left:0; width:100%; height:100%; background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 800'%3E%3Ccircle cx='400' cy='400' r='300' fill='none' stroke='%231a237e' stroke-width='2' opacity='0.1'/%3E%3Ccircle cx='400' cy='400' r='200' fill='none' stroke='%231a237e' stroke-width='1.5' opacity='0.08'/%3E%3Ccircle cx='400' cy='400' r='100' fill='none' stroke='%231a237e' stroke-width='1' opacity='0.06'/%3E%3Cpath d='M400 50 L415 120 L485 140 L435 185 L445 260 L400 220 L355 260 L365 185 L315 140 L385 120 Z' fill='%231a237e' opacity='0.05'/%3E%3C/svg%3E") center/cover no-repeat; pointer-events:none; }
         .topbar { position:sticky; top:0; z-index:40; background:linear-gradient(135deg,#1a237e,#283593); border-bottom:3px solid var(--gold); padding:10px 18px; display:flex; align-items:center; justify-content:center; gap:14px; box-shadow:var(--shadow-md); }
         .topbar .brand { flex:1; min-width:0; text-align:center; }
-        .topbar .brand .coat-of-arms { width:45px; height:45px; margin:0 auto 4px; }
-        .topbar .brand .coat-of-arms img { width:100%; height:100%; object-fit:contain; filter:drop-shadow(0 0 4px rgba(255,215,0,0.2)); }
+        .topbar .brand .school-logo { width:50px; height:50px; margin:0 auto 2px; }
+        .topbar .brand .school-logo img { width:100%; height:100%; object-fit:contain; filter:drop-shadow(0 0 4px rgba(255,215,0,0.2)); }
         .topbar .brand .ministry { font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--gold); font-weight:600; }
         .topbar .brand h1 { font-family:var(--font-display); font-weight:650; font-size:22px; color:#fff; letter-spacing:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
         .topbar .brand .motto { font-size:12px; color:var(--gold); font-style:italic; font-weight:400; letter-spacing:0.5px; }
@@ -194,7 +194,7 @@
         .teacher-welcome { font-size:14px; color:var(--ink-soft); }
         @media (max-width:480px) {
             .topbar .brand h1 { font-size:14px; }
-            .topbar .brand .coat-of-arms { width:35px; height:35px; }
+            .topbar .brand .school-logo { width:35px; height:35px; }
             .topbar .seal { width:35px; height:35px; }
             .card { padding:14px; }
             .tab-nav .tab-btn { font-size:11px; padding:8px 10px; min-width:60px; }
@@ -241,8 +241,8 @@
 <!-- top bar -->
 <div class="topbar">
     <div class="brand">
-        <div class="coat-of-arms">
-            <img src="image/coat_arms.png" alt="Coat of Arms" onerror="this.style.display='none'">
+        <div class="school-logo">
+            <img src="image/logo-removebg-preview.png" alt="School Logo" onerror="this.style.display='none'">
         </div>
         <div class="ministry">Ministry of Education</div>
         <h1>Laura Girls Secondary School</h1>
@@ -864,7 +864,7 @@
         });
 
         // ============================================================
-        // TEACHER LOAD STUDENTS - NO RESTRICTIONS
+        // TEACHER LOAD STUDENTS
         // ============================================================
         loadStudentsBtn.addEventListener('click', async function() {
             if (!currentUser || currentUser.role !== 'teacher') {
@@ -1130,7 +1130,7 @@
         });
 
         // ============================================================
-        // TEACHER EXCEL IMPORT - NO RESTRICTIONS
+        // TEACHER EXCEL IMPORT
         // ============================================================
         teacherImportLoadBtn.addEventListener('click', function() {
             const className = teacherImportClass.value;
@@ -1721,8 +1721,8 @@
         // ============================================================
         initSupabase();
         updateLoginUI();
-        console.log('✅ Laura Girls · Teacher access without restrictions');
-        console.log('📝 Teachers can access all classes and subjects');
+        console.log('✅ Laura Girls · School logo updated in header');
+        console.log('📝 Logo appears above Ministry of Education');
     })();
 </script>
 </body>
