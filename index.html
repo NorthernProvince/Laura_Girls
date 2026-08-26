@@ -1184,6 +1184,50 @@
         .admin-school-selector {
             display: none !important;
         }
+
+        /* Clean login forms - remove old role buttons */
+        .login-options {
+            display: none !important;
+        }
+        .login-form {
+            display: none;
+            margin-top: 12px;
+        }
+        .login-form.active {
+            display: block;
+        }
+        .login-form .field {
+            margin-bottom: 12px;
+        }
+        .login-form .btn-submit {
+            margin-top: 4px;
+            width: 100%;
+        }
+        .btn-outline.btn-sm {
+            padding: 10px 16px;
+            font-size: 13px;
+            border-radius: 30px;
+            transition: all 0.2s ease;
+        }
+        .btn-outline.btn-sm:hover {
+            background: var(--marian-blue);
+            color: #fff;
+            border-color: var(--marian-blue);
+        }
+        .btn-outline.btn-sm:active {
+            transform: scale(0.97);
+        }
+        .role-selector {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .role-selector .btn {
+            flex: 1;
+            min-width: 80px;
+        }
     </style>
 </head>
 <body>
@@ -1219,26 +1263,64 @@
             <div class="modal-header">
                 <div class="modal-logo"><img src="https://raw.githubusercontent.com/NorthernProvince/Laura_Girls/main/image/logo-removebg-preview.png" alt="logo" onerror="this.style.display='none'"></div>
                 <h2><i class="fas fa-user-circle" style="color:var(--gold);"></i> Sign In</h2>
-                <p>Select your role</p>
+                <p>Select your role below</p>
             </div>
             <div class="logout-section" id="logoutSection" style="display:none;">
                 <div class="user-info"><i class="fas fa-user-check"></i> Signed in as: <span id="loggedInUserName">User</span></div>
                 <button class="btn btn-danger btn-block" id="logoutFromModalBtn"><i class="fas fa-sign-out-alt"></i> Sign Out</button>
             </div>
             <div id="loginOptions">
-                <div class="login-options">
-                    <button class="btn btn-student" onclick="showLoginForm('student')"><i class="fas fa-user-graduate"></i> Student</button>
-                    <button class="btn btn-teacher" onclick="showLoginForm('teacher')"><i class="fas fa-chalkboard-teacher"></i> Teacher</button>
-                    <button class="btn btn-admin" onclick="showLoginForm('admin')"><i class="fas fa-user-shield"></i> Admin</button>
+                <!-- Student Login -->
+                <div class="login-form" id="studentLoginForm">
+                    <div class="field">
+                        <label><i class="fas fa-id-card"></i> Student Number</label>
+                        <input type="text" id="studentLoginNumber" placeholder="e.g. 2024-001">
+                    </div>
+                    <button class="btn btn-primary btn-submit btn-block" onclick="studentLogin()">
+                        <i class="fas fa-sign-in-alt"></i> View Results
+                    </button>
                 </div>
-                <div class="login-form" id="studentLoginForm"><div class="field"><label><i class="fas fa-id-card"></i> Student Number</label><input type="text" id="studentLoginNumber" placeholder="e.g. 2024-001"></div><button class="btn btn-primary btn-submit" onclick="studentLogin()"><i class="fas fa-sign-in-alt"></i> View Results</button></div>
+
+                <!-- Teacher Login -->
                 <div class="login-form" id="teacherLoginForm">
-                    <div class="field"><label><i class="fas fa-user"></i> Username</label><input type="text" id="teacherLoginUsername" placeholder="Enter your username"></div>
-                    <div class="field"><label><i class="fas fa-lock"></i> Password</label><input type="password" id="teacherLoginPassword" placeholder="Enter your password"></div>
-                    <button class="btn btn-success btn-submit" onclick="teacherLogin()"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+                    <div class="field">
+                        <label><i class="fas fa-user"></i> Username</label>
+                        <input type="text" id="teacherLoginUsername" placeholder="Enter your username">
+                    </div>
+                    <div class="field">
+                        <label><i class="fas fa-lock"></i> Password</label>
+                        <input type="password" id="teacherLoginPassword" placeholder="Enter your password">
+                    </div>
+                    <button class="btn btn-success btn-submit btn-block" onclick="teacherLogin()">
+                        <i class="fas fa-sign-in-alt"></i> Sign In
+                    </button>
                     <p style="text-align:center;font-size:11px;color:var(--ink-faint);margin-top:8px;">Default: jbanda / teacher123</p>
                 </div>
-                <div class="login-form" id="adminLoginForm"><div class="field"><label><i class="fas fa-lock"></i> Admin Password</label><input type="password" id="adminLoginPassword" placeholder="Enter admin password"></div><button class="btn btn-danger btn-submit" onclick="adminLogin()"><i class="fas fa-sign-in-alt"></i> Sign In</button><p style="text-align:center;font-size:11px;color:var(--ink-faint);margin-top:8px;">Default: admin123</p></div>
+
+                <!-- Admin Login -->
+                <div class="login-form" id="adminLoginForm">
+                    <div class="field">
+                        <label><i class="fas fa-lock"></i> Admin Password</label>
+                        <input type="password" id="adminLoginPassword" placeholder="Enter admin password">
+                    </div>
+                    <button class="btn btn-danger btn-submit btn-block" onclick="adminLogin()">
+                        <i class="fas fa-sign-in-alt"></i> Sign In
+                    </button>
+                    <p style="text-align:center;font-size:11px;color:var(--ink-faint);margin-top:8px;">Default: admin123</p>
+                </div>
+
+                <!-- Role selector buttons (clean, clickable) -->
+                <div class="role-selector">
+                    <button class="btn btn-outline btn-sm" onclick="showLoginForm('student')">
+                        <i class="fas fa-user-graduate"></i> Student
+                    </button>
+                    <button class="btn btn-outline btn-sm" onclick="showLoginForm('teacher')">
+                        <i class="fas fa-chalkboard-teacher"></i> Teacher
+                    </button>
+                    <button class="btn btn-outline btn-sm" onclick="showLoginForm('admin')">
+                        <i class="fas fa-user-shield"></i> Admin
+                    </button>
+                </div>
             </div>
         </div>
     </div>
