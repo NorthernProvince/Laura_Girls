@@ -42,15 +42,80 @@
         body { font-family:var(--font-body); background:var(--paper); color:var(--ink); min-height:100vh; line-height:1.5; }
         .mary-bg { position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1; background:linear-gradient(135deg,#E8EAF6 0%,#C5CAE9 50%,#E8EAF6 100%); opacity:0.3; }
         .mary-bg::before { content:''; position:absolute; top:0; left:0; width:100%; height:100%; background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 800'%3E%3Ccircle cx='400' cy='400' r='300' fill='none' stroke='%231a237e' stroke-width='2' opacity='0.1'/%3E%3Ccircle cx='400' cy='400' r='200' fill='none' stroke='%231a237e' stroke-width='1.5' opacity='0.08'/%3E%3Ccircle cx='400' cy='400' r='100' fill='none' stroke='%231a237e' stroke-width='1' opacity='0.06'/%3E%3Cpath d='M400 50 L415 120 L485 140 L435 185 L445 260 L400 220 L355 260 L365 185 L315 140 L385 120 Z' fill='%231a237e' opacity='0.05'/%3E%3C/svg%3E") center/cover no-repeat; pointer-events:none; }
-        .topbar { position:sticky; top:0; z-index:40; background:linear-gradient(135deg,#1a237e,#283593); border-bottom:3px solid var(--gold); padding:10px 18px; display:flex; align-items:center; justify-content:center; gap:14px; box-shadow:var(--shadow-md); }
-        .topbar .brand { flex:1; min-width:0; text-align:center; }
-        .topbar .brand .school-logo { width:55px; height:55px; margin:0 auto 2px; display:block; }
-        .topbar .brand .school-logo img { width:100%; height:100%; object-fit:contain; filter:drop-shadow(0 0 4px rgba(255,215,0,0.2)); }
-        .topbar .brand .ministry { font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--gold); font-weight:600; }
-        .topbar .brand h1 { font-family:var(--font-display); font-weight:650; font-size:22px; color:#fff; letter-spacing:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-        .topbar .brand .motto { font-size:12px; color:var(--gold); font-style:italic; font-weight:400; letter-spacing:0.5px; }
-        .topbar .seal { width:45px; height:45px; flex-shrink:0; border-radius:50%; overflow:hidden; border:3px solid var(--gold); background:#fff; display:flex; align-items:center; justify-content:center; padding:3px; }
-        .topbar .seal img { width:100%; height:100%; object-fit:contain; border-radius:50%; }
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            background: linear-gradient(135deg, #1a237e, #283593);
+            border-bottom: 3px solid var(--gold);
+            padding: 10px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            box-shadow: var(--shadow-md);
+        }
+        .topbar .brand {
+            flex: 1;
+            min-width: 0;
+            text-align: center;
+        }
+        /* Updated school logo style - placed at the very top */
+        .topbar .brand .school-logo {
+            width: 65px;
+            height: 65px;
+            margin: 0 auto 2px;
+            display: block;
+        }
+        .topbar .brand .school-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.2));
+        }
+        .topbar .brand .ministry {
+            font-size: 9px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--gold);
+            font-weight: 600;
+        }
+        .topbar .brand h1 {
+            font-family: var(--font-display);
+            font-weight: 650;
+            font-size: 22px;
+            color: #fff;
+            letter-spacing: 1px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .topbar .brand .motto {
+            font-size: 12px;
+            color: var(--gold);
+            font-style: italic;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+        }
+        .topbar .seal {
+            width: 45px;
+            height: 45px;
+            flex-shrink: 0;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid var(--gold);
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3px;
+        }
+        .topbar .seal img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 50%;
+        }
         .connection-status { position:fixed; bottom:20px; right:20px; z-index:50; padding:8px 16px; border-radius:40px; font-size:11px; font-weight:600; background:rgba(255,255,255,0.95); border:1px solid var(--border); box-shadow:var(--shadow-sm); display:flex; align-items:center; gap:8px; backdrop-filter:blur(10px); }
         .connection-status .dot { width:8px; height:8px; border-radius:50%; display:inline-block; }
         .connection-status .dot.online { background:#2e7d32; }
@@ -194,7 +259,7 @@
         .teacher-welcome { font-size:14px; color:var(--ink-soft); }
         @media (max-width:480px) {
             .topbar .brand h1 { font-size:14px; }
-            .topbar .brand .school-logo { width:35px; height:35px; }
+            .topbar .brand .school-logo { width:45px; height:45px; }
             .topbar .seal { width:35px; height:35px; }
             .card { padding:14px; }
             .tab-nav .tab-btn { font-size:11px; padding:8px 10px; min-width:60px; }
@@ -241,16 +306,15 @@
 <!-- top bar -->
 <div class="topbar">
     <div class="brand">
+        <!-- School logo placed at the very top, above Ministry of Education -->
         <div class="school-logo">
-            <img src="image/logo-removebg-preview.png" alt="School Logo" onerror="this.style.display='none'">
+            <img src="https://raw.githubusercontent.com/NorthernProvince/Laura_Girls/main/image/logo-removebg-preview.png" alt="School Logo" onerror="this.style.display='none'">
         </div>
         <div class="ministry">Ministry of Education</div>
         <h1>Laura Girls Secondary School</h1>
         <div class="motto">Education is the matter of the heart</div>
     </div>
-    <span class="seal">
-        <img src="image/logo-removebg-preview.png" alt="School Logo" onerror="this.style.display='none'">
-    </span>
+    <!-- Seal removed -->
 </div>
 
 <!-- login modal -->
@@ -258,7 +322,7 @@
     <div class="modal-content">
         <button class="close-btn" id="closeLoginModal">&times;</button>
         <div class="modal-header">
-            <div class="modal-logo"><img src="image/logo-removebg-preview.png" alt="logo" onerror="this.style.display='none'"></div>
+            <div class="modal-logo"><img src="https://raw.githubusercontent.com/NorthernProvince/Laura_Girls/main/image/logo-removebg-preview.png" alt="logo" onerror="this.style.display='none'"></div>
             <h2><i class="fas fa-user-circle" style="color:var(--gold);"></i> Sign In</h2>
             <p>Select your role</p>
         </div>
@@ -1450,7 +1514,7 @@
                 <div class="result-card report-card-print" style="padding:12px 16px;">
                     <div class="result-header" style="display:flex;align-items:center;gap:12px;border-bottom:2px solid var(--gold);padding-bottom:8px;margin-bottom:10px;">
                         <div style="flex-shrink:0;">
-                            <img src="image/logo-removebg-preview.png" alt="School Logo" style="width:50px;height:50px;object-fit:contain;border-radius:50%;border:2px solid var(--gold);">
+                            <img src="https://raw.githubusercontent.com/NorthernProvince/Laura_Girls/main/image/logo-removebg-preview.png" alt="School Logo" style="width:50px;height:50px;object-fit:contain;border-radius:50%;border:2px solid var(--gold);">
                         </div>
                         <div style="flex:1;text-align:center;">
                             <h1 style="font-family:var(--font-display);font-size:20px;color:var(--marian-blue);margin:0;">Laura Girls Secondary School</h1>
