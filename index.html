@@ -7,7 +7,7 @@
     <meta name="theme-color" content="#1a237e">
     <meta name="description" content="Laura Girls Secondary School - Kasama District, Zambia.">
     
-    <!-- Vercel Analytics - wrapped in try/catch to prevent errors -->
+    <!-- Vercel Analytics - only loads if deployed on Vercel -->
     <script>
         try {
             window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
@@ -476,7 +476,7 @@
         "use strict";
 
         // ============================================================
-        // CONFIG - FIXED for Vercel
+        // CONFIG - DIRECT DATABASE CONNECTION
         // ============================================================
         const SUPABASE_URL = 'https://yhmjidkrwtxckecvjixo.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlobWppZGtyd3R4Y2tlY3ZqaXhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc0MzYzMDksImV4cCI6MjEwMzAxMjMwOX0.db6y1ac6HIMt4v_AW9M-IvypHXSz1aoMA-X3bAvpKnI';
@@ -514,6 +514,7 @@
         let supabaseClient = null;
         let currentUser = null;
         let isConnected = false;
+        let connectionAttempts = 0;
         let bulkData = null;
         let teacherImportData = null;
         let currentSchoolCode = 'LGSS';
@@ -762,14 +763,15 @@
             const password = document.getElementById('teacherLoginPassword').value.trim();
             if (!username) { showToast('⚠️ Please enter your username', true); return; }
             if (!password) { showToast('⚠️ Please enter your password', true); return; }
-            
+
+            // Check offline demo teachers first (for testing)
             const validTeachers = {
                 'jbanda': { id: 1, name: 'Mr. John Banda', password: 'teacher123' },
                 'mphiri': { id: 2, name: 'Mrs. Mary Phiri', password: 'teacher123' },
                 'pzulu': { id: 3, name: 'Mr. Peter Zulu', password: 'teacher123' },
                 'gmwansa': { id: 4, name: 'Ms. Grace Mwansa', password: 'teacher123' }
             };
-            
+
             if (validTeachers[username] && validTeachers[username].password === password) {
                 currentUser = { role: 'teacher', id: validTeachers[username].id, name: validTeachers[username].name };
                 showToast('✅ Logged in as teacher: ' + validTeachers[username].name);
@@ -781,7 +783,7 @@
                 teacherNameDisplay.textContent = `Welcome, ${validTeachers[username].name}`;
                 return;
             }
-            
+
             showToast('❌ Invalid credentials. Teachers: jbanda, mphiri, pzulu, gmwansa (password: teacher123)', true);
         }
         window.teacherLogin = teacherLogin;
@@ -803,7 +805,7 @@
         window.adminLogin = adminLogin;
 
         // ============================================================
-        // SUPABASE INIT - FIXED for Vercel
+        // SUPABASE INIT - DIRECT CONNECTION
         // ============================================================
         function initSupabase() {
             try {
@@ -813,68 +815,69 @@
                 }
                 applySchoolBranding();
 
-                // Check if Supabase library is loaded
                 if (typeof window.supabase === 'undefined' || !window.supabase.createClient) {
-                    console.warn('Supabase library not loaded - using offline mode');
-                    setConnectionStatus('offline', 'Offline Mode');
-                    showToast('⚠️ Supabase library not loaded - using offline mode', true);
-                    loadFallbackData();
+                    console.error('Supabase library not loaded');
+                    setConnectionStatus('offline', 'Library Error');
+                    showToast('⚠️ Supabase library not loaded - please refresh', true);
                     return;
                 }
 
-                // Create Supabase client with custom fetch options to handle CORS
+                // Create Supabase client with proper configuration
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
                     auth: {
-                        persistSession: true,
+                        persistSession: false,
                         autoRefreshToken: false,
                         detectSessionInUrl: false
                     }
                 });
 
-                // Test connection with a simple query - using a more reliable approach
-                const testConnection = async () => {
-                    try {
-                        // Try to fetch a single record from students
-                        const { data, error } = await supabaseClient
-                            .from('students')
-                            .select('id')
-                            .limit(1);
-
-                        if (error) {
-                            console.warn('Database connection error:', error);
-                            // Check if it's a CORS error
-                            if (error.message && error.message.includes('CORS')) {
-                                setConnectionStatus('offline', 'CORS Error');
-                                showToast('⚠️ CORS error - please configure Supabase CORS settings', true);
-                            } else {
-                                setConnectionStatus('offline', 'Offline');
-                                showToast('⚠️ Database connection error - using offline mode', true);
-                            }
-                            loadFallbackData();
-                            return;
-                        }
-
-                        isConnected = true;
-                        setConnectionStatus('online', 'Connected');
-                        showToast('✅ Database connected');
-                        loadAllData();
-                    } catch (err) {
-                        console.warn('Connection test failed:', err);
-                        setConnectionStatus('offline', 'Offline');
-                        showToast('⚠️ Could not connect to database - using offline mode', true);
-                        loadFallbackData();
-                    }
-                };
-
-                // Run the connection test
+                // Test connection - try to fetch from students table
                 testConnection();
 
             } catch(e) {
                 console.error('Supabase initialization error:', e);
-                setConnectionStatus('offline', 'Offline');
+                setConnectionStatus('offline', 'Error');
                 showToast('⚠️ ' + e.message, true);
-                loadFallbackData();
             }
+        }
+
+        function testConnection() {
+            connectionAttempts++;
+            setConnectionStatus('connecting', 'Connecting...');
+
+            // Use a more reliable test - try to get a count from the students table
+            supabaseClient.from('students').select('id', { count: 'exact', head: true })
+                .then(({ data, error, count }) => {
+                    if (error) {
+                        console.error('Database connection error:', error);
+                        // Check if it's a CORS or network error
+                        if (error.message && (error.message.includes('CORS') || error.message.includes('NetworkError'))) {
+                            setConnectionStatus('offline', 'CORS Error');
+                            showToast('⚠️ CORS error - please configure Supabase CORS settings', true);
+                            // Retry after 3 seconds
+                            setTimeout(testConnection, 3000);
+                        } else {
+                            setConnectionStatus('offline', 'Error');
+                            showToast('⚠️ Database error: ' + error.message, true);
+                        }
+                        return;
+                    }
+
+                    // Connection successful
+                    isConnected = true;
+                    setConnectionStatus('online', 'Connected');
+                    showToast('✅ Database connected successfully');
+                    loadAllData();
+                })
+                .catch((err) => {
+                    console.error('Connection test failed:', err);
+                    setConnectionStatus('offline', 'Offline');
+                    showToast('⚠️ Could not connect to database: ' + err.message, true);
+                    // Retry a few times
+                    if (connectionAttempts < 3) {
+                        setTimeout(testConnection, 2000);
+                    }
+                });
         }
 
         function loadAllData() {
@@ -885,34 +888,6 @@
             populateImportClassDropdowns();
             updateLoginUI();
             loadSchoolSelector();
-        }
-
-        function loadFallbackData() {
-            console.log('📱 Loading offline fallback data...');
-            populateClassDropdowns();
-            populateBulkClassDropdown();
-            populateImportClassDropdowns();
-            loadFallbackClasses();
-            loadFallbackStats();
-            updateLoginUI();
-            loadSchoolSelector();
-            setConnectionStatus('offline', 'Offline - Demo Mode');
-            showToast('📱 Running in offline mode with demo data');
-        }
-
-        function loadFallbackClasses() {
-            let html = '';
-            CLASS_DEFINITIONS.forEach((c, i) => {
-                html += `<tr><td>${i + 1}</td><td><strong>${c.display}</strong></td><td>${c.grade}</td><td>${c.stream}</td><td>0</td><td><span class="badge badge-info">Offline</span></td></tr>`;
-            });
-            classesTableBody.innerHTML = html;
-        }
-
-        function loadFallbackStats() {
-            totalStudents.textContent = '--';
-            totalTeachers.textContent = '--';
-            totalSubjects.textContent = '--';
-            totalResults.textContent = '--';
         }
 
         function populateClassDropdowns() {
@@ -954,7 +929,6 @@
         // ============================================================
         async function loadAdminStats() {
             if (!supabaseClient || !isConnected) {
-                loadFallbackStats();
                 return;
             }
             try {
@@ -966,20 +940,19 @@
                 const { count: rc } = await supabaseClient.from('results').select('*', { count: 'exact', head: true });
                 totalResults.textContent = rc || 0;
             } catch (e) {
-                loadFallbackStats();
+                console.error('Error loading stats:', e);
             }
         }
 
         async function loadClasses() {
             if (!supabaseClient || !isConnected) {
-                loadFallbackClasses();
                 return;
             }
             try {
                 const { data, error } = await supabaseClient.from('classes').select('*').order('grade', { ascending: true });
                 if (error) throw error;
                 if (!data || data.length === 0) {
-                    loadFallbackClasses();
+                    classesTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--ink-faint);">No classes found. Please add classes.</td></tr>`;
                     return;
                 }
                 let html = '';
@@ -997,7 +970,7 @@
                         .catch(() => {});
                 });
             } catch (e) {
-                loadFallbackClasses();
+                console.error('Error loading classes:', e);
             }
         }
 
@@ -1013,191 +986,9 @@
                     loadClasses();
                 }).catch(err => showToast('❌ ' + err.message, true));
             } else {
-                showToast('⚠️ Offline', true);
+                showToast('⚠️ Not connected to database', true);
             }
         };
-
-        // ============================================================
-        // BULK REGISTER
-        // ============================================================
-        bulkRegisterTemplateBtn.addEventListener('click', function() {
-            const wb = XLSX.utils.book_new();
-            const data = [['Student Number', 'Name']];
-            data.push(['2024-001', 'Ireen Mwansa']);
-            data.push(['2024-002', 'Mary Phiri']);
-            data.push(['2024-003', 'Grace Zulu']);
-            data.push(['2024-004', 'Mercy Banda']);
-            data.push(['2024-005', 'Faith Mumba']);
-            const ws = XLSX.utils.aoa_to_sheet(data);
-            XLSX.utils.book_append_sheet(wb, ws, 'Students');
-            XLSX.writeFile(wb, 'Bulk_Student_Register_Template.xlsx');
-            showToast('📥 Template downloaded');
-        });
-
-        bulkImportArea.addEventListener('click', () => bulkFileInput.click());
-        bulkImportArea.addEventListener('dragover', e => {
-            e.preventDefault();
-            bulkImportArea.classList.add('dragover');
-        });
-        bulkImportArea.addEventListener('dragleave', e => {
-            e.preventDefault();
-            bulkImportArea.classList.remove('dragover');
-        });
-        bulkImportArea.addEventListener('drop', e => {
-            e.preventDefault();
-            bulkImportArea.classList.remove('dragover');
-            if (e.dataTransfer.files.length) {
-                bulkFileInput.files = e.dataTransfer.files;
-                handleBulkFile(bulkFileInput.files[0]);
-            }
-        });
-        bulkFileInput.addEventListener('change', function() {
-            if (this.files.length) handleBulkFile(this.files[0]);
-        });
-
-        function handleBulkFile(file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    const sheet = workbook.Sheets[workbook.SheetNames[0]];
-                    const json = XLSX.utils.sheet_to_json(sheet);
-                    if (!json || json.length === 0) {
-                        showToast('⚠️ Empty file', true);
-                        return;
-                    }
-                    const headers = Object.keys(json[0]);
-                    const hasNumber = headers.some(h => h.toLowerCase().includes('student') && (h.toLowerCase().includes('number') || h.toLowerCase().includes('id')));
-                    const hasName = headers.some(h => h.toLowerCase().includes('name'));
-                    if (!hasNumber || !hasName) {
-                        showToast('⚠️ Missing columns: "Student Number" and "Name" required', true);
-                        return;
-                    }
-                    const numKey = headers.find(h => h.toLowerCase().includes('student') && (h.toLowerCase().includes('number') || h.toLowerCase().includes('id')));
-                    const nameKey = headers.find(h => h.toLowerCase().includes('name'));
-                    const mapped = json.map(row => ({
-                        student_number: String(row[numKey] || '').trim(),
-                        name: String(row[nameKey] || '').trim()
-                    })).filter(r => r.student_number && r.name);
-                    if (mapped.length === 0) {
-                        showToast('⚠️ No valid rows found', true);
-                        return;
-                    }
-                    bulkData = mapped;
-                    displayBulkPreview(mapped);
-                    bulkConfirmImportBtn.style.display = 'inline-flex';
-                    bulkClearPreviewBtn.style.display = 'inline-flex';
-                    bulkImportStatus.innerHTML = '';
-                    showToast(`✅ Loaded ${mapped.length} students`);
-                } catch (err) {
-                    showToast('❌ Error reading file: ' + err.message, true);
-                    console.error(err);
-                }
-            };
-            reader.readAsArrayBuffer(file);
-        }
-
-        function displayBulkPreview(data) {
-            let html = `<div class="table-wrapper"><table><thead><tr><th>#</th><th>Student Number</th><th>Name</th><th>Status</th></tr></thead><tbody>`;
-            data.slice(0, 20).forEach((r, i) => {
-                const status = r.student_number && r.name ? '✅ Ready' : '⚠️ Incomplete';
-                const cls = r.student_number && r.name ? 'badge-success' : 'badge-warning';
-                html += `<tr><td>${i + 1}</td><td>${r.student_number}</td><td>${r.name}</td><td><span class="badge ${cls}">${status}</span></td></tr>`;
-            });
-            if (data.length > 20) html += `<tr><td colspan="4" style="text-align:center;color:var(--ink-faint);">... and ${data.length - 20} more</td></tr>`;
-            html += `</tbody></table></div><p style="font-size:12px;color:var(--ink-faint);margin-top:8px;">${data.length} students ready to register.</p>`;
-            bulkImportPreview.innerHTML = html;
-            bulkImportPreview.style.display = 'block';
-        }
-
-        bulkClearPreviewBtn.addEventListener('click', function() {
-            bulkData = null;
-            bulkImportPreview.style.display = 'none';
-            bulkImportPreview.innerHTML = '';
-            bulkConfirmImportBtn.style.display = 'none';
-            bulkClearPreviewBtn.style.display = 'none';
-            bulkImportStatus.innerHTML = '';
-            bulkFileInput.value = '';
-            showToast('🧹 Cleared');
-        });
-
-        bulkConfirmImportBtn.addEventListener('click', async function() {
-            if (!currentUser || currentUser.role !== 'admin') {
-                showToast('🔒 Admin login required', true);
-                return;
-            }
-            if (!bulkData || bulkData.length === 0) {
-                showToast('⚠️ No data to import', true);
-                return;
-            }
-            const selectedClass = bulkClassSelect.value;
-            if (!selectedClass) {
-                showToast('⚠️ Please select a default class', true);
-                return;
-            }
-            if (!supabaseClient || !isConnected) {
-                showToast('⚠️ Offline mode – cannot register', true);
-                return;
-            }
-
-            this.disabled = true;
-            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registering...';
-            let success = 0,
-                errors = 0,
-                duplicates = 0;
-
-            for (const row of bulkData) {
-                try {
-                    const { data: existing } = await supabaseClient
-                        .from('students')
-                        .select('id')
-                        .eq('student_number', row.student_number)
-                        .maybeSingle();
-                    if (existing) {
-                        duplicates++;
-                        continue;
-                    }
-
-                    const { error } = await supabaseClient
-                        .from('students')
-                        .insert({
-                            student_number: row.student_number,
-                            name: row.name,
-                            class: selectedClass
-                        });
-                    if (error) {
-                        errors++;
-                    } else {
-                        success++;
-                    }
-                } catch (e) {
-                    errors++;
-                }
-            }
-
-            this.disabled = false;
-            this.innerHTML = '<i class="fas fa-check-circle"></i> Confirm & Register All';
-            const msg = `✅ ${success} registered, ${duplicates} duplicates, ${errors} errors.`;
-            bulkImportStatus.innerHTML = msg;
-            showToast(msg);
-            loadAdminStats();
-            loadClasses();
-            bulkData = null;
-            bulkImportPreview.style.display = 'none';
-            bulkImportPreview.innerHTML = '';
-            bulkConfirmImportBtn.style.display = 'none';
-            bulkClearPreviewBtn.style.display = 'none';
-            bulkFileInput.value = '';
-        });
-
-        bulkRegisterBtn.addEventListener('click', function() {
-            if (!bulkData || bulkData.length === 0) {
-                showToast('⚠️ Please upload an Excel file first', true);
-                return;
-            }
-            bulkConfirmImportBtn.click();
-        });
 
         // ============================================================
         // TEACHER LOAD STUDENTS
@@ -1220,16 +1011,7 @@
             }
 
             if (!supabaseClient || !isConnected) {
-                const demoStudents = [
-                    { id: 1, name: 'Ireen Mwansa', student_number: '2024-001' },
-                    { id: 2, name: 'Mary Phiri', student_number: '2024-002' },
-                    { id: 3, name: 'Grace Zulu', student_number: '2024-003' },
-                    { id: 4, name: 'Mercy Banda', student_number: '2024-004' },
-                    { id: 5, name: 'Faith Mumba', student_number: '2024-005' }
-                ];
-                displayResultsEntry(demoStudents, subject, term, year, testType);
-                resultsEntry.style.display = 'block';
-                showToast('⚠️ Offline mode - showing demo students', true);
+                showToast('⚠️ Not connected to database', true);
                 return;
             }
 
@@ -1279,13 +1061,6 @@
             } catch (err) {
                 showToast('❌ Error loading students: ' + err.message, true);
                 console.error(err);
-                const demoStudents = [
-                    { id: 1, name: 'Ireen Mwansa', student_number: '2024-001' },
-                    { id: 2, name: 'Mary Phiri', student_number: '2024-002' },
-                    { id: 3, name: 'Grace Zulu', student_number: '2024-003' }
-                ];
-                displayResultsEntry(demoStudents, subject, term, year, testType);
-                resultsEntry.style.display = 'block';
             }
         });
 
@@ -1403,7 +1178,7 @@
             }
 
             if (!supabaseClient || !isConnected) {
-                showToast('⚠️ Offline mode - results saved locally only', true);
+                showToast('⚠️ Not connected to database', true);
                 return;
             }
 
@@ -1486,6 +1261,11 @@
 
             if (!className || !subject || !term || !year || !testType) {
                 showToast('⚠️ Fill all import fields', true);
+                return;
+            }
+
+            if (!supabaseClient || !isConnected) {
+                showToast('⚠️ Not connected to database', true);
                 return;
             }
 
@@ -1625,7 +1405,7 @@
             }
 
             if (!supabaseClient || !isConnected) {
-                showToast('⚠️ Offline mode – import not available', true);
+                showToast('⚠️ Not connected to database', true);
                 return;
             }
 
@@ -1734,24 +1514,7 @@
             }
 
             if (!supabaseClient || !isConnected) {
-                const demoStudent = {
-                    name: 'Chela Tasheni',
-                    student_number: number,
-                    class: 'Form1_Mazz',
-                    position: 1,
-                    comment: 'Good performance! Keep it up.'
-                };
-                const demoMidResults = [
-                    { subject: 'ICT', score: 88 },
-                    { subject: 'Mathematics', score: 88 }
-                ];
-                const demoEndResults = [
-                    { subject: 'ICT', score: 79 },
-                    { subject: 'Mathematics', score: 69 }
-                ];
-                displayCombinedResults(demoStudent, demoMidResults, demoEndResults, term, year);
-                studentResults.style.display = 'block';
-                showToast('⚠️ Offline mode - showing demo data', true);
+                showToast('⚠️ Not connected to database', true);
                 return;
             }
 
@@ -1999,7 +1762,7 @@
             }
 
             if (!supabaseClient || !isConnected) {
-                showToast('⚠️ Offline mode', true);
+                showToast('⚠️ Not connected to database', true);
                 return;
             }
 
@@ -2044,7 +1807,7 @@
             }
 
             if (!supabaseClient || !isConnected) {
-                showToast('⚠️ Offline mode', true);
+                showToast('⚠️ Not connected to database', true);
                 return;
             }
 
@@ -2083,7 +1846,7 @@
             }
 
             if (!supabaseClient || !isConnected) {
-                showToast('⚠️ Offline mode', true);
+                showToast('⚠️ Not connected to database', true);
                 return;
             }
 
@@ -2115,6 +1878,188 @@
                 }
                 console.error(err);
             }
+        });
+
+        // ============================================================
+        // BULK REGISTER
+        // ============================================================
+        bulkRegisterTemplateBtn.addEventListener('click', function() {
+            const wb = XLSX.utils.book_new();
+            const data = [['Student Number', 'Name']];
+            data.push(['2024-001', 'Ireen Mwansa']);
+            data.push(['2024-002', 'Mary Phiri']);
+            data.push(['2024-003', 'Grace Zulu']);
+            data.push(['2024-004', 'Mercy Banda']);
+            data.push(['2024-005', 'Faith Mumba']);
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            XLSX.utils.book_append_sheet(wb, ws, 'Students');
+            XLSX.writeFile(wb, 'Bulk_Student_Register_Template.xlsx');
+            showToast('📥 Template downloaded');
+        });
+
+        bulkImportArea.addEventListener('click', () => bulkFileInput.click());
+        bulkImportArea.addEventListener('dragover', e => {
+            e.preventDefault();
+            bulkImportArea.classList.add('dragover');
+        });
+        bulkImportArea.addEventListener('dragleave', e => {
+            e.preventDefault();
+            bulkImportArea.classList.remove('dragover');
+        });
+        bulkImportArea.addEventListener('drop', e => {
+            e.preventDefault();
+            bulkImportArea.classList.remove('dragover');
+            if (e.dataTransfer.files.length) {
+                bulkFileInput.files = e.dataTransfer.files;
+                handleBulkFile(bulkFileInput.files[0]);
+            }
+        });
+        bulkFileInput.addEventListener('change', function() {
+            if (this.files.length) handleBulkFile(this.files[0]);
+        });
+
+        function handleBulkFile(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const json = XLSX.utils.sheet_to_json(sheet);
+                    if (!json || json.length === 0) {
+                        showToast('⚠️ Empty file', true);
+                        return;
+                    }
+                    const headers = Object.keys(json[0]);
+                    const hasNumber = headers.some(h => h.toLowerCase().includes('student') && (h.toLowerCase().includes('number') || h.toLowerCase().includes('id')));
+                    const hasName = headers.some(h => h.toLowerCase().includes('name'));
+                    if (!hasNumber || !hasName) {
+                        showToast('⚠️ Missing columns: "Student Number" and "Name" required', true);
+                        return;
+                    }
+                    const numKey = headers.find(h => h.toLowerCase().includes('student') && (h.toLowerCase().includes('number') || h.toLowerCase().includes('id')));
+                    const nameKey = headers.find(h => h.toLowerCase().includes('name'));
+                    const mapped = json.map(row => ({
+                        student_number: String(row[numKey] || '').trim(),
+                        name: String(row[nameKey] || '').trim()
+                    })).filter(r => r.student_number && r.name);
+                    if (mapped.length === 0) {
+                        showToast('⚠️ No valid rows found', true);
+                        return;
+                    }
+                    bulkData = mapped;
+                    displayBulkPreview(mapped);
+                    bulkConfirmImportBtn.style.display = 'inline-flex';
+                    bulkClearPreviewBtn.style.display = 'inline-flex';
+                    bulkImportStatus.innerHTML = '';
+                    showToast(`✅ Loaded ${mapped.length} students`);
+                } catch (err) {
+                    showToast('❌ Error reading file: ' + err.message, true);
+                    console.error(err);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function displayBulkPreview(data) {
+            let html = `<div class="table-wrapper"><table><thead><tr><th>#</th><th>Student Number</th><th>Name</th><th>Status</th></tr></thead><tbody>`;
+            data.slice(0, 20).forEach((r, i) => {
+                const status = r.student_number && r.name ? '✅ Ready' : '⚠️ Incomplete';
+                const cls = r.student_number && r.name ? 'badge-success' : 'badge-warning';
+                html += `<tr><td>${i + 1}</td><td>${r.student_number}</td><td>${r.name}</td><td><span class="badge ${cls}">${status}</span></td></tr>`;
+            });
+            if (data.length > 20) html += `<tr><td colspan="4" style="text-align:center;color:var(--ink-faint);">... and ${data.length - 20} more</td></tr>`;
+            html += `</tbody></table></div><p style="font-size:12px;color:var(--ink-faint);margin-top:8px;">${data.length} students ready to register.</p>`;
+            bulkImportPreview.innerHTML = html;
+            bulkImportPreview.style.display = 'block';
+        }
+
+        bulkClearPreviewBtn.addEventListener('click', function() {
+            bulkData = null;
+            bulkImportPreview.style.display = 'none';
+            bulkImportPreview.innerHTML = '';
+            bulkConfirmImportBtn.style.display = 'none';
+            bulkClearPreviewBtn.style.display = 'none';
+            bulkImportStatus.innerHTML = '';
+            bulkFileInput.value = '';
+            showToast('🧹 Cleared');
+        });
+
+        bulkConfirmImportBtn.addEventListener('click', async function() {
+            if (!currentUser || currentUser.role !== 'admin') {
+                showToast('🔒 Admin login required', true);
+                return;
+            }
+            if (!bulkData || bulkData.length === 0) {
+                showToast('⚠️ No data to import', true);
+                return;
+            }
+            const selectedClass = bulkClassSelect.value;
+            if (!selectedClass) {
+                showToast('⚠️ Please select a default class', true);
+                return;
+            }
+            if (!supabaseClient || !isConnected) {
+                showToast('⚠️ Not connected to database', true);
+                return;
+            }
+
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registering...';
+            let success = 0,
+                errors = 0,
+                duplicates = 0;
+
+            for (const row of bulkData) {
+                try {
+                    const { data: existing } = await supabaseClient
+                        .from('students')
+                        .select('id')
+                        .eq('student_number', row.student_number)
+                        .maybeSingle();
+                    if (existing) {
+                        duplicates++;
+                        continue;
+                    }
+
+                    const { error } = await supabaseClient
+                        .from('students')
+                        .insert({
+                            student_number: row.student_number,
+                            name: row.name,
+                            class: selectedClass
+                        });
+                    if (error) {
+                        errors++;
+                    } else {
+                        success++;
+                    }
+                } catch (e) {
+                    errors++;
+                }
+            }
+
+            this.disabled = false;
+            this.innerHTML = '<i class="fas fa-check-circle"></i> Confirm & Register All';
+            const msg = `✅ ${success} registered, ${duplicates} duplicates, ${errors} errors.`;
+            bulkImportStatus.innerHTML = msg;
+            showToast(msg);
+            loadAdminStats();
+            loadClasses();
+            bulkData = null;
+            bulkImportPreview.style.display = 'none';
+            bulkImportPreview.innerHTML = '';
+            bulkConfirmImportBtn.style.display = 'none';
+            bulkClearPreviewBtn.style.display = 'none';
+            bulkFileInput.value = '';
+        });
+
+        bulkRegisterBtn.addEventListener('click', function() {
+            if (!bulkData || bulkData.length === 0) {
+                showToast('⚠️ Please upload an Excel file first', true);
+                return;
+            }
+            bulkConfirmImportBtn.click();
         });
 
         // ============================================================
@@ -2171,7 +2116,7 @@
         console.log('👨‍🏫 Teachers: jbanda, mphiri, pzulu, gmwansa (password: teacher123)');
         console.log('🔑 Admin: admin123');
         console.log('📱 Database connection status:', isConnected ? 'Connected' : 'Offline');
-        console.log('💡 If offline, the app will work with demo data');
+        console.log('💡 If offline, check Supabase CORS settings');
     })();
 </script>
 </body>
