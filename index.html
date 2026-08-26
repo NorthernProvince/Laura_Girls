@@ -5,13 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>Laura Girls Secondary School</title>
     <meta name="theme-color" content="#1a237e">
-    <meta name="description" content="Laura Girls Secondary School - Kasama District, Zambia. Student results, teacher dashboard, and school management system.">
+    <meta name="description" content="Laura Girls Secondary School - Kasama District, Zambia.">
     
-    <!-- Vercel Analytics -->
+    <!-- Vercel Analytics - wrapped in try/catch to prevent errors -->
     <script>
-        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+        try {
+            window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+        } catch(e) {
+            console.log('Analytics not available');
+        }
     </script>
-    <script defer src="/_vercel/insights/script.js"></script>
+    <script defer src="/_vercel/insights/script.js" onerror="console.log('Analytics script not found - ignoring')"></script>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,6 +26,7 @@
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js">
     </script>
     <style>
+        /* ========== CSS (same as before) ========== */
         :root {
             --paper: #F4F5F1;
             --surface: #FFFFFF;
@@ -471,60 +476,7 @@
         "use strict";
 
         // ============================================================
-        // ANALYTICS TRACKING FUNCTIONS
-        // ============================================================
-        
-        // Track page views and events
-        function trackEvent(category, action, label, value) {
-            if (window.va) {
-                window.va('send', 'event', {
-                    category: category,
-                    action: action,
-                    label: label || null,
-                    value: value || null
-                });
-                console.log(`📊 Analytics: ${category} - ${action}${label ? ' (' + label + ')' : ''}`);
-            }
-        }
-
-        function trackPageView(page, userRole) {
-            if (window.va) {
-                window.va('send', 'pageview', {
-                    path: page || window.location.pathname,
-                    title: document.title,
-                    dimension1: userRole || 'guest',
-                    dimension2: currentSchoolCode || 'LGSS'
-                });
-            }
-        }
-
-        // Track user login
-        function trackLogin(userRole, username) {
-            trackEvent('User', 'Login', userRole + ': ' + username);
-        }
-
-        // Track school switching
-        function trackSchoolSwitch(schoolCode, schoolName) {
-            trackEvent('School', 'Switch', schoolCode + ' - ' + schoolName);
-        }
-
-        // Track results viewing
-        function trackResultsView(studentNumber, testType) {
-            trackEvent('Results', 'View', studentNumber, testType);
-        }
-
-        // Track result saving
-        function trackResultsSave(subject, classId, count) {
-            trackEvent('Results', 'Save', subject + ' - ' + classId, count);
-        }
-
-        // Track Excel import
-        function trackImport(fileType, count) {
-            trackEvent('Import', 'Excel', fileType, count);
-        }
-
-        // ============================================================
-        // CONFIG
+        // CONFIG - FIXED for Vercel
         // ============================================================
         const SUPABASE_URL = 'https://yhmjidkrwtxckecvjixo.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlobWppZGtyd3R4Y2tlY3ZqaXhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc0MzYzMDksImV4cCI6MjEwMzAxMjMwOX0.db6y1ac6HIMt4v_AW9M-IvypHXSz1aoMA-X3bAvpKnI';
@@ -701,14 +653,9 @@
                 showToast('❌ School not found', true);
                 return;
             }
-            const oldSchool = currentSchoolCode;
             currentSchoolCode = schoolCode;
             localStorage.setItem('selectedSchool', schoolCode);
             applySchoolBranding();
-            
-            // Track school switch
-            trackSchoolSwitch(schoolCode, SCHOOL_CONFIG.schools[schoolCode].name);
-            
             showToast(`✅ Switched to ${SCHOOL_CONFIG.schools[schoolCode].name}`);
             if (isConnected) {
                 loadAllData();
@@ -796,9 +743,6 @@
             teacherLocked.style.display = 'block'; teacherContent.style.display = 'none';
             adminLocked.style.display = 'block'; adminContent.style.display = 'none';
             document.querySelector('.tab-btn[data-tab="student"]').click();
-            
-            // Track logout
-            trackEvent('User', 'Logout', 'User logged out');
         }
 
         function studentLogin() {
@@ -809,10 +753,6 @@
             loginModal.classList.remove('active'); updateLoginUI();
             document.querySelector('.tab-btn[data-tab="student"]').click();
             document.getElementById('studentNumber').value = id;
-            
-            // Track student login
-            trackLogin('student', id);
-            
             viewResultsBtn.click();
         }
         window.studentLogin = studentLogin;
@@ -839,9 +779,6 @@
                 teacherContent.style.display = 'block';
                 document.querySelector('.tab-btn[data-tab="teacher"]').click();
                 teacherNameDisplay.textContent = `Welcome, ${validTeachers[username].name}`;
-                
-                // Track teacher login
-                trackLogin('teacher', username);
                 return;
             }
             
@@ -857,10 +794,6 @@
                 loginModal.classList.remove('active'); updateLoginUI();
                 adminLocked.style.display = 'none'; adminContent.style.display = 'block';
                 document.querySelector('.tab-btn[data-tab="admin"]').click();
-                
-                // Track admin login
-                trackLogin('admin', 'admin');
-                
                 loadAdminStats(); loadClasses(); populateBulkClassDropdown();
                 loadSchoolSelector();
                 return;
@@ -870,7 +803,7 @@
         window.adminLogin = adminLogin;
 
         // ============================================================
-        // SUPABASE INIT
+        // SUPABASE INIT - FIXED for Vercel
         // ============================================================
         function initSupabase() {
             try {
@@ -880,48 +813,67 @@
                 }
                 applySchoolBranding();
 
+                // Check if Supabase library is loaded
                 if (typeof window.supabase === 'undefined' || !window.supabase.createClient) {
                     console.warn('Supabase library not loaded - using offline mode');
                     setConnectionStatus('offline', 'Offline Mode');
                     showToast('⚠️ Supabase library not loaded - using offline mode', true);
                     loadFallbackData();
-                    // Track offline mode
-                    trackEvent('System', 'Offline', 'Supabase library not loaded');
                     return;
                 }
 
-                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                // Create Supabase client with custom fetch options to handle CORS
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+                    auth: {
+                        persistSession: true,
+                        autoRefreshToken: false,
+                        detectSessionInUrl: false
+                    }
+                });
 
-                supabaseClient.from('students').select('count', { count: 'exact', head: true })
-                    .then(({ error }) => {
+                // Test connection with a simple query - using a more reliable approach
+                const testConnection = async () => {
+                    try {
+                        // Try to fetch a single record from students
+                        const { data, error } = await supabaseClient
+                            .from('students')
+                            .select('id')
+                            .limit(1);
+
                         if (error) {
                             console.warn('Database connection error:', error);
-                            setConnectionStatus('offline', 'Offline');
-                            showToast('⚠️ Database connection error - using offline mode', true);
+                            // Check if it's a CORS error
+                            if (error.message && error.message.includes('CORS')) {
+                                setConnectionStatus('offline', 'CORS Error');
+                                showToast('⚠️ CORS error - please configure Supabase CORS settings', true);
+                            } else {
+                                setConnectionStatus('offline', 'Offline');
+                                showToast('⚠️ Database connection error - using offline mode', true);
+                            }
                             loadFallbackData();
-                            trackEvent('System', 'Offline', 'Database connection error');
                             return;
                         }
+
                         isConnected = true;
                         setConnectionStatus('online', 'Connected');
                         showToast('✅ Database connected');
                         loadAllData();
-                        trackEvent('System', 'Online', 'Database connected');
-                    })
-                    .catch((err) => {
+                    } catch (err) {
                         console.warn('Connection test failed:', err);
                         setConnectionStatus('offline', 'Offline');
                         showToast('⚠️ Could not connect to database - using offline mode', true);
                         loadFallbackData();
-                        trackEvent('System', 'Offline', 'Connection test failed');
-                    });
+                    }
+                };
+
+                // Run the connection test
+                testConnection();
 
             } catch(e) {
                 console.error('Supabase initialization error:', e);
                 setConnectionStatus('offline', 'Offline');
                 showToast('⚠️ ' + e.message, true);
                 loadFallbackData();
-                trackEvent('System', 'Error', e.message);
             }
         }
 
@@ -933,9 +885,6 @@
             populateImportClassDropdowns();
             updateLoginUI();
             loadSchoolSelector();
-            
-            // Track page view
-            trackPageView(window.location.pathname, currentUser?.role);
         }
 
         function loadFallbackData() {
@@ -949,8 +898,6 @@
             loadSchoolSelector();
             setConnectionStatus('offline', 'Offline - Demo Mode');
             showToast('📱 Running in offline mode with demo data');
-            
-            trackEvent('System', 'Offline', 'Using fallback data');
         }
 
         function loadFallbackClasses() {
@@ -1064,7 +1011,6 @@
                 supabaseClient.from('classes').delete().eq('id', id).then(() => {
                     showToast('✅ Deleted');
                     loadClasses();
-                    trackEvent('Admin', 'DeleteClass', id);
                 }).catch(err => showToast('❌ ' + err.message, true));
             } else {
                 showToast('⚠️ Offline', true);
@@ -1086,7 +1032,6 @@
             XLSX.utils.book_append_sheet(wb, ws, 'Students');
             XLSX.writeFile(wb, 'Bulk_Student_Register_Template.xlsx');
             showToast('📥 Template downloaded');
-            trackEvent('Admin', 'DownloadTemplate', 'Student Registration');
         });
 
         bulkImportArea.addEventListener('click', () => bulkFileInput.click());
@@ -1145,7 +1090,6 @@
                     bulkClearPreviewBtn.style.display = 'inline-flex';
                     bulkImportStatus.innerHTML = '';
                     showToast(`✅ Loaded ${mapped.length} students`);
-                    trackEvent('Admin', 'BulkUploadPreview', mapped.length + ' students');
                 } catch (err) {
                     showToast('❌ Error reading file: ' + err.message, true);
                     console.error(err);
@@ -1237,10 +1181,6 @@
             const msg = `✅ ${success} registered, ${duplicates} duplicates, ${errors} errors.`;
             bulkImportStatus.innerHTML = msg;
             showToast(msg);
-            
-            // Track bulk import
-            trackEvent('Admin', 'BulkRegisterStudents', selectedClass, success);
-            
             loadAdminStats();
             loadClasses();
             bulkData = null;
@@ -1278,9 +1218,6 @@
                 showToast('⚠️ Please select Class, Subject, Term, Year, and Test Type', true);
                 return;
             }
-
-            // Track teacher loading students
-            trackEvent('Teacher', 'LoadStudents', className + ' - ' + subject);
 
             if (!supabaseClient || !isConnected) {
                 const demoStudents = [
@@ -1527,9 +1464,6 @@
                 this.innerHTML = '<i class="fas fa-save"></i> Save All';
                 this.disabled = false;
 
-                // Track results save
-                trackResultsSave(subject, className, resultsToSave.length);
-
                 await loadStudentsWithResults(className, subject, term, year, testType);
 
             } catch (err) {
@@ -1567,9 +1501,6 @@
             teacherImportClearBtn.style.display = 'none';
             teacherImportStatus.innerHTML = '';
             showToast('📂 Upload your Excel file with scores');
-            
-            // Track import load
-            trackEvent('Teacher', 'ImportLoad', className + ' - ' + subject);
         });
 
         teacherImportArea.addEventListener('click', () => teacherFileInput.click());
@@ -1640,9 +1571,6 @@
                     teacherImportClearBtn.style.display = 'inline-flex';
                     teacherImportStatus.innerHTML = '';
                     showToast(`✅ Loaded ${mapped.length} results from Excel`);
-                    
-                    // Track file import
-                    trackImport('Excel', mapped.length);
                 } catch (err) {
                     showToast('❌ Error reading file: ' + err.message, true);
                     console.error(err);
@@ -1771,9 +1699,6 @@
             const msg = `✅ ${imported} saved (${duplicates} updated), ${notFound} students not found, ${errors} errors.`;
             teacherImportStatus.innerHTML = msg;
             showToast(msg);
-            
-            // Track import results
-            trackEvent('Teacher', 'ImportResults', subject + ' - ' + className, imported);
 
             teacherImportData = null;
             teacherImportPreview.style.display = 'none';
@@ -1807,9 +1732,6 @@
                 showToast('⚠️ Please select a year', true);
                 return;
             }
-
-            // Track student viewing results
-            trackResultsView(number, term);
 
             if (!supabaseClient || !isConnected) {
                 const demoStudent = {
@@ -2049,9 +1971,6 @@
             setTimeout(() => {
                 card.classList.remove('report-card-print');
             }, 1000);
-            
-            // Track PDF download
-            trackEvent('Student', 'DownloadPDF', studentNumber.value);
         });
 
         // ============================================================
@@ -2096,9 +2015,6 @@
                 adminStudentClass.value = '';
                 loadAdminStats();
                 loadClasses();
-                
-                // Track student addition
-                trackEvent('Admin', 'AddStudent', className);
             } catch (err) {
                 showToast('❌ Error: ' + err.message, true);
                 console.error(err);
@@ -2143,9 +2059,6 @@
                 adminTeacherUsername.value = '';
                 adminTeacherPassword.value = '';
                 loadAdminStats();
-                
-                // Track teacher addition
-                trackEvent('Admin', 'AddTeacher', username);
             } catch (err) {
                 showToast('❌ Error: ' + err.message, true);
                 console.error(err);
@@ -2194,9 +2107,6 @@
                 newClassStream.value = '';
                 loadClasses();
                 populateClassDropdowns();
-                
-                // Track class addition
-                trackEvent('Admin', 'AddClass', displayName);
             } catch (err) {
                 if (err.message.includes('duplicate')) {
                     showToast('❌ Class already exists', true);
@@ -2208,7 +2118,7 @@
         });
 
         // ============================================================
-        // TAB SWITCHING - with analytics tracking
+        // TAB SWITCHING
         // ============================================================
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', function() {
@@ -2239,17 +2149,12 @@
                 document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
                 const sec = document.getElementById(tab + 'Section');
                 if (sec) sec.classList.add('active');
-                
-                // Track tab switching
-                trackEvent('Navigation', 'TabSwitch', tab);
-                trackPageView(tab, currentUser?.role);
             });
         });
 
         // ============================================================
         // BOOT
         // ============================================================
-        // Apply branding
         const savedSchool = localStorage.getItem('selectedSchool');
         if (savedSchool && SCHOOL_CONFIG.schools[savedSchool]) {
             currentSchoolCode = savedSchool;
@@ -2260,16 +2165,13 @@
         initSupabase();
         updateLoginUI();
 
-        // Track initial page view
-        trackPageView('home', currentUser?.role);
-
-        console.log('✅ Laura Girls School System with Analytics');
+        console.log('✅ Laura Girls School System');
         console.log('🏫 Current school:', getCurrentSchool().name);
         console.log('📝 Available schools:', Object.keys(SCHOOL_CONFIG.schools).join(', '));
         console.log('👨‍🏫 Teachers: jbanda, mphiri, pzulu, gmwansa (password: teacher123)');
         console.log('🔑 Admin: admin123');
         console.log('📱 Database connection status:', isConnected ? 'Connected' : 'Offline');
-        console.log('📊 Analytics tracking enabled - view data in Vercel dashboard');
+        console.log('💡 If offline, the app will work with demo data');
     })();
 </script>
 </body>
