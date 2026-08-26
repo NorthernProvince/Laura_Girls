@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Laura Girls · Combined Report Card</title>
+    <title>Laura Girls · Teacher Subject Assignment</title>
     <meta name="theme-color" content="#1a237e">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -105,6 +105,7 @@
         .badge-warning { background:#fff3e0; color:#e65100; }
         .badge-danger { background:#ffebee; color:#c62828; }
         .badge-info { background:#e3f2fd; color:#0d47a1; }
+        .badge-purple { background:#f3e5f5; color:#6a1b9a; }
         .stat-card { background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); border:1px solid var(--border); border-radius:14px; padding:16px; text-align:center; box-shadow:var(--shadow-sm); border-bottom:3px solid var(--gold); }
         .stat-card .number { font-family:var(--font-mono); font-size:28px; font-weight:700; color:var(--marian-blue); }
         .stat-card .label { font-size:11px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:0.5px; margin-top:4px; }
@@ -172,6 +173,11 @@
         .no-assignments .sub { color:var(--ink-faint); font-size:12px; }
         .assignment-row { transition:background 0.2s; }
         .assignment-row:hover { background:var(--marian-blue-tint); }
+        .subject-assignment-card { border-top-color: var(--marian-blue); }
+        .teacher-assignment-chip { display:inline-flex; align-items:center; gap:6px; background:var(--paper); border-radius:20px; padding:4px 12px; margin:3px; font-size:12px; border:1px solid var(--border); }
+        .teacher-assignment-chip .subject-tag { background:var(--marian-blue-tint); color:var(--marian-blue); padding:1px 8px; border-radius:12px; font-size:10px; font-weight:600; }
+        .teacher-assignment-chip .remove-btn { background:none; border:none; color:var(--oxblood); cursor:pointer; font-size:12px; padding:0 4px; }
+        .teacher-assignment-chip .remove-btn:hover { color:var(--oxblood-dark); }
         @media (max-width:480px) {
             .topbar .brand h1 { font-size:14px; }
             .topbar .brand .coat-of-arms { width:35px; height:35px; }
@@ -289,11 +295,11 @@
             <div class="card"><div class="card-header"><h2><i class="fas fa-chalkboard-teacher"></i> Teacher Dashboard</h2><span class="subtitle" id="teacherNameDisplay">Welcome, Teacher</span></div>
                 <div class="card" style="border-top-color: var(--oxblood); margin-bottom:16px;">
                     <div class="card-header">
-                        <h2><i class="fas fa-users" style="color:var(--oxblood);"></i> Your Assigned Classes</h2>
-                        <span class="subtitle">You can only enter results for these classes</span>
+                        <h2><i class="fas fa-users" style="color:var(--oxblood);"></i> Your Assigned Subjects & Classes</h2>
+                        <span class="subtitle">You can only enter results for subjects you are assigned to</span>
                     </div>
                     <div id="assignedClassesList">
-                        <p style="color:var(--ink-faint); text-align:center; padding:10px;">Loading your assigned classes...</p>
+                        <p style="color:var(--ink-faint); text-align:center; padding:10px;">Loading your assigned subjects...</p>
                     </div>
                 </div>
                 <div class="grid-3"><div class="field"><label><i class="fas fa-users"></i> Class</label><select id="teacherClass"><option value="">Select Class</option></select></div><div class="field"><label><i class="fas fa-book"></i> Subject</label><select id="teacherSubject"><option value="">Select</option><option value="English">English</option><option value="Mathematics">Mathematics</option><option value="Biology">Biology</option><option value="Chemistry">Chemistry</option><option value="Physics">Physics</option><option value="History">History</option><option value="Geography">Geography</option><option value="Civic Education">Civic Education</option><option value="Zambian Languages">Zambian Languages</option><option value="Religious Education">Religious Education</option><option value="Commerce">Commerce</option><option value="Principles of Accounts">Principles of Accounts</option><option value="Agricultural Science">Agricultural Science</option><option value="ICT">ICT</option></select></div><div class="field"><label><i class="fas fa-calendar-alt"></i> Term</label><select id="teacherTerm"><option value="">Select</option><option value="1">Term 1</option><option value="2">Term 2</option><option value="3">Term 3</option></select></div></div>
@@ -337,11 +343,11 @@
         <div id="adminContent" style="display:none;">
             <div class="card"><div class="card-header"><h2><i class="fas fa-user-shield"></i> Admin Dashboard</h2><span class="subtitle">Overview</span></div><div class="grid-4"><div class="stat-card"><div class="icon"><i class="fas fa-users"></i></div><div class="number" id="totalStudents">0</div><div class="label">Total Students</div></div><div class="stat-card"><div class="icon"><i class="fas fa-user-tie"></i></div><div class="number" id="totalTeachers">0</div><div class="label">Total Teachers</div></div><div class="stat-card"><div class="icon"><i class="fas fa-book"></i></div><div class="number" id="totalSubjects">0</div><div class="label">Total Subjects</div></div><div class="stat-card"><div class="icon"><i class="fas fa-file-alt"></i></div><div class="number" id="totalResults">0</div><div class="label">Total Results</div></div></div></div>
 
-            <!-- Teacher Class Assignments -->
-            <div class="card class-assignment-card">
+            <!-- Teacher Subject Class Assignments -->
+            <div class="card subject-assignment-card">
                 <div class="card-header">
-                    <h2><i class="fas fa-user-tie" style="color:var(--oxblood);"></i> Teacher Class Assignments</h2>
-                    <span class="subtitle">Assign teachers to classes</span>
+                    <h2><i class="fas fa-user-tie" style="color:var(--marian-blue);"></i> Teacher - Subject - Class Assignments</h2>
+                    <span class="subtitle">Assign teachers to specific subjects in classes</span>
                 </div>
                 <div class="grid-3">
                     <div class="field">
@@ -352,15 +358,36 @@
                         <label><i class="fas fa-users"></i> Class</label>
                         <select id="assignClassSelect"><option value="">Select Class</option></select>
                     </div>
+                    <div class="field">
+                        <label><i class="fas fa-book"></i> Subject</label>
+                        <select id="assignSubjectSelect"><option value="">Select Subject</option>
+                            <option value="English">English</option>
+                            <option value="Mathematics">Mathematics</option>
+                            <option value="Biology">Biology</option>
+                            <option value="Chemistry">Chemistry</option>
+                            <option value="Physics">Physics</option>
+                            <option value="History">History</option>
+                            <option value="Geography">Geography</option>
+                            <option value="Civic Education">Civic Education</option>
+                            <option value="Zambian Languages">Zambian Languages</option>
+                            <option value="Religious Education">Religious Education</option>
+                            <option value="Commerce">Commerce</option>
+                            <option value="Principles of Accounts">Principles of Accounts</option>
+                            <option value="Agricultural Science">Agricultural Science</option>
+                            <option value="ICT">ICT</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid-3">
                     <div class="field" style="justify-content:flex-end;">
-                        <button class="btn btn-success" id="assignTeacherBtn"><i class="fas fa-plus"></i> Assign Teacher</button>
+                        <button class="btn btn-success" id="assignTeacherBtn"><i class="fas fa-plus"></i> Assign Teacher to Subject</button>
                     </div>
                 </div>
                 <div style="margin-top:12px;">
                     <div class="table-wrapper">
                         <table>
                             <thead>
-                                <tr><th>#</th><th>Class</th><th>Assigned Teacher</th><th>Status</th><th>Action</th></tr>
+                                <tr><th>#</th><th>Class</th><th>Subject</th><th>Assigned Teacher</th><th>Action</th></tr>
                             </thead>
                             <tbody id="assignmentsTableBody">
                                 <tr><td colspan="5" style="text-align:center;color:var(--ink-faint);">Loading assignments...</td></tr>
@@ -387,7 +414,7 @@
                 <div class="card"><div class="card-header"><h2><i class="fas fa-user-plus"></i> Add Student</h2></div><div class="field"><label>Student Number</label><input type="text" id="adminStudentNumber" placeholder="e.g. 2024-001"></div><div class="field"><label>Full Name</label><input type="text" id="adminStudentName" placeholder="e.g. Mary Mwansa"></div><div class="field"><label>Class</label><select id="adminStudentClass"><option value="">Select Class</option></select></div><button class="btn btn-success btn-block" id="addStudentBtn"><i class="fas fa-plus"></i> Add Student</button></div>
                 <div class="card"><div class="card-header"><h2><i class="fas fa-user-plus"></i> Add Teacher</h2></div><div class="field"><label>Name</label><input type="text" id="adminTeacherName" placeholder="e.g. John Banda"></div><div class="field"><label>Username</label><input type="text" id="adminTeacherUsername" placeholder="jbanda"></div><div class="field"><label>Password</label><input type="password" id="adminTeacherPassword" placeholder="Enter password"></div><button class="btn btn-success btn-block" id="addTeacherBtn"><i class="fas fa-plus"></i> Add Teacher</button></div>
             </div>
-            <div class="card"><div class="card-header"><h2><i class="fas fa-users"></i> Class Management</h2><span class="subtitle">View & manage classes</span></div><div class="table-wrapper"><table><thead><tr><th>#</th><th>Class Name</th><th>Grade</th><th>Stream</th><th>Students</th><th>Teacher</th><th>Actions</th></tr></thead><tbody id="classesTableBody"><tr><td colspan="7" style="text-align:center;color:var(--ink-faint);">Loading...</td></tr></tbody></table></div><div style="margin-top:16px;"><div class="grid-3"><div class="field"><label><i class="fas fa-graduation-cap"></i> Grade</label><select id="newClassGrade"><option value="">Select</option><option value="Form1">Form 1</option><option value="Form2">Form 2</option><option value="Grade10">Grade 10</option><option value="Grade11">Grade 11</option><option value="Grade12">Grade 12</option></select></div><div class="field"><label><i class="fas fa-layer-group"></i> Stream</label><select id="newClassStream"><option value="">Select</option><option value="Mary">Mary</option><option value="Joseph">Joseph</option><option value="Mazz">Mazz</option><option value="Laura">Laura</option></select></div><div class="field"><label><i class="fas fa-user-tie"></i> Teacher</label><select id="newClassTeacher"><option value="">Select Teacher</option></select></div></div><button class="btn btn-success btn-block" id="addClassBtn"><i class="fas fa-plus"></i> Add Class</button></div></div>
+            <div class="card"><div class="card-header"><h2><i class="fas fa-users"></i> Class Management</h2><span class="subtitle">View & manage classes</span></div><div class="table-wrapper"><table><thead><tr><th>#</th><th>Class Name</th><th>Grade</th><th>Stream</th><th>Students</th><th>Action</th></tr></thead><tbody id="classesTableBody"><tr><td colspan="6" style="text-align:center;color:var(--ink-faint);">Loading...</td></tr></tbody></table></div><div style="margin-top:16px;"><div class="grid-3"><div class="field"><label><i class="fas fa-graduation-cap"></i> Grade</label><select id="newClassGrade"><option value="">Select</option><option value="Form1">Form 1</option><option value="Form2">Form 2</option><option value="Grade10">Grade 10</option><option value="Grade11">Grade 11</option><option value="Grade12">Grade 12</option></select></div><div class="field"><label><i class="fas fa-layer-group"></i> Stream</label><select id="newClassStream"><option value="">Select</option><option value="Mary">Mary</option><option value="Joseph">Joseph</option><option value="Mazz">Mazz</option><option value="Laura">Laura</option></select></div></div><button class="btn btn-success btn-block" id="addClassBtn"><i class="fas fa-plus"></i> Add Class</button></div></div>
         </div>
     </div>
     <div class="section" id="classesSection" style="display:none;"></div>
@@ -441,7 +468,7 @@
         let isConnected = false;
         let bulkData = null;
         let teacherImportData = null;
-        let teacherAssignedClasses = [];
+        let teacherAssignments = []; // Array of {class_id, subject}
 
         // ============================================================
         // DOM refs
@@ -511,11 +538,11 @@
         const classesTableBody = document.getElementById('classesTableBody');
         const newClassGrade = document.getElementById('newClassGrade');
         const newClassStream = document.getElementById('newClassStream');
-        const newClassTeacher = document.getElementById('newClassTeacher');
         const addClassBtn = document.getElementById('addClassBtn');
 
         const assignTeacherSelect = document.getElementById('assignTeacherSelect');
         const assignClassSelect = document.getElementById('assignClassSelect');
+        const assignSubjectSelect = document.getElementById('assignSubjectSelect');
         const assignTeacherBtn = document.getElementById('assignTeacherBtn');
         const assignmentsTableBody = document.getElementById('assignmentsTableBody');
 
@@ -671,13 +698,12 @@
 
         function loadAllData() { 
             loadAdminStats(); 
-            populateTeachersDropdown(); 
+            populateTeacherDropdowns(); 
             loadClasses(); 
             populateClassDropdowns(); 
             populateBulkClassDropdown(); 
             populateImportClassDropdowns(); 
             updateLoginUI(); 
-            populateTeacherDropdowns(); 
             loadAssignments(); 
             populateClassSelectForAssign(); 
         }
@@ -692,7 +718,7 @@
         }
 
         function loadFallbackClasses() {
-            let html=''; CLASS_DEFINITIONS.forEach((c,i)=>{ html+=`<tr><td>${i+1}</td><td><strong>${c.display}</strong></td><td>${c.grade}</td><td>${c.stream}</td><td>0</td><td>Not Assigned</td><td><span class="badge badge-info">Offline</span></td></tr>`; });
+            let html=''; CLASS_DEFINITIONS.forEach((c,i)=>{ html+=`<tr><td>${i+1}</td><td><strong>${c.display}</strong></td><td>${c.grade}</td><td>${c.stream}</td><td>0</td><td><span class="badge badge-info">Offline</span></td></tr>`; });
             classesTableBody.innerHTML = html;
         }
         function loadFallbackStats() { totalStudents.textContent='--'; totalTeachers.textContent='--'; totalSubjects.textContent='--'; totalResults.textContent='--'; }
@@ -720,7 +746,7 @@
         }
 
         async function populateTeacherDropdowns() {
-            const drops = [newClassTeacher, assignTeacherSelect];
+            const drops = [assignTeacherSelect];
             drops.forEach(drop => { drop.innerHTML = '<option value="">Select Teacher</option>'; });
             if (!supabaseClient || !isConnected) return;
             try {
@@ -758,7 +784,7 @@
                 if (!data || data.length===0) { loadFallbackClasses(); return; }
                 let html=''; data.forEach((c,i)=>{
                     const displayName = c.display_name || c.grade + ' ' + c.stream;
-                    html += `<tr data-class-id="${c.id}"><td>${i+1}</td><td><strong>${displayName}</strong></td><td>${c.grade}</td><td>${c.stream}</td><td class="student-count">...</td><td>${c.teacher_name || 'Not Assigned'}</td><td><button class="btn btn-sm btn-outline" onclick="window.editClass('${c.id}')"><i class="fas fa-edit"></i></button> <button class="btn btn-sm btn-danger" onclick="window.deleteClass('${c.id}')"><i class="fas fa-trash"></i></button></td></tr>`;
+                    html += `<tr data-class-id="${c.id}"><td>${i+1}</td><td><strong>${displayName}</strong></td><td>${c.grade}</td><td>${c.stream}</td><td class="student-count">...</td><td><button class="btn btn-sm btn-danger" onclick="window.deleteClass('${c.id}')"><i class="fas fa-trash"></i></button></td></tr>`;
                 });
                 classesTableBody.innerHTML = html;
                 data.forEach(c=>{
@@ -769,13 +795,6 @@
             } catch(e){ loadFallbackClasses(); }
         }
 
-        window.editClass = function(id) {
-            if (!currentUser || currentUser.role !== 'admin') { showToast('🔒 Admin only', true); return; }
-            const newTeacher = prompt('Enter new teacher name:');
-            if (newTeacher !== null && supabaseClient && isConnected) {
-                supabaseClient.from('classes').update({ teacher_name: newTeacher }).eq('id', id).then(()=>{ showToast('✅ Updated'); loadClasses(); loadAssignments(); }).catch(err=>showToast('❌ '+err.message, true));
-            } else if(newTeacher !== null) { showToast('⚠️ Offline', true); }
-        };
         window.deleteClass = function(id) {
             if (!currentUser || currentUser.role !== 'admin') { showToast('🔒 Admin only', true); return; }
             if (!confirm('Delete class?')) return;
@@ -785,7 +804,7 @@
         };
 
         // ============================================================
-        // TEACHER CLASS ASSIGNMENTS
+        // TEACHER ASSIGNMENTS - Subject based
         // ============================================================
         async function loadTeacherAssignments() {
             if (!supabaseClient || !isConnected) {
@@ -796,127 +815,105 @@
                         <p class="sub">Please check your connection</p>
                     </div>
                 `;
-                teacherClass.innerHTML = '<option value="">No classes assigned</option>';
+                teacherClass.innerHTML = '<option value="">No assignments</option>';
                 teacherClass.disabled = true;
-                teacherImportClass.innerHTML = '<option value="">No classes assigned</option>';
+                teacherImportClass.innerHTML = '<option value="">No assignments</option>';
                 teacherImportClass.disabled = true;
                 return;
             }
 
             try {
-                let assignedClassIds = [];
+                // Get assignments for this teacher
+                const { data, error } = await supabaseClient
+                    .from('teacher_subject_assignments')
+                    .select('class_id, subject')
+                    .eq('teacher_id', currentUser.id);
 
-                // Approach 1: Check teacher_class_assignments table
-                try {
-                    const { data, error } = await supabaseClient
-                        .from('teacher_class_assignments')
-                        .select('class_id')
-                        .eq('teacher_id', currentUser.id);
-
-                    if (!error && data && data.length > 0) {
-                        assignedClassIds = data.map(a => a.class_id);
-                    }
-                } catch (e) {
-                    console.warn('Approach 1 failed:', e);
-                }
-
-                // Approach 2: Check classes table by teacher_id
-                if (assignedClassIds.length === 0) {
+                if (error) {
+                    console.warn('Error loading assignments:', error);
+                    // Try legacy table
                     try {
-                        const { data, error } = await supabaseClient
-                            .from('classes')
-                            .select('id')
+                        const { data: legacyData, error: legacyError } = await supabaseClient
+                            .from('teacher_class_assignments')
+                            .select('class_id')
                             .eq('teacher_id', currentUser.id);
-
-                        if (!error && data && data.length > 0) {
-                            assignedClassIds = data.map(c => c.id);
-                        }
-                    } catch (e) {
-                        console.warn('Approach 2 failed:', e);
-                    }
-                }
-
-                // Approach 3: Check classes table by teacher_name
-                if (assignedClassIds.length === 0) {
-                    try {
-                        const nameParts = currentUser.name.split(' ');
-                        let searchTerms = [];
                         
-                        if (nameParts.length > 1) {
-                            searchTerms = [
-                                currentUser.name,
-                                nameParts[0],
-                                nameParts[nameParts.length - 1]
-                            ];
-                        } else {
-                            searchTerms = [currentUser.name];
-                        }
-
-                        for (const term of searchTerms) {
-                            if (term.length < 2) continue;
-                            const { data, error } = await supabaseClient
-                                .from('classes')
-                                .select('id')
-                                .ilike('teacher_name', `%${term}%`);
-
-                            if (!error && data && data.length > 0) {
-                                assignedClassIds = data.map(c => c.id);
-                                break;
-                            }
+                        if (!legacyError && legacyData && legacyData.length > 0) {
+                            teacherAssignments = legacyData.map(a => ({ class_id: a.class_id, subject: null }));
                         }
                     } catch (e) {
-                        console.warn('Approach 3 failed:', e);
+                        console.warn('Legacy table also failed:', e);
+                    }
+                    if (teacherAssignments.length === 0) {
+                        displayNoAssignments();
+                    }
+                    return;
+                }
+
+                teacherAssignments = data || [];
+
+                if (teacherAssignments.length === 0) {
+                    // Try legacy table
+                    try {
+                        const { data: legacyData, error: legacyError } = await supabaseClient
+                            .from('teacher_class_assignments')
+                            .select('class_id')
+                            .eq('teacher_id', currentUser.id);
+                        
+                        if (!legacyError && legacyData && legacyData.length > 0) {
+                            teacherAssignments = legacyData.map(a => ({ class_id: a.class_id, subject: null }));
+                        }
+                    } catch (e) {
+                        console.warn('Legacy table failed:', e);
                     }
                 }
 
-                teacherAssignedClasses = assignedClassIds;
-
-                if (teacherAssignedClasses.length === 0) {
-                    assignedClassesList.innerHTML = `
-                        <div class="no-assignments">
-                            <i class="fas fa-exclamation-triangle" style="color:var(--oxblood);"></i>
-                            <p>You are not assigned to any class yet.</p>
-                            <p class="sub">Please contact the administrator to assign you to a class.</p>
-                        </div>
-                    `;
-                    teacherClass.innerHTML = '<option value="">No classes assigned</option>';
-                    teacherClass.disabled = true;
-                    teacherImportClass.innerHTML = '<option value="">No classes assigned</option>';
-                    teacherImportClass.disabled = true;
-                    teacherNameDisplay.textContent = `Welcome, ${currentUser.name} (No classes assigned)`;
+                if (teacherAssignments.length === 0) {
+                    displayNoAssignments();
                     return;
                 }
 
                 // Get class details
-                const classPromises = teacherAssignedClasses.map(classId => {
+                const classIds = [...new Set(teacherAssignments.map(a => a.class_id))];
+                const classPromises = classIds.map(classId => {
                     return supabaseClient.from('classes').select('*').eq('id', classId).maybeSingle();
                 });
                 const classResults = await Promise.all(classPromises);
                 const classes = classResults.map(r => r.data).filter(c => c !== null);
 
                 if (classes.length === 0) {
-                    assignedClassesList.innerHTML = `
-                        <div class="no-assignments">
-                            <i class="fas fa-exclamation-triangle" style="color:var(--oxblood);"></i>
-                            <p>You are not assigned to any class yet.</p>
-                            <p class="sub">Please contact the administrator to assign you to a class.</p>
-                        </div>
-                    `;
-                    teacherClass.innerHTML = '<option value="">No classes assigned</option>';
-                    teacherClass.disabled = true;
-                    teacherImportClass.innerHTML = '<option value="">No classes assigned</option>';
-                    teacherImportClass.disabled = true;
+                    displayNoAssignments();
                     return;
                 }
 
-                let html = `<div style="display:flex; flex-wrap:wrap; gap:8px;">`;
+                // Build display
+                let html = `<div style="display:flex; flex-wrap:wrap; gap:12px;">`;
                 classes.forEach(c => {
                     const displayName = c.display_name || c.grade + ' ' + c.stream;
-                    html += `<span class="assigned-class-item assigned">${displayName}</span>`;
+                    const subjects = teacherAssignments
+                        .filter(a => a.class_id === c.id)
+                        .map(a => a.subject)
+                        .filter(s => s !== null && s !== undefined);
+                    
+                    html += `<div style="background:var(--paper); border-radius:12px; padding:12px 16px; border:1px solid var(--border); min-width:180px;">
+                        <div style="font-weight:600; color:var(--marian-blue);">${displayName}</div>
+                        <div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:6px;">`;
+                    
+                    if (subjects.length > 0) {
+                        subjects.forEach(s => {
+                            html += `<span class="badge badge-purple">${s}</span>`;
+                        });
+                    } else {
+                        // If no specific subject assigned, show "All Subjects"
+                        html += `<span class="badge badge-info">All Subjects</span>`;
+                    }
+                    
+                    html += `</div></div>`;
                 });
                 html += `</div>`;
                 assignedClassesList.innerHTML = html;
 
+                // Populate dropdowns with assigned classes
                 const classOptions = classes.map(c => ({ value: c.id, text: c.display_name || c.grade + ' ' + c.stream }));
                 [teacherClass, teacherImportClass].forEach(drop => {
                     drop.innerHTML = '<option value="">Select Class</option>';
@@ -929,22 +926,47 @@
                     drop.disabled = false;
                 });
 
+                // Set subject dropdown to only show assigned subjects
+                const assignedSubjects = [...new Set(teacherAssignments.map(a => a.subject).filter(s => s !== null && s !== undefined))];
+                if (assignedSubjects.length > 0) {
+                    teacherSubject.innerHTML = '<option value="">Select Subject</option>';
+                    assignedSubjects.forEach(s => {
+                        const o = document.createElement('option');
+                        o.value = s;
+                        o.textContent = s;
+                        teacherSubject.appendChild(o);
+                    });
+                } else {
+                    teacherSubject.innerHTML = '<option value="">Select Subject</option>';
+                    SUBJECTS.forEach(s => {
+                        const o = document.createElement('option');
+                        o.value = s;
+                        o.textContent = s;
+                        teacherSubject.appendChild(o);
+                    });
+                }
+
                 teacherNameDisplay.textContent = `Welcome, ${currentUser.name} (${classes.length} class${classes.length > 1 ? 'es' : ''} assigned)`;
 
             } catch (err) {
                 console.error('Error loading teacher assignments:', err);
-                assignedClassesList.innerHTML = `
-                    <div class="no-assignments">
-                        <i class="fas fa-exclamation-triangle" style="color:var(--oxblood);"></i>
-                        <p>Error loading assignments</p>
-                        <p class="sub">${err.message || 'Please contact administrator'}</p>
-                    </div>
-                `;
-                teacherClass.innerHTML = '<option value="">No classes assigned</option>';
-                teacherClass.disabled = true;
-                teacherImportClass.innerHTML = '<option value="">No classes assigned</option>';
-                teacherImportClass.disabled = true;
+                displayNoAssignments();
             }
+        }
+
+        function displayNoAssignments() {
+            assignedClassesList.innerHTML = `
+                <div class="no-assignments">
+                    <i class="fas fa-exclamation-triangle" style="color:var(--oxblood);"></i>
+                    <p>You are not assigned to any subject or class yet.</p>
+                    <p class="sub">Please contact the administrator to assign you to a subject and class.</p>
+                </div>
+            `;
+            teacherClass.innerHTML = '<option value="">No assignments</option>';
+            teacherClass.disabled = true;
+            teacherImportClass.innerHTML = '<option value="">No assignments</option>';
+            teacherImportClass.disabled = true;
+            teacherNameDisplay.textContent = `Welcome, ${currentUser ? currentUser.name : 'Teacher'} (No assignments)`;
         }
 
         // ============================================================
@@ -959,10 +981,10 @@
             try {
                 let assignments = [];
 
-                // Try to get from teacher_class_assignments table
+                // Try to get from teacher_subject_assignments table
                 try {
                     const { data, error } = await supabaseClient
-                        .from('teacher_class_assignments')
+                        .from('teacher_subject_assignments')
                         .select('*')
                         .order('class_id');
 
@@ -970,66 +992,65 @@
                         assignments = data;
                     }
                 } catch (e) {
-                    console.warn('Could not fetch from teacher_class_assignments:', e);
+                    console.warn('Could not fetch from teacher_subject_assignments:', e);
                 }
 
-                // If no assignments, try classes table
+                // If no assignments, try legacy teacher_class_assignments
                 if (assignments.length === 0) {
                     try {
                         const { data, error } = await supabaseClient
-                            .from('classes')
-                            .select('id, display_name, grade, stream, teacher_id, teacher_name')
-                            .not('teacher_id', 'is', null)
-                            .order('grade');
+                            .from('teacher_class_assignments')
+                            .select('*')
+                            .order('class_id');
 
                         if (!error && data && data.length > 0) {
-                            const teacherIds = data.map(c => c.teacher_id).filter(id => id);
-                            let teacherMap = {};
-                            if (teacherIds.length > 0) {
-                                const { data: teachers } = await supabaseClient
-                                    .from('teachers')
-                                    .select('id, name')
-                                    .in('id', teacherIds);
-                                if (teachers) {
-                                    teachers.forEach(t => { teacherMap[t.id] = t.name; });
-                                }
-                            }
-
-                            assignments = data.map(c => ({
-                                class_id: c.id,
-                                class_display: c.display_name || c.grade + ' ' + c.stream,
-                                teacher_id: c.teacher_id,
-                                teacher_name: teacherMap[c.teacher_id] || c.teacher_name || 'Unknown'
-                            }));
+                            assignments = data;
                         }
                     } catch (e) {
-                        console.warn('Could not fetch from classes:', e);
+                        console.warn('Could not fetch from teacher_class_assignments:', e);
                     }
                 }
 
                 if (assignments.length === 0) {
-                    assignmentsTableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--ink-faint);">No assignments found. Please assign teachers to classes.</td></tr>`;
+                    assignmentsTableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--ink-faint);">No assignments found. Please assign teachers to subjects and classes.</td></tr>`;
                     return;
                 }
 
+                // Build table
                 let html = '';
-                assignments.forEach((a, i) => {
-                    const classDisplay = a.class_display || a.class_id || 'Unknown Class';
-                    const teacherName = a.teacher_name || 'Unknown Teacher';
-                    const classId = a.class_id || a.id;
+                for (let i = 0; i < assignments.length; i++) {
+                    const a = assignments[i];
                     
+                    // Get class info
+                    const { data: classInfo } = await supabaseClient
+                        .from('classes')
+                        .select('display_name')
+                        .eq('id', a.class_id)
+                        .maybeSingle();
+                    
+                    // Get teacher info
+                    const { data: teacherInfo } = await supabaseClient
+                        .from('teachers')
+                        .select('name')
+                        .eq('id', a.teacher_id)
+                        .maybeSingle();
+
+                    const classDisplay = classInfo ? classInfo.display_name : a.class_id;
+                    const teacherName = teacherInfo ? teacherInfo.name : 'Unknown';
+                    const subjectDisplay = a.subject || 'All Subjects';
+
                     html += `<tr class="assignment-row">
                         <td>${i+1}</td>
                         <td><strong>${classDisplay}</strong></td>
+                        <td><span class="badge badge-purple">${subjectDisplay}</span></td>
                         <td>${teacherName}</td>
-                        <td><span class="assignment-status assigned">✅ Assigned</span></td>
                         <td>
-                            <button class="btn btn-sm btn-danger" onclick="window.removeAssignment('${classId}')">
+                            <button class="btn btn-sm btn-danger" onclick="window.removeAssignment('${a.class_id}', '${a.subject || ''}')">
                                 <i class="fas fa-times"></i> Remove
                             </button>
                         </td>
                     </tr>`;
-                });
+                }
 
                 assignmentsTableBody.innerHTML = html;
 
@@ -1042,12 +1063,29 @@
         // ============================================================
         // REMOVE ASSIGNMENT
         // ============================================================
-        window.removeAssignment = async function(classId) {
+        window.removeAssignment = async function(classId, subject) {
             if (!currentUser || currentUser.role !== 'admin') { showToast('🔒 Admin only', true); return; }
-            if (!confirm('Remove teacher assignment from this class?')) return;
+            if (!confirm('Remove this teacher assignment?')) return;
             if (!supabaseClient || !isConnected) { showToast('⚠️ Offline mode', true); return; }
 
             try {
+                // Try to delete from teacher_subject_assignments
+                try {
+                    let query = supabaseClient
+                        .from('teacher_subject_assignments')
+                        .delete()
+                        .eq('class_id', classId);
+                    
+                    if (subject) {
+                        query = query.eq('subject', subject);
+                    }
+                    
+                    await query;
+                } catch (e) {
+                    console.warn('Could not delete from teacher_subject_assignments:', e);
+                }
+
+                // Also try legacy table
                 try {
                     await supabaseClient
                         .from('teacher_class_assignments')
@@ -1057,14 +1095,8 @@
                     console.warn('Could not delete from teacher_class_assignments:', e);
                 }
 
-                await supabaseClient
-                    .from('classes')
-                    .update({ teacher_id: null, teacher_name: null })
-                    .eq('id', classId);
-
                 showToast('✅ Assignment removed');
                 await loadAssignments();
-                await loadClasses();
                 if (currentUser.role === 'teacher') {
                     await loadTeacherAssignments();
                 }
@@ -1074,19 +1106,22 @@
         };
 
         // ============================================================
-        // ASSIGN TEACHER
+        // ASSIGN TEACHER TO SUBJECT AND CLASS
         // ============================================================
         assignTeacherBtn.addEventListener('click', async function() {
             if (!currentUser || currentUser.role !== 'admin') { showToast('🔒 Admin only', true); return; }
             const teacherId = assignTeacherSelect.value;
             const classId = assignClassSelect.value;
+            const subject = assignSubjectSelect.value;
 
             if (!teacherId) { showToast('⚠️ Please select a teacher', true); return; }
             if (!classId) { showToast('⚠️ Please select a class', true); return; }
+            if (!subject) { showToast('⚠️ Please select a subject', true); return; }
 
             if (!supabaseClient || !isConnected) { showToast('⚠️ Offline mode', true); return; }
 
             try {
+                // Get teacher name
                 const { data: teacher, error: tError } = await supabaseClient
                     .from('teachers')
                     .select('name')
@@ -1094,38 +1129,55 @@
                     .maybeSingle();
                 if (tError) throw tError;
 
-                await supabaseClient
-                    .from('classes')
-                    .update({ 
-                        teacher_id: teacherId, 
-                        teacher_name: teacher ? teacher.name : null 
-                    })
-                    .eq('id', classId);
-
+                // Try to insert into teacher_subject_assignments
                 try {
+                    // Check if assignment already exists
                     const { data: existing } = await supabaseClient
-                        .from('teacher_class_assignments')
+                        .from('teacher_subject_assignments')
                         .select('*')
                         .eq('class_id', classId)
+                        .eq('subject', subject)
                         .maybeSingle();
 
                     if (existing) {
                         await supabaseClient
-                            .from('teacher_class_assignments')
+                            .from('teacher_subject_assignments')
                             .update({ teacher_id: teacherId })
-                            .eq('class_id', classId);
+                            .eq('class_id', classId)
+                            .eq('subject', subject);
                     } else {
                         await supabaseClient
-                            .from('teacher_class_assignments')
-                            .insert({ teacher_id: teacherId, class_id: classId });
+                            .from('teacher_subject_assignments')
+                            .insert({ teacher_id: teacherId, class_id: classId, subject: subject });
                     }
                 } catch (e) {
-                    console.warn('Could not update teacher_class_assignments:', e);
+                    // Fallback to legacy table
+                    console.warn('Could not insert into teacher_subject_assignments:', e);
+                    try {
+                        const { data: existing } = await supabaseClient
+                            .from('teacher_class_assignments')
+                            .select('*')
+                            .eq('class_id', classId)
+                            .maybeSingle();
+
+                        if (existing) {
+                            await supabaseClient
+                                .from('teacher_class_assignments')
+                                .update({ teacher_id: teacherId })
+                                .eq('class_id', classId);
+                        } else {
+                            await supabaseClient
+                                .from('teacher_class_assignments')
+                                .insert({ teacher_id: teacherId, class_id: classId });
+                        }
+                    } catch (e2) {
+                        console.warn('Could not insert into teacher_class_assignments either:', e2);
+                        showToast('⚠️ Assignment saved to classes table only', true);
+                    }
                 }
 
-                showToast('✅ Teacher assigned successfully!');
+                showToast(`✅ ${teacher ? teacher.name : 'Teacher'} assigned to ${subject} in this class!`);
                 await loadAssignments();
-                await loadClasses();
                 populateClassDropdowns();
                 
                 if (currentUser.role === 'teacher') {
@@ -1280,7 +1332,7 @@
         });
 
         // ============================================================
-        // TEACHER LOAD STUDENTS
+        // TEACHER LOAD STUDENTS - with assignment check
         // ============================================================
         loadStudentsBtn.addEventListener('click', async function() {
             if (!currentUser || currentUser.role !== 'teacher') {
@@ -1299,8 +1351,13 @@
                 return;
             }
 
-            if (!teacherAssignedClasses.includes(className)) {
-                showToast('🔒 You are not assigned to this class. Please select an assigned class.', true);
+            // Check if teacher is assigned to this class and subject
+            const isAssigned = teacherAssignments.some(a => 
+                a.class_id === className && (a.subject === subject || a.subject === null || a.subject === undefined)
+            );
+
+            if (!isAssigned) {
+                showToast('🔒 You are not assigned to this subject in this class.', true);
                 return;
             }
 
@@ -1478,8 +1535,12 @@
                 return;
             }
 
-            if (!teacherAssignedClasses.includes(className)) {
-                showToast('🔒 You are not assigned to this class.', true);
+            const isAssigned = teacherAssignments.some(a => 
+                a.class_id === className && (a.subject === subject || a.subject === null || a.subject === undefined)
+            );
+
+            if (!isAssigned) {
+                showToast('🔒 You are not assigned to this subject in this class.', true);
                 return;
             }
 
@@ -1570,8 +1631,12 @@
                 return;
             }
 
-            if (!teacherAssignedClasses.includes(className)) {
-                showToast('🔒 You are not assigned to this class.', true);
+            const isAssigned = teacherAssignments.some(a => 
+                a.class_id === className && (a.subject === subject || a.subject === null || a.subject === undefined)
+            );
+
+            if (!isAssigned) {
+                showToast('🔒 You are not assigned to this subject in this class.', true);
                 return;
             }
 
@@ -1695,8 +1760,12 @@
                 return;
             }
 
-            if (!teacherAssignedClasses.includes(className)) {
-                showToast('🔒 You are not assigned to this class.', true);
+            const isAssigned = teacherAssignments.some(a => 
+                a.class_id === className && (a.subject === subject || a.subject === null || a.subject === undefined)
+            );
+
+            if (!isAssigned) {
+                showToast('🔒 You are not assigned to this subject in this class.', true);
                 return;
             }
 
@@ -1786,7 +1855,7 @@
         });
 
         // ============================================================
-        // STUDENT VIEW RESULTS - Combined Report with Mid & End Term
+        // STUDENT VIEW RESULTS - Combined Mid & End Term
         // ============================================================
         viewResultsBtn.addEventListener('click', async function() {
             const number = studentNumber.value.trim();
@@ -1827,7 +1896,6 @@
                     return;
                 }
 
-                // Fetch both Mid Term and End Term results
                 const { data: midResults, error: midError } = await supabaseClient
                     .from('results')
                     .select('*')
@@ -1874,7 +1942,6 @@
                 </div>
             `;
 
-            // Get all unique subjects from both results
             const subjectSet = new Set();
             midResults.forEach(r => subjectSet.add(r.subject));
             endResults.forEach(r => subjectSet.add(r.subject));
@@ -1954,7 +2021,6 @@
                 `;
             });
 
-            // Calculate averages
             const midAvg = midCount > 0 ? (midTotal / midCount) : 0;
             const endAvg = endCount > 0 ? (endTotal / endCount) : 0;
             const overallAvg = overallCount > 0 ? (overallTotal / overallCount) : 0;
@@ -1992,7 +2058,6 @@
                 </div>
             `;
 
-            // Show message if no results found
             if (subjects.length === 0) {
                 html = `
                     <div style="text-align:center;padding:30px;color:var(--ink-faint);">
@@ -2086,7 +2151,6 @@
             if (!currentUser || currentUser.role !== 'admin') { showToast('🔒 Admin login required', true); return; }
             const grade = newClassGrade.value;
             const stream = newClassStream.value;
-            const teacherId = newClassTeacher.value;
 
             if (!grade) { showToast('⚠️ Please select a grade', true); return; }
             if (!stream) { showToast('⚠️ Please select a stream', true); return; }
@@ -2103,8 +2167,7 @@
                         id: classId,
                         grade: grade,
                         stream: stream,
-                        display_name: displayName,
-                        teacher_id: teacherId || null
+                        display_name: displayName
                     });
 
                 if (error) throw error;
@@ -2112,7 +2175,6 @@
                 showToast('✅ Class added successfully!');
                 newClassGrade.value = '';
                 newClassStream.value = '';
-                newClassTeacher.value = '';
                 loadClasses();
                 populateClassDropdowns();
                 populateClassSelectForAssign();
@@ -2171,8 +2233,10 @@
         populateClassSelectForAssign();
         initSupabase();
         updateLoginUI();
-        console.log('✅ Laura Girls · Combined report with Mid & End Term columns');
-        console.log('📝 Report card shows both tests side by side with averages');
+        console.log('✅ Laura Girls · Teacher-Subject-Class assignment system');
+        console.log('📝 Teachers can be assigned to specific subjects in specific classes');
+        console.log('📝 Multiple teachers can teach different subjects in the same class');
+        console.log('📝 Teachers can teach different subjects across different classes');
     })();
 </script>
 </body>
