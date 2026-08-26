@@ -14,7 +14,6 @@
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js">
     </script>
     <style>
-        /* ========== CSS (same as original, kept for brevity) ========== */
         :root {
             --paper: #F4F5F1;
             --surface: #FFFFFF;
@@ -367,11 +366,11 @@
         <button class="tab-btn hidden-tab" data-tab="classes"><i class="fas fa-users"></i> Classes</button>
     </div>
 
-    <!-- School Selector (visible to super admin) -->
-    <div class="school-selector-card" id="schoolSelector" style="display:none;">
+    <!-- School Selector - Visible to Admin users -->
+    <div class="school-selector-card" id="schoolSelector">
         <div class="card-header">
             <h2><i class="fas fa-school"></i> Select School</h2>
-            <span class="subtitle">Switch between schools (Super Admin only)</span>
+            <span class="subtitle">Switch between schools (Admin only)</span>
         </div>
         <div class="school-list" id="schoolList">
             <!-- Schools will be populated dynamically -->
@@ -467,9 +466,6 @@
         // MULTI-SCHOOL CONFIGURATION
         // ============================================================
         const SCHOOL_CONFIG = {
-            // Current school - change this to switch schools
-            currentSchool: 'LGSS',
-            
             // Available schools configuration
             schools: {
                 'LGSS': {
@@ -549,7 +545,7 @@
         let isConnected = false;
         let bulkData = null;
         let teacherImportData = null;
-        let currentSchoolCode = SCHOOL_CONFIG.currentSchool;
+        let currentSchoolCode = 'LGSS';
 
         // ============================================================
         // SCHOOL MANAGEMENT FUNCTIONS
@@ -603,13 +599,16 @@
             }
         }
 
-        // Load available schools for super admin
+        // Load available schools - ALWAYS VISIBLE FOR ADMIN
         function loadSchoolSelector() {
             const container = document.getElementById('schoolSelector');
             const list = document.getElementById('schoolList');
             
-            // Only show to super admin
-            if (!currentUser || currentUser.role !== 'super_admin') {
+            // Show the selector to all users (not just super admin)
+            // But hide it if user is not logged in as admin/teacher
+            const showSelector = currentUser && (currentUser.role === 'admin' || currentUser.role === 'super_admin');
+            
+            if (!showSelector) {
                 container.style.display = 'none';
                 return;
             }
@@ -627,7 +626,7 @@
                     </div>
                     <div class="school-info">
                         <div class="name">${school.name}</div>
-                        <div class="code">${school.code} ${isActive ? '✅' : ''}</div>
+                        <div class="code">${school.code} ${isActive ? ' ✅ Active' : ''}</div>
                     </div>
                 `;
                 div.onclick = () => switchSchool(school.code);
@@ -638,6 +637,82 @@
         // ============================================================
         // TOAST, LOGIN, CONNECTION
         // ============================================================
+        const toastDiv = document.getElementById('globalToast');
+        const toastMsg = document.getElementById('toastMsg');
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+        const loginFloatingBtn = document.getElementById('loginFloatingBtn');
+        const loginModal = document.getElementById('loginModal');
+        const closeLoginModal = document.getElementById('closeLoginModal');
+        const logoutSection = document.getElementById('logoutSection');
+        const loginOptions = document.getElementById('loginOptions');
+        const loggedInUserName = document.getElementById('loggedInUserName');
+        const logoutFromModalBtn = document.getElementById('logoutFromModalBtn');
+
+        const studentNumber = document.getElementById('studentNumber');
+        const studentTerm = document.getElementById('studentTerm');
+        const studentYear = document.getElementById('studentYear');
+        const viewResultsBtn = document.getElementById('viewResultsBtn');
+        const studentResults = document.getElementById('studentResults');
+        const studentInfo = document.getElementById('studentInfo');
+        const resultsContent = document.getElementById('resultsContent');
+        const downloadResultsBtn = document.getElementById('downloadResultsBtn');
+
+        const teacherClass = document.getElementById('teacherClass');
+        const teacherSubject = document.getElementById('teacherSubject');
+        const teacherTerm = document.getElementById('teacherTerm');
+        const teacherYear = document.getElementById('teacherYear');
+        const teacherTestType = document.getElementById('teacherTestType');
+        const loadStudentsBtn = document.getElementById('loadStudentsBtn');
+        const resultsEntry = document.getElementById('resultsEntry');
+        const resultsTableBody = document.getElementById('resultsTableBody');
+        const saveResultsBtn = document.getElementById('saveResultsBtn');
+        const teacherLocked = document.getElementById('teacherLocked');
+        const teacherContent = document.getElementById('teacherContent');
+        const teacherNameDisplay = document.getElementById('teacherNameDisplay');
+
+        const teacherImportClass = document.getElementById('teacherImportClass');
+        const teacherImportSubject = document.getElementById('teacherImportSubject');
+        const teacherImportTerm = document.getElementById('teacherImportTerm');
+        const teacherImportYear = document.getElementById('teacherImportYear');
+        const teacherImportTestType = document.getElementById('teacherImportTestType');
+        const teacherImportLoadBtn = document.getElementById('teacherImportLoadBtn');
+        const teacherImportArea = document.getElementById('teacherImportArea');
+        const teacherFileInput = document.getElementById('teacherFileInput');
+        const teacherImportPreview = document.getElementById('teacherImportPreview');
+        const teacherImportBtn = document.getElementById('teacherImportBtn');
+        const teacherImportClearBtn = document.getElementById('teacherImportClearBtn');
+        const teacherImportStatus = document.getElementById('teacherImportStatus');
+
+        const adminStudentNumber = document.getElementById('adminStudentNumber');
+        const adminStudentName = document.getElementById('adminStudentName');
+        const adminStudentClass = document.getElementById('adminStudentClass');
+        const addStudentBtn = document.getElementById('addStudentBtn');
+        const adminTeacherName = document.getElementById('adminTeacherName');
+        const adminTeacherUsername = document.getElementById('adminTeacherUsername');
+        const adminTeacherPassword = document.getElementById('adminTeacherPassword');
+        const addTeacherBtn = document.getElementById('addTeacherBtn');
+        const totalStudents = document.getElementById('totalStudents');
+        const totalTeachers = document.getElementById('totalTeachers');
+        const totalSubjects = document.getElementById('totalSubjects');
+        const totalResults = document.getElementById('totalResults');
+        const adminLocked = document.getElementById('adminLocked');
+        const adminContent = document.getElementById('adminContent');
+        const classesTableBody = document.getElementById('classesTableBody');
+        const newClassGrade = document.getElementById('newClassGrade');
+        const newClassStream = document.getElementById('newClassStream');
+        const addClassBtn = document.getElementById('addClassBtn');
+
+        const bulkClassSelect = document.getElementById('bulkClassSelect');
+        const bulkImportArea = document.getElementById('bulkImportArea');
+        const bulkFileInput = document.getElementById('bulkFileInput');
+        const bulkImportPreview = document.getElementById('bulkImportPreview');
+        const bulkConfirmImportBtn = document.getElementById('bulkConfirmImportBtn');
+        const bulkClearPreviewBtn = document.getElementById('bulkClearPreviewBtn');
+        const bulkImportStatus = document.getElementById('bulkImportStatus');
+        const bulkRegisterTemplateBtn = document.getElementById('bulkRegisterTemplateBtn');
+        const bulkRegisterBtn = document.getElementById('bulkRegisterBtn');
+
         function showToast(msg, isError = false) {
             toastMsg.textContent = msg;
             toastDiv.classList.toggle('error', isError);
@@ -708,6 +783,30 @@
 
         async function authenticateTeacher(username, password) {
             try {
+                if (!supabaseClient || !isConnected) {
+                    // Offline mode - allow demo teachers
+                    const validTeachers = {
+                        'jbanda': { id: 1, name: 'Mr. John Banda', password: 'teacher123' },
+                        'mphiri': { id: 2, name: 'Mrs. Mary Phiri', password: 'teacher123' },
+                        'pzulu': { id: 3, name: 'Mr. Peter Zulu', password: 'teacher123' },
+                        'gmwansa': { id: 4, name: 'Ms. Grace Mwansa', password: 'teacher123' }
+                    };
+                    
+                    if (validTeachers[username] && validTeachers[username].password === password) {
+                        currentUser = { role: 'teacher', id: validTeachers[username].id, name: validTeachers[username].name };
+                        showToast('✅ Logged in as teacher (offline): ' + validTeachers[username].name);
+                        loginModal.classList.remove('active');
+                        updateLoginUI();
+                        teacherLocked.style.display = 'none';
+                        teacherContent.style.display = 'block';
+                        document.querySelector('.tab-btn[data-tab="teacher"]').click();
+                        teacherNameDisplay.textContent = `Welcome, ${validTeachers[username].name}`;
+                        return;
+                    }
+                    showToast('❌ Invalid credentials. Offline teachers: jbanda, mphiri, pzulu, gmwansa (password: teacher123)', true);
+                    return;
+                }
+
                 const { data, error } = await supabaseClient
                     .from('teachers')
                     .select('*')
@@ -738,7 +837,6 @@
             const password = document.getElementById('teacherLoginPassword').value.trim();
             if (!username) { showToast('⚠️ Please enter your username', true); return; }
             if (!password) { showToast('⚠️ Please enter your password', true); return; }
-            if (!supabaseClient || !isConnected) { showToast('⚠️ Offline mode - please contact administrator', true); return; }
             authenticateTeacher(username, password);
         }
         window.teacherLogin = teacherLogin;
@@ -752,6 +850,8 @@
                 adminLocked.style.display = 'none'; adminContent.style.display = 'block';
                 document.querySelector('.tab-btn[data-tab="admin"]').click();
                 loadAdminStats(); loadClasses(); populateBulkClassDropdown();
+                // Show school selector for admin
+                loadSchoolSelector();
                 return;
             }
             showToast('❌ Invalid admin password. Default: admin123', true);
@@ -829,7 +929,7 @@
         }
 
         // ============================================================
-        // ADMIN STATS & CLASSES
+        // ADMIN STATS & CLASSES (existing functions - keeping them working)
         // ============================================================
         async function loadAdminStats() {
             if (!supabaseClient || !isConnected) { loadFallbackStats(); return; }
@@ -872,7 +972,7 @@
         };
 
         // ============================================================
-        // BULK REGISTER
+        // BULK REGISTER (keeping existing functionality)
         // ============================================================
         bulkRegisterTemplateBtn.addEventListener('click', function() {
             const wb = XLSX.utils.book_new();
@@ -1574,6 +1674,7 @@
         function displayCombinedResults(student, midResults, endResults, term, year) {
             const classDisplay = getClassDisplay(student.class);
             const termDisplay = `Term ${term} · ${year}`;
+            const school = getCurrentSchool();
             
             studentInfo.innerHTML = `
                 <div class="grid-3">
@@ -1599,11 +1700,11 @@
                 <div class="result-card report-card-print" style="padding:12px 16px;">
                     <div class="result-header" style="display:flex;align-items:center;gap:12px;border-bottom:2px solid var(--gold);padding-bottom:8px;margin-bottom:10px;">
                         <div style="flex-shrink:0;">
-                            <img src="${getCurrentSchool().logo}" alt="School Logo" style="width:50px;height:50px;object-fit:contain;border-radius:50%;border:2px solid var(--gold);">
+                            <img src="${school.logo}" alt="School Logo" style="width:50px;height:50px;object-fit:contain;border-radius:50%;border:2px solid var(--gold);">
                         </div>
                         <div style="flex:1;text-align:center;">
-                            <h1 style="font-family:var(--font-display);font-size:20px;color:var(--marian-blue);margin:0;">${getCurrentSchool().name}</h1>
-                            <p style="color:var(--ink-soft);font-size:12px;margin:0;">${getCurrentSchool().location} · Northern Province</p>
+                            <h1 style="font-family:var(--font-display);font-size:20px;color:var(--marian-blue);margin:0;">${school.name}</h1>
+                            <p style="color:var(--ink-soft);font-size:12px;margin:0;">${school.location} · Northern Province</p>
                             <p style="color:var(--ink-faint);font-size:10px;margin:2px 0 0;">Student Academic Report · <span class="test-type-badge combined" style="font-size:10px;padding:2px 10px;">Combined (Mid & End Term)</span> ${termDisplay}</p>
                         </div>
                     </div>
@@ -1697,7 +1798,7 @@
 
                     <div style="display:flex;justify-content:space-between;font-size:8px;color:var(--ink-faint);border-top:1px solid var(--border);padding-top:4px;margin-top:4px;">
                         <div>Generated: ${new Date().toLocaleDateString()}</div>
-                        <div>${getCurrentSchool().name} · ${getCurrentSchool().location}</div>
+                        <div>${school.name} · ${school.location}</div>
                     </div>
                 </div>
             `;
@@ -1873,7 +1974,8 @@
         console.log('✅ Multi-school system initialized');
         console.log('🏫 Current school:', getCurrentSchool().name);
         console.log('📝 Available schools:', Object.keys(SCHOOL_CONFIG.schools).join(', '));
-        console.log('💡 Super Admin can switch schools via the school selector');
+        console.log('💡 Admin users can switch schools via the school selector');
+        console.log('📱 Offline mode: Teachers can use demo accounts (jbanda, mphiri, pzulu, gmwansa)');
     })();
 </script>
 </body>
