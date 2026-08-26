@@ -366,7 +366,7 @@
         <button class="tab-btn hidden-tab" data-tab="classes"><i class="fas fa-users"></i> Classes</button>
     </div>
 
-    <!-- School Selector - Visible to Admin users -->
+    <!-- School Selector -->
     <div class="school-selector-card" id="schoolSelector">
         <div class="card-header">
             <h2><i class="fas fa-school"></i> Select School</h2>
@@ -466,7 +466,6 @@
         // MULTI-SCHOOL CONFIGURATION
         // ============================================================
         const SCHOOL_CONFIG = {
-            // Available schools configuration
             schools: {
                 'LGSS': {
                     code: 'LGSS',
@@ -548,94 +547,7 @@
         let currentSchoolCode = 'LGSS';
 
         // ============================================================
-        // SCHOOL MANAGEMENT FUNCTIONS
-        // ============================================================
-
-        // Get current school config
-        function getCurrentSchool() {
-            return SCHOOL_CONFIG.schools[currentSchoolCode] || SCHOOL_CONFIG.schools['LGSS'];
-        }
-
-        // Apply school branding to header
-        function applySchoolBranding() {
-            const school = getCurrentSchool();
-            if (!school) return;
-            
-            document.getElementById('schoolNameHeader').textContent = school.name;
-            document.getElementById('schoolMottoHeader').textContent = school.motto;
-            document.getElementById('schoolLogoImg').src = school.logo;
-            
-            // Update theme colors
-            document.documentElement.style.setProperty('--marian-blue', school.theme.primary);
-            document.documentElement.style.setProperty('--gold', school.theme.secondary);
-            
-            // Update footer
-            const footer = document.querySelector('.footer-note');
-            if (footer) {
-                footer.textContent = `${school.name} · ${school.location} · Under the Patronage of Mary, Mother of Christ © 2026`;
-            }
-            
-            // Update page title
-            document.title = school.name;
-            
-            console.log(`🏫 Switched to: ${school.name} (${school.code})`);
-        }
-
-        // Switch to a different school
-        function switchSchool(schoolCode) {
-            if (!SCHOOL_CONFIG.schools[schoolCode]) {
-                showToast('❌ School not found', true);
-                return;
-            }
-            
-            currentSchoolCode = schoolCode;
-            localStorage.setItem('selectedSchool', schoolCode);
-            applySchoolBranding();
-            showToast(`✅ Switched to ${SCHOOL_CONFIG.schools[schoolCode].name}`);
-            
-            // Reload data for new school
-            if (isConnected) {
-                loadAllData();
-            }
-        }
-
-        // Load available schools - ALWAYS VISIBLE FOR ADMIN
-        function loadSchoolSelector() {
-            const container = document.getElementById('schoolSelector');
-            const list = document.getElementById('schoolList');
-            
-            // Show the selector to all users (not just super admin)
-            // But hide it if user is not logged in as admin/teacher
-            const showSelector = currentUser && (currentUser.role === 'admin' || currentUser.role === 'super_admin');
-            
-            if (!showSelector) {
-                container.style.display = 'none';
-                return;
-            }
-            
-            container.style.display = 'block';
-            list.innerHTML = '';
-            
-            Object.values(SCHOOL_CONFIG.schools).forEach(school => {
-                const isActive = school.code === currentSchoolCode;
-                const div = document.createElement('div');
-                div.className = `school-item ${isActive ? 'active' : ''}`;
-                div.innerHTML = `
-                    <div class="school-icon">
-                        <img src="${school.logo}" alt="${school.name}">
-                    </div>
-                    <div class="school-info">
-                        <div class="name">${school.name}</div>
-                        <div class="code">${school.code} ${isActive ? ' ✅ Active' : ''}</div>
-                    </div>
-                `;
-                div.onclick = () => switchSchool(school.code);
-                list.appendChild(div);
-            });
-        }
-
-        // ============================================================
-        // TOAST, LOGIN, CONNECTION
+        // DOM refs
         // ============================================================
         const toastDiv = document.getElementById('globalToast');
         const toastMsg = document.getElementById('toastMsg');
@@ -713,6 +625,85 @@
         const bulkRegisterTemplateBtn = document.getElementById('bulkRegisterTemplateBtn');
         const bulkRegisterBtn = document.getElementById('bulkRegisterBtn');
 
+        // ============================================================
+        // SCHOOL MANAGEMENT FUNCTIONS
+        // ============================================================
+
+        function getCurrentSchool() {
+            return SCHOOL_CONFIG.schools[currentSchoolCode] || SCHOOL_CONFIG.schools['LGSS'];
+        }
+
+        function applySchoolBranding() {
+            const school = getCurrentSchool();
+            if (!school) return;
+            
+            document.getElementById('schoolNameHeader').textContent = school.name;
+            document.getElementById('schoolMottoHeader').textContent = school.motto;
+            document.getElementById('schoolLogoImg').src = school.logo;
+            
+            document.documentElement.style.setProperty('--marian-blue', school.theme.primary);
+            document.documentElement.style.setProperty('--gold', school.theme.secondary);
+            
+            const footer = document.querySelector('.footer-note');
+            if (footer) {
+                footer.textContent = `${school.name} · ${school.location} · Under the Patronage of Mary, Mother of Christ © 2026`;
+            }
+            
+            document.title = school.name;
+            console.log(`🏫 Switched to: ${school.name} (${school.code})`);
+        }
+
+        function switchSchool(schoolCode) {
+            if (!SCHOOL_CONFIG.schools[schoolCode]) {
+                showToast('❌ School not found', true);
+                return;
+            }
+            
+            currentSchoolCode = schoolCode;
+            localStorage.setItem('selectedSchool', schoolCode);
+            applySchoolBranding();
+            showToast(`✅ Switched to ${SCHOOL_CONFIG.schools[schoolCode].name}`);
+            
+            if (isConnected) {
+                loadAllData();
+            }
+        }
+
+        function loadSchoolSelector() {
+            const container = document.getElementById('schoolSelector');
+            const list = document.getElementById('schoolList');
+            
+            const showSelector = currentUser && (currentUser.role === 'admin' || currentUser.role === 'super_admin');
+            
+            if (!showSelector) {
+                container.style.display = 'none';
+                return;
+            }
+            
+            container.style.display = 'block';
+            list.innerHTML = '';
+            
+            Object.values(SCHOOL_CONFIG.schools).forEach(school => {
+                const isActive = school.code === currentSchoolCode;
+                const div = document.createElement('div');
+                div.className = `school-item ${isActive ? 'active' : ''}`;
+                div.innerHTML = `
+                    <div class="school-icon">
+                        <img src="${school.logo}" alt="${school.name}">
+                    </div>
+                    <div class="school-info">
+                        <div class="name">${school.name}</div>
+                        <div class="code">${school.code} ${isActive ? ' ✅ Active' : ''}</div>
+                    </div>
+                `;
+                div.onclick = () => switchSchool(school.code);
+                list.appendChild(div);
+            });
+        }
+
+        // ============================================================
+        // TOAST, LOGIN, CONNECTION
+        // ============================================================
         function showToast(msg, isError = false) {
             toastMsg.textContent = msg;
             toastDiv.classList.toggle('error', isError);
@@ -754,7 +745,6 @@
                 loginFloatingBtn.classList.remove('logged-in');
             }
             
-            // Show/hide school selector based on user role
             loadSchoolSelector();
         }
         closeLoginModal.addEventListener('click', ()=>loginModal.classList.remove('active'));
@@ -784,7 +774,7 @@
         async function authenticateTeacher(username, password) {
             try {
                 if (!supabaseClient || !isConnected) {
-                    // Offline mode - allow demo teachers
+                    // Offline mode - demo teachers
                     const validTeachers = {
                         'jbanda': { id: 1, name: 'Mr. John Banda', password: 'teacher123' },
                         'mphiri': { id: 2, name: 'Mrs. Mary Phiri', password: 'teacher123' },
@@ -850,7 +840,6 @@
                 adminLocked.style.display = 'none'; adminContent.style.display = 'block';
                 document.querySelector('.tab-btn[data-tab="admin"]').click();
                 loadAdminStats(); loadClasses(); populateBulkClassDropdown();
-                // Show school selector for admin
                 loadSchoolSelector();
                 return;
             }
@@ -859,28 +848,51 @@
         window.adminLogin = adminLogin;
 
         // ============================================================
-        // SUPABASE INIT
+        // SUPABASE INIT - FIXED
         // ============================================================
         function initSupabase() {
             try {
-                // Load saved school preference
                 const savedSchool = localStorage.getItem('selectedSchool');
                 if (savedSchool && SCHOOL_CONFIG.schools[savedSchool]) {
                     currentSchoolCode = savedSchool;
                 }
                 applySchoolBranding();
                 
-                if (typeof window.supabase === 'undefined' || !window.supabase.createClient) throw new Error('Supabase library not loaded');
+                if (typeof window.supabase === 'undefined' || !window.supabase.createClient) {
+                    console.warn('Supabase library not loaded - using offline mode');
+                    setConnectionStatus('offline', 'Offline Mode');
+                    showToast('⚠️ Supabase library not loaded - using offline mode', true);
+                    loadFallbackData();
+                    return;
+                }
+                
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                supabaseClient.from('students').select('id', { count:'exact', head:true })
-                    .then(({ error })=>{
-                        if (error) { setConnectionStatus('offline','Error'); showToast('⚠️ DB error', true); return; }
-                        isConnected = true; setConnectionStatus('online','Connected'); showToast('✅ Database connected');
+                
+                // Test connection with a simple query
+                supabaseClient.from('schools').select('count', { count: 'exact', head: true })
+                    .then(({ error }) => {
+                        if (error) {
+                            console.warn('Database connection error:', error);
+                            setConnectionStatus('offline', 'Offline');
+                            showToast('⚠️ Database connection error - using offline mode', true);
+                            loadFallbackData();
+                            return;
+                        }
+                        isConnected = true;
+                        setConnectionStatus('online', 'Connected');
+                        showToast('✅ Database connected');
                         loadAllData();
                     })
-                    .catch(()=>{ setConnectionStatus('offline','Offline'); showToast('⚠️ Offline mode', true); loadFallbackData(); });
+                    .catch((err) => {
+                        console.warn('Connection test failed:', err);
+                        setConnectionStatus('offline', 'Offline');
+                        showToast('⚠️ Could not connect to database - using offline mode', true);
+                        loadFallbackData();
+                    });
+                    
             } catch(e) {
-                setConnectionStatus('offline','Offline');
+                console.error('Supabase initialization error:', e);
+                setConnectionStatus('offline', 'Offline');
                 showToast('⚠️ ' + e.message, true);
                 loadFallbackData();
             }
@@ -895,14 +907,17 @@
             updateLoginUI(); 
             loadSchoolSelector();
         }
-        function loadFallbackData() { 
-            populateClassDropdowns(); 
-            populateBulkClassDropdown(); 
-            populateImportClassDropdowns(); 
-            loadFallbackClasses(); 
-            loadFallbackStats(); 
-            updateLoginUI(); 
+        
+        function loadFallbackData() {
+            console.log('📱 Loading offline fallback data...');
+            populateClassDropdowns();
+            populateBulkClassDropdown();
+            populateImportClassDropdowns();
+            loadFallbackClasses();
+            loadFallbackStats();
+            updateLoginUI();
             loadSchoolSelector();
+            showToast('📱 Running in offline mode with demo data');
         }
 
         function loadFallbackClasses() {
@@ -929,7 +944,7 @@
         }
 
         // ============================================================
-        // ADMIN STATS & CLASSES (existing functions - keeping them working)
+        // ADMIN STATS & CLASSES
         // ============================================================
         async function loadAdminStats() {
             if (!supabaseClient || !isConnected) { loadFallbackStats(); return; }
@@ -972,7 +987,7 @@
         };
 
         // ============================================================
-        // BULK REGISTER (keeping existing functionality)
+        // BULK REGISTER (unchanged)
         // ============================================================
         bulkRegisterTemplateBtn.addEventListener('click', function() {
             const wb = XLSX.utils.book_new();
@@ -1113,7 +1128,7 @@
         });
 
         // ============================================================
-        // TEACHER LOAD STUDENTS
+        // TEACHER LOAD STUDENTS - WITH OFFLINE SUPPORT
         // ============================================================
         loadStudentsBtn.addEventListener('click', async function() {
             if (!currentUser || currentUser.role !== 'teacher') {
@@ -1132,17 +1147,16 @@
                 return;
             }
 
-            await loadStudentsWithResults(className, subject, term, year, testType);
-        });
-
-        async function loadStudentsWithResults(className, subject, term, year, testType) {
-            if (!supabaseClient || !isConnected) {
-                const demo = [
-                    { id:1, name:'Ireen Mwansa', student_number:'2024-001' },
-                    { id:2, name:'Mary Phiri', student_number:'2024-002' },
-                    { id:3, name:'Grace Zulu', student_number:'2024-003' }
+            // If offline, use demo data
+            if (!isConnected || !supabaseClient) {
+                const demoStudents = [
+                    { id: 1, name: 'Ireen Mwansa', student_number: '2024-001' },
+                    { id: 2, name: 'Mary Phiri', student_number: '2024-002' },
+                    { id: 3, name: 'Grace Zulu', student_number: '2024-003' },
+                    { id: 4, name: 'Mercy Banda', student_number: '2024-004' },
+                    { id: 5, name: 'Faith Mumba', student_number: '2024-005' }
                 ];
-                displayResultsEntry(demo, subject, term, year, testType);
+                displayResultsEntry(demoStudents, subject, term, year, testType);
                 resultsEntry.style.display = 'block';
                 showToast('⚠️ Offline mode - showing demo students', true);
                 return;
@@ -1190,8 +1204,15 @@
             } catch (err) {
                 showToast('❌ Error loading students: ' + err.message, true);
                 console.error(err);
+                const demoStudents = [
+                    { id: 1, name: 'Ireen Mwansa', student_number: '2024-001' },
+                    { id: 2, name: 'Mary Phiri', student_number: '2024-002' },
+                    { id: 3, name: 'Grace Zulu', student_number: '2024-003' }
+                ];
+                displayResultsEntry(demoStudents, subject, term, year, testType);
+                resultsEntry.style.display = 'block';
             }
-        }
+        });
 
         function displayResultsEntryWithScores(students, subject, term, year, testType, resultsMap) {
             let html = '';
