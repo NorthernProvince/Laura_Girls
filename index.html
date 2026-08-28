@@ -1044,6 +1044,27 @@
             font-size: 11px;
             color: var(--ink-faint);
         }
+        /* Danger Zone Styles */
+        .danger-zone {
+            background: #ffebee;
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            border-left: 4px solid #c62828;
+        }
+        .danger-zone .danger-icon {
+            color: #c62828;
+            font-size: 20px;
+        }
+        .danger-zone .danger-title {
+            font-weight: 600;
+            color: #c62828;
+            font-size: 13px;
+        }
+        .danger-zone .danger-note {
+            font-size: 11px;
+            color: var(--ink-faint);
+        }
         @media (max-width: 480px) {
             .topbar .brand h1 {
                 font-size: 14px;
@@ -1104,6 +1125,17 @@
             .admin-tabs .admin-tab {
                 font-size: 12px;
                 padding: 8px 14px;
+            }
+            .danger-zone {
+                padding: 10px 12px;
+            }
+            .danger-zone .danger-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .danger-zone .danger-actions .btn {
+                width: 100%;
+                justify-content: center;
             }
         }
         @media print {
@@ -1665,7 +1697,7 @@
                 <!-- Admin dashboard stats -->
                 <div class="card"><div class="card-header"><h2><i class="fas fa-user-shield"></i> Admin Dashboard</h2><span class="subtitle">Overview</span></div><div class="grid-4"><div class="stat-card"><div class="icon"><i class="fas fa-users"></i></div><div class="number" id="totalStudents">0</div><div class="label">Total Students</div></div><div class="stat-card"><div class="icon"><i class="fas fa-user-tie"></i></div><div class="number" id="totalTeachers">0</div><div class="label">Total Teachers</div></div><div class="stat-card"><div class="icon"><i class="fas fa-book"></i></div><div class="number" id="totalSubjects">0</div><div class="label">Total Subjects</div></div><div class="stat-card"><div class="icon"><i class="fas fa-file-alt"></i></div><div class="number" id="totalResults">0</div><div class="label">Total Results</div></div></div></div>
 
-                <!-- Admin Tabs (Assignments & Learners Work) - NO SCHOOL SELECTOR TABS -->
+                <!-- Admin Tabs (Assignments & Learners Work) -->
                 <div class="card">
                     <div class="admin-tabs" id="adminTabs2">
                         <button class="admin-tab active" data-admintab="assignments2"><i class="fas fa-tasks"></i> Assignments</button>
@@ -1728,6 +1760,25 @@
                             <h2><i class="fas fa-users"></i> Learners Work</h2>
                             <span class="subtitle">Manage students</span>
                         </div>
+
+                        <!-- Danger Zone - Delete Controls -->
+                        <div class="danger-zone">
+                            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+                                <i class="fas fa-exclamation-triangle danger-icon"></i>
+                                <span class="danger-title">Danger Zone:</span>
+                                <button class="btn btn-danger btn-sm" onclick="confirmDeleteAll()">
+                                    <i class="fas fa-trash-alt"></i> Delete All Students
+                                </button>
+                                <button class="btn btn-danger btn-sm" id="deleteSelectedStudentsBtn" onclick="deleteSelectedStudents()" style="display:none;">
+                                    <i class="fas fa-trash-alt"></i> Delete Selected (<span id="selectedCount">0</span>)
+                                </button>
+                                <button class="btn btn-outline btn-sm" onclick="toggleSelectAll()">
+                                    <i class="fas fa-check-double"></i> Select All
+                                </button>
+                                <span class="danger-note">(This action cannot be undone)</span>
+                            </div>
+                        </div>
+
                         <div class="grid-3">
                             <div class="field">
                                 <label><i class="fas fa-user-plus"></i> Student Number</label>
@@ -1743,11 +1794,25 @@
                             </div>
                         </div>
                         <button class="btn btn-success btn-block" id="addStudentBtn2"><i class="fas fa-plus"></i> Add Student</button>
+
                         <div style="margin-top:12px;">
                             <div class="table-wrapper">
                                 <table>
-                                    <thead><tr><th>#</th><th>Student Number</th><th>Name</th><th>Class</th><th>Action</th></tr></thead>
-                                    <tbody id="studentsTableBody2"><tr><td colspan="5" style="text-align:center;color:var(--ink-faint);">Loading students...</td></tr></tbody>
+                                    <thead>
+                                        <tr>
+                                            <th style="width:30px;">
+                                                <input type="checkbox" id="selectAllCheckbox" onchange="toggleAllCheckboxes()">
+                                            </th>
+                                            <th>#</th>
+                                            <th>Student Number</th>
+                                            <th>Name</th>
+                                            <th>Class</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="studentsTableBody2">
+                                        <tr><td colspan="6" style="text-align:center;color:var(--ink-faint);">Loading students...</td></tr>
+                                    </tbody>
                                 </table>
                             </div>
                         </div>
@@ -2494,13 +2559,12 @@
             });
 
             // ============================================================
-            // LOAD STUDENTS FOR ADMIN
+            // LOAD STUDENTS FOR ADMIN - Updated with checkboxes
             // ============================================================
             async function loadStudents() {
                 if (!supabaseClient || !isConnected) {
                     [studentsTableBody2].forEach(body => {
-                        body.innerHTML =
-                        `<tr><td colspan="5" style="text-align:center;color:var(--ink-faint);">Database not connected</td></tr>`;
+                        body.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--ink-faint);">Database not connected</td></tr>`;
                     });
                     return;
                 }
@@ -2514,8 +2578,7 @@
                     if (error) throw error;
 
                     if (!data || data.length === 0) {
-                        const msg =
-                            `<tr><td colspan="5" style="text-align:center;color:var(--ink-faint);">No students found.</td></tr>`;
+                        const msg = `<tr><td colspan="6" style="text-align:center;color:var(--ink-faint);">No students found.</td></tr>`;
                         studentsTableBody2.innerHTML = msg;
                         return;
                     }
@@ -2523,51 +2586,263 @@
                     let html = '';
                     data.forEach((s, i) => {
                         const classDisplay = CLASS_DEFINITIONS.find(c => c.id === s.class)?.display || s.class || 'N/A';
-                        html += `<tr>
+                        html += `<tr data-student-id="${s.id}">
+                                <td>
+                                    <input type="checkbox" class="student-checkbox" value="${s.id}" data-name="${s.name}" onchange="updateSelectedCount()">
+                                </td>
                                 <td>${i + 1}</td>
                                 <td><strong>${s.student_number}</strong></td>
                                 <td>${s.name}</td>
                                 <td>${classDisplay}</td>
                                 <td>
-                                    <button class="btn btn-sm btn-danger" onclick="window.deleteStudent('${s.id}')">
-                                        <i class="fas fa-times"></i> Remove
+                                    <button class="btn btn-sm btn-danger" onclick="window.deleteStudent('${s.id}')" title="Delete this student">
+                                        <i class="fas fa-trash"></i>
                                     </button>
                                 </td>
                             </tr>`;
                     });
 
                     studentsTableBody2.innerHTML = html;
+                    updateSelectedCount();
 
                 } catch (err) {
                     console.error('Error loading students:', err);
-                    const msg =
-                        `<tr><td colspan="5" style="text-align:center;color:var(--ink-faint);">Error loading students</td></tr>`;
+                    const msg = `<tr><td colspan="6" style="text-align:center;color:var(--ink-faint);">Error loading students</td></tr>`;
                     studentsTableBody2.innerHTML = msg;
                 }
             }
 
+            // ============================================================
+            // DELETE STUDENT FUNCTIONS
+            // ============================================================
+
+            // Delete single student
             window.deleteStudent = async function(id) {
                 if (!currentUser || currentUser.role !== 'admin') {
                     showToast('🔒 Admin only', true);
                     return;
                 }
-                if (!confirm('Delete this student?')) return;
+
+                // Get student name for confirmation
+                const row = document.querySelector(`tr[data-student-id="${id}"]`);
+                const name = row ? row.querySelector('td:nth-child(4)')?.textContent || 'this student' : 'this student';
+
+                if (!confirm(`⚠️ Are you sure you want to delete ${name}?\n\nThis action cannot be undone and will also delete all results for this student.`)) {
+                    return;
+                }
+
                 if (!supabaseClient || !isConnected) {
                     showToast('⚠️ Not connected to database', true);
                     return;
                 }
 
                 try {
-                    await supabaseClient.from('students').delete().eq('id', id);
-                    showToast('✅ Student deleted');
+                    showToast('🔄 Deleting student...');
+
+                    // First delete all results for this student
+                    const { error: resultsError } = await supabaseClient
+                        .from('results')
+                        .delete()
+                        .eq('student_id', id);
+
+                    if (resultsError) {
+                        console.warn('Could not delete results:', resultsError);
+                    }
+
+                    // Then delete the student
+                    const { error } = await supabaseClient
+                        .from('students')
+                        .delete()
+                        .eq('id', id);
+
+                    if (error) throw error;
+
+                    showToast('✅ Student deleted successfully');
                     loadStudents();
                     loadAdminStats();
                     loadClasses();
+                    updateSelectedCount();
+
                 } catch (err) {
                     showToast('❌ Error: ' + err.message, true);
                     console.error(err);
                 }
             };
+
+            // Delete all students
+            window.deleteAllStudents = async function() {
+                if (!currentUser || currentUser.role !== 'admin') {
+                    showToast('🔒 Admin only', true);
+                    return;
+                }
+
+                // Get total count
+                const { count, error: countError } = await supabaseClient
+                    .from('students')
+                    .select('*', { count: 'exact', head: true });
+
+                if (countError) {
+                    showToast('❌ Could not count students', true);
+                    return;
+                }
+
+                if (count === 0) {
+                    showToast('ℹ️ No students to delete', true);
+                    return;
+                }
+
+                // Triple confirmation
+                if (!confirm(`⚠️ DANGER: You are about to delete ALL ${count} students from the database!\n\nThis action CANNOT be undone and will also delete all associated results.\n\nAre you absolutely sure?`)) {
+                    return;
+                }
+
+                if (!confirm(`⚠️ FINAL WARNING: This will permanently remove ${count} students and all their results.\n\nContinue?`)) {
+                    return;
+                }
+
+                if (!supabaseClient || !isConnected) {
+                    showToast('⚠️ Not connected to database', true);
+                    return;
+                }
+
+                try {
+                    showToast('🔄 Deleting all students... This may take a moment...');
+
+                    // Get all student IDs
+                    const { data: students, error: fetchError } = await supabaseClient
+                        .from('students')
+                        .select('id');
+
+                    if (fetchError) throw fetchError;
+
+                    if (students && students.length > 0) {
+                        const studentIds = students.map(s => s.id);
+
+                        // Delete all results
+                        const { error: resultsError } = await supabaseClient
+                            .from('results')
+                            .delete()
+                            .in('student_id', studentIds);
+
+                        if (resultsError) {
+                            console.warn('Could not delete results:', resultsError);
+                        }
+                    }
+
+                    // Delete all students
+                    const { error } = await supabaseClient
+                        .from('students')
+                        .delete()
+                        .neq('id', '');
+
+                    if (error) throw error;
+
+                    showToast(`✅ All ${count} students deleted successfully`);
+                    loadStudents();
+                    loadAdminStats();
+                    loadClasses();
+                    updateSelectedCount();
+
+                } catch (err) {
+                    showToast('❌ Error: ' + err.message, true);
+                    console.error(err);
+                }
+            };
+
+            // Delete selected students
+            window.deleteSelectedStudents = async function() {
+                if (!currentUser || currentUser.role !== 'admin') {
+                    showToast('🔒 Admin only', true);
+                    return;
+                }
+
+                const checkboxes = document.querySelectorAll('.student-checkbox:checked');
+                if (checkboxes.length === 0) {
+                    showToast('⚠️ Please select at least one student', true);
+                    return;
+                }
+
+                const studentIds = Array.from(checkboxes).map(cb => cb.value);
+                const studentNames = Array.from(checkboxes).map(cb => cb.dataset.name);
+
+                if (!confirm(`⚠️ Are you sure you want to delete ${studentIds.length} selected students?\n\n${studentNames.join(', ')}\n\nThis action cannot be undone.`)) {
+                    return;
+                }
+
+                if (!supabaseClient || !isConnected) {
+                    showToast('⚠️ Not connected to database', true);
+                    return;
+                }
+
+                try {
+                    showToast(`🔄 Deleting ${studentIds.length} students...`);
+
+                    // Delete results
+                    const { error: resultsError } = await supabaseClient
+                        .from('results')
+                        .delete()
+                        .in('student_id', studentIds);
+
+                    if (resultsError) {
+                        console.warn('Could not delete results:', resultsError);
+                    }
+
+                    // Delete students
+                    const { error } = await supabaseClient
+                        .from('students')
+                        .delete()
+                        .in('id', studentIds);
+
+                    if (error) throw error;
+
+                    showToast(`✅ ${studentIds.length} students deleted successfully`);
+                    loadStudents();
+                    loadAdminStats();
+                    loadClasses();
+                    updateSelectedCount();
+
+                } catch (err) {
+                    showToast('❌ Error: ' + err.message, true);
+                    console.error(err);
+                }
+            };
+
+            // Toggle functions
+            function toggleAllCheckboxes() {
+                const selectAll = document.getElementById('selectAllCheckbox');
+                const checkboxes = document.querySelectorAll('.student-checkbox');
+                checkboxes.forEach(cb => cb.checked = selectAll.checked);
+                updateSelectedCount();
+            }
+
+            function toggleSelectAll() {
+                const selectAll = document.getElementById('selectAllCheckbox');
+                selectAll.checked = !selectAll.checked;
+                toggleAllCheckboxes();
+            }
+
+            function updateSelectedCount() {
+                const checkboxes = document.querySelectorAll('.student-checkbox:checked');
+                const count = checkboxes.length;
+                const countEl = document.getElementById('selectedCount');
+                if (countEl) countEl.textContent = count;
+                const deleteBtn = document.getElementById('deleteSelectedStudentsBtn');
+                if (deleteBtn) {
+                    deleteBtn.style.display = count > 0 ? 'inline-flex' : 'none';
+                }
+            }
+
+            function confirmDeleteAll() {
+                deleteAllStudents();
+            }
+
+            // Make functions globally accessible
+            window.toggleAllCheckboxes = toggleAllCheckboxes;
+            window.toggleSelectAll = toggleSelectAll;
+            window.updateSelectedCount = updateSelectedCount;
+            window.confirmDeleteAll = confirmDeleteAll;
+            window.deleteSelectedStudents = deleteSelectedStudents;
+            window.deleteAllStudents = deleteAllStudents;
 
             // ============================================================
             // ADD STUDENT (Admin)
